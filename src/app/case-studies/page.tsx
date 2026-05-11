@@ -6,7 +6,9 @@ import { siteContent } from "@/config/content";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { PlaceholderImage } from "@/components/ui/placeholder-image";
 
 import { useMode } from "@/hooks/use-mode";
 
@@ -175,9 +177,6 @@ export default function CaseStudiesPage() {
         </div>
       </div>
       <Footer />
-    </main>
-  );
-}
     </main>
   );
 }
