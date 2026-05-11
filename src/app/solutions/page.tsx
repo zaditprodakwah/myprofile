@@ -6,6 +6,8 @@ import {
   BarChart3, Sparkles
 } from "lucide-react";
 import { Metadata } from "next";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Industry Solutions & Problem Mapping | Zadit Intelligence Hub",
@@ -63,6 +65,7 @@ const industries = [
 export default function SolutionsDirectory() {
   return (
     <div className="min-h-screen pt-32 pb-24 px-6 bg-[#020617]">
+      <Header />
       <div className="max-w-7xl mx-auto space-y-24">
         {/* Hero Section */}
         <header className="max-w-3xl space-y-6">
@@ -165,6 +168,7 @@ export default function SolutionsDirectory() {
           </div>
         </section>
       </div>
+      <Footer />
     </div>
   );
 }

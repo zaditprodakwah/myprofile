@@ -15,6 +15,8 @@ import {
 import Link from "next/link";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { generateSoftwareSchema } from "@/lib/seo/schema";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 interface Props {
   params: {
@@ -56,6 +58,7 @@ export default async function ToolDetailPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-200">
+      <Header />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
@@ -190,6 +193,7 @@ export default async function ToolDetailPage({ params }: Props) {
           </div>
         </aside>
       </section>
+      <Footer />
     </main>
   );
 }

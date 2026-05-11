@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 import { TrendingUp, GraduationCap, Briefcase, Sparkles, FilterX } from "lucide-react";
 import { useMode } from "@/hooks/use-mode";
 import { motion, AnimatePresence } from "framer-motion";
+import { Footer } from "@/components/layout/Footer";
+import { Badge } from "@/components/ui/badge";
+import { Layers } from "lucide-react";
 
 export default function ServicesPage() {
   const { mode } = useMode();

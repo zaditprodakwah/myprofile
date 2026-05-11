@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Footer } from "@/components/layout/Footer";
 import { Radio, Newspaper, Zap, ExternalLink, Filter } from "lucide-react";
 import Link from "next/link";
 
@@ -174,6 +175,7 @@ export default function RadarPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </main>
   );
 }

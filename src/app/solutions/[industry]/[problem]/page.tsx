@@ -7,6 +7,8 @@ import { ArrowLeft, CheckCircle2, ChevronRight, ShieldCheck, Sparkles } from "lu
 import Link from "next/link";
 import { Recommendations } from "@/components/shared/Recommendations";
 import { supabase } from "@/lib/supabase/client";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 interface Props {
   params: { industry: string; problem: string };
@@ -49,6 +51,7 @@ export default async function SolutionPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-200 selection:bg-blue-500/30">
+      <Header />
       {/* Breadcrumbs */}
       <nav className="max-w-7xl mx-auto px-6 py-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500">
         <Link href="/" className="hover:text-blue-500 transition-colors">Home</Link>
@@ -162,6 +165,7 @@ export default async function SolutionPage({ params }: Props) {
           })
         }}
       />
+      <Footer />
     </main>
   );
 }

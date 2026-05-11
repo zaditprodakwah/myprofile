@@ -1,15 +1,17 @@
 import React from "react";
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, Lock, Eye, FileText } from "lucide-react";
 
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-[#020617] pt-32 pb-24">
       <Header />
-      <div className="max-w-4xl mx-auto px-6 space-y-12">
+      <div className="max-w-4xl mx-auto px-6 space-y-12 mb-32">
         <header className="space-y-4">
           <Badge variant="outline" className="text-blue-500 border-blue-500/20">Privacy Policy</Badge>
-          <h1 className="text-4xl md:text-6xl font-black font-outfit">Data Integrity & Privacy</h1>
+          <h1 className="text-4xl md:text-6xl font-black">Data Integrity & Privacy</h1>
           <p className="text-slate-400 text-lg">Bagaimana kami mengelola informasi Anda dengan standar keamanan eksekutif.</p>
         </header>
 
@@ -50,19 +52,7 @@ export default function PrivacyPage() {
           </p>
         </article>
       </div>
+      <Footer />
     </main>
   );
 }
-
-function Badge({ children, variant, className }: any) {
-  return (
-    <span className={cn(
-      "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-      className
-    )}>
-      {children}
-    </span>
-  );
-}
-
-import { cn } from "@/lib/utils";

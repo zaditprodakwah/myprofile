@@ -1,6 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import { siteContent } from "@/config/content";
 import { PackageCards } from "@/components/services/PackageCards";
 import { InquiryWizard } from "@/components/inquiry/InquiryWizard";
@@ -156,6 +157,7 @@ export default function LPPage({ params }: LPPageProps) {
           </div>
         </div>
       </section>
+      <Footer />
     </main>
   );
 }

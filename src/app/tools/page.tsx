@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase/client";
 import { Search, Grid, List, Zap, Star, ShieldCheck, ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Authority Tool Directory | Zadit Intelligence Hub",
@@ -20,7 +22,8 @@ export default async function ToolsDirectoryPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-200 selection:bg-amber-500/30">
-      {/* Header */}
+      <Header />
+      {/* Header Section */}
       <section className="relative pt-32 pb-20 px-6 border-b border-white/5">
         <div className="absolute inset-0 bg-linear-to-b from-amber-500/5 to-transparent pointer-events-none" />
         <div className="max-w-5xl mx-auto text-center space-y-8 relative">
@@ -106,6 +109,7 @@ export default async function ToolsDirectoryPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </main>
   );
 }

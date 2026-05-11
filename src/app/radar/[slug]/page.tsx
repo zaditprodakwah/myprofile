@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { getBaseMetadata } from "@/lib/seo/meta";
 import { Recommendations } from "@/components/shared/Recommendations";
+import { Footer } from "@/components/layout/Footer";
 
 interface Props {
   params: { slug: string };
@@ -148,6 +149,7 @@ export default async function RadarItemPage({ params }: Props) {
           })
         }}
       />
+      <Footer />
     </main>
   );
 }
