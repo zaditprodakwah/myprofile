@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Radar, ArrowRight, Clock, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 
 import { supabase } from "@/lib/supabase/client";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";

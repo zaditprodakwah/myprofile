@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 
 export const metadata = {
   title: "Intelligence Search Results | Zadit Hub",

@@ -9,7 +9,7 @@ import { TrendingUp, GraduationCap, Briefcase, Sparkles, FilterX } from "lucide-
 import { useMode } from "@/hooks/use-mode";
 import { motion, AnimatePresence } from "framer-motion";
 import { Footer } from "@/components/layout/Footer";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { Layers } from "lucide-react";
 
 export default function ServicesPage() {

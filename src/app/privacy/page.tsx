@@ -1,7 +1,7 @@
 import React from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { ShieldCheck, Lock, Eye, FileText } from "lucide-react";
 
 export default function PrivacyPage() {

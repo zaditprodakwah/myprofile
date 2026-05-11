@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { runIngestion } from "@/lib/radar/ingestion";
+import { ingestAllFeeds } from "@/lib/radar/ingestion";
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const results = await runIngestion();
+    const results = await ingestAllFeeds();
     return NextResponse.json({
       success: true,
       message: "Ingestion pipeline completed",

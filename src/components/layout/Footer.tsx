@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Radar, Mail, MessageSquare, Linkedin, Twitter, ExternalLink, ShieldCheck } from "lucide-react";

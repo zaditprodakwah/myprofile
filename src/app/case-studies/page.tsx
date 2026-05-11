@@ -7,8 +7,9 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { PlaceholderImage } from "@/components/ui/placeholder-image";
+import { Badge } from "@/components/ui/Badge";
+import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
+import { Footer } from "@/components/layout/Footer";
 
 import { useMode } from "@/hooks/use-mode";
 
