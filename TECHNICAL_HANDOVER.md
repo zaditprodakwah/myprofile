@@ -61,22 +61,12 @@ graph TD
 
 ### Peta Folder Utama
 ```bash
-/web
-├── src/
-│   ├── app/                # Next.js 14 App Router (Routes & Server Pages)
-│   │   ├── solutions/      # pSEO Engine: Industry-specific problem solvers
-│   │   ├── tools/          # Authority Stack: Verified tool directory
-│   │   ├── radar/          # Intelligence Feed: Single Source of Truth
-│   │   └── api/            # Serverless Functions (Cron, Webhooks)
-│   ├── components/         # UI Logic
-│   │   ├── shared/         # Universal components (Recommendations, SmartSearch)
-│   │   ├── layout/         # Header, Sidebar, Sticky Footer
-│   │   └── forms/          # InquiryWizard & Lead Capture
-│   ├── lib/                # Core Logic (Utils, Generators, SEO helpers)
-│   ├── hooks/              # Client-side state (useMode, useSearch)
-│   └── scripts/            # Database Seeding & Maintenance
-├── supabase/               # SQL Migrations & Schema Blueprints
-└── data/                   # Seed Data (JSON) for pSEO expansion
+.
+├── src/                # Next.js 14 App Router
+├── supabase/           # SQL Migrations
+├── public/             # Static Assets
+├── temp_docs/          # Design documents
+└── data/               # Seed Data
 ```
 
 ---

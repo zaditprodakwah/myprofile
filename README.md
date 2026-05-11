@@ -20,20 +20,21 @@ A high-performance, database-driven intelligence platform designed for executive
 
 ## 📂 Project Structure
 
-- `web/`: Main Next.js application.
-- `temp_docs/`: Design documents and technical specifications.
+- `src/`: Core application logic and UI components.
 - `supabase/`: SQL schema and migration scripts.
+- `public/`: Static assets and icons.
+- `temp_docs/`: Design documents and technical specifications.
+- `data/`: Seed Data (JSON) for pSEO expansion.
 
 ## 🚦 Getting Started
 
 1. **Clone the repository**
 2. **Install dependencies**:
    ```bash
-   cd web
    npm install
    ```
 3. **Configure Environment Variables**:
-   Create a `.env.local` in the `web/` directory with:
+   Create a `.env.local` in the root directory with:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
