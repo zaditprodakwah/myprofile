@@ -1,0 +1,6 @@
+[
+  { "slug": "marketing", "name": "Digital Marketing & Agency", "description": "Scale ROAS & dominate search SERPs", "priority": 10, "tags": ["SEO", "PPC", "CRO"] },
+  { "slug": "academic", "name": "Academic & Research", "description": "Research integrity & automated mapping", "priority": 8, "tags": ["citations", "research", "paper"] },
+  { "slug": "business", "name": "Business & Enterprise", "description": "Executive assets & strategic reporting", "priority": 9, "tags": ["BI", "reporting", "SaaS"] },
+  { "slug": "ecommerce", "name": "E-commerce & Retail", "description": "Conversion optimization and headless commerce", "priority": 7, "tags": ["shopify", "conversion", "sales"] }
+]

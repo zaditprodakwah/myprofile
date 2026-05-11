@@ -1,0 +1,34 @@
+[
+  { 
+    "industry_slug": "marketing", 
+    "slug": "low-signup-conversion", 
+    "title": "Low Signup Conversion on Landing Pages",
+    "symptom_queries": ["why is my landing page not converting", "low conversion rate marketing"],
+    "solution_summary": "Implement behavior-based triggers and high-intent copy optimization.",
+    "tags": ["CRO", "LPO", "Marketing"]
+  },
+  { 
+    "industry_slug": "academic", 
+    "slug": "citation-management-chaos", 
+    "title": "Citation & Reference Management Chaos",
+    "symptom_queries": ["how to manage citations automatically", "bibtex automation tools"],
+    "solution_summary": "Automated workflow for Zotero to BibTex synchronization with LLM enrichment.",
+    "tags": ["Research", "Academia", "Tools"]
+  },
+  { 
+    "industry_slug": "business", 
+    "slug": "manual-reporting-bottleneck", 
+    "title": "Manual Executive Reporting Bottleneck",
+    "symptom_queries": ["automate executive reports", "business intelligence dashboard automation"],
+    "solution_summary": "Dynamic BI data connectors with automated synthesis for executive summaries.",
+    "tags": ["BI", "Reporting", "Efficiency"]
+  },
+  {
+    "industry_slug": "ecommerce",
+    "slug": "cart-abandonment",
+    "title": "High Cart Abandonment Rate",
+    "symptom_queries": ["reduce checkout abandonment", "ecommerce cart recovery strategies"],
+    "solution_summary": "One-click checkout implementation with retargeting automation.",
+    "tags": ["ecommerce", "UX", "sales"]
+  }
+]

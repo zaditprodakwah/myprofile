@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /out/
+
+Sitemap: https://zadit.pro/sitemap.xml

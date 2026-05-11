@@ -1,0 +1,35 @@
+[
+  { 
+    "slug": "groq", 
+    "name": "Groq Cloud", 
+    "tagline": "LPU Inference Engine for ultra-fast LLMs",
+    "category": "AI", 
+    "website_url": "https://groq.com",
+    "pricing_model": "Freemium",
+    "is_featured": true,
+    "priority": 100,
+    "features": ["Ultra-fast inference", "Open-source model support", "Cloud API"],
+    "use_cases": ["Real-time chatbots", "High-volume data processing"]
+  },
+  { 
+    "slug": "supabase", 
+    "name": "Supabase", 
+    "tagline": "The Open Source Firebase Alternative",
+    "category": "Database", 
+    "website_url": "https://supabase.com",
+    "pricing_model": "Freemium",
+    "priority": 95,
+    "features": ["Realtime DB", "Auth", "Storage"],
+    "use_cases": ["Web apps", "Mobile backends"]
+  },
+  {
+    "slug": "resend",
+    "name": "Resend",
+    "tagline": "Email for developers",
+    "category": "Marketing",
+    "website_url": "https://resend.com",
+    "pricing_model": "Freemium",
+    "priority": 90,
+    "features": ["React email templates", "High deliverability", "Simple API"]
+  }
+]

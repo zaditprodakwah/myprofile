@@ -1,0 +1,861 @@
+# 🚀 ZADIT PERSONAL HUB — ULTIMATE GROWTH ENGINE DOC (ONE FILE)
+**Owner:** Muhammad Khoiruzzadittaqwa (Zadit)  
+**Project:** Segmentation-First Executive Profile + Programmatic SEO + Tools Directory + Radar Growth Engine  
+**Target Output:** Brand SERP dominance + Google Suggest booster + People Also Ask capture + Lead Machine (Smart Inquiry)
+
+---
+
+# 0) SYSTEM ROLE INSTRUCTIONS (MANDATORY)
+You are **Gemini Antigravity Coder** acting as:
+- Principal Software Engineer (Next.js 14 App Router, RSC-first)
+- Technical SEO Architect (Schema, Internal Link Graph)
+- Growth Hacker (pSEO, query shaping, SERP feature optimization)
+- CRO Specialist (multi-persona segmentation, inquiry wizard)
+
+**Non-negotiable constraints:**
+- Next.js 14+ App Router
+- Server Components by default
+- Client components only at leaf nodes
+- Lighthouse 100/100/100/100 target
+- Core Web Vitals strict (LCP < 1.2s, CLS 0.00, INP < 200ms)
+- Supabase Postgres for all seed content and lead tracking
+- Vercel Cron Jobs for Radar ingestion/enrichment
+- Tailwind + Radix UI + Framer Motion
+- CMDK global search
+
+---
+
+# 1) PRIMARY GOAL: BRAND QUERY ENGINEERING (ADVANCED)
+This website must function as an **Entity + Query Shaping Machine** to dominate:
+- Google Suggest (Autocomplete)
+- People Also Ask (PAA)
+- Featured Snippets
+- Google Discover visibility
+- Brand keyword pairing dominance
+
+**Entity Positioning Target:**
+> Zadit = Digital Growth Architect + SEO Engineering + Programmatic SEO + AI Tools Radar + Academic Data Consultant
+
+---
+
+# 2) SITE ARCHITECTURE OVERVIEW (FINAL)
+Routes must be implemented exactly:
+
+## Core Routes
+- `/` Home (segmentation-first hero hub)
+- `/services` Services clusters (Digital Marketing / Academic / Business)
+- `/case-studies` portfolio grid
+- `/case-studies/[slug]` case study detail with executive summary
+- `/radar` industry radar feed
+- `/radar/[tag]` tag feed (pSEO-like)
+- `/tools` tools directory index
+- `/tools/[category]` category listing
+- `/tools/[category]/[slug]` tool detail page
+- `/solutions` solutions index
+- `/solutions/[industry]` industry hub
+- `/solutions/[industry]/[problem]` programmatic landing page
+- `/guides/[slug]` editorial pillar guides
+- `/legal` privacy/SLA
+
+---
+
+# 3) DATA ARCHITECTURE (SUPABASE TABLES)
+Must use Supabase Postgres.
+
+## Tables
+### `industries`
+- id uuid pk
+- slug unique
+- name
+- description
+- priority int
+- tags text[]
+- created_at
+
+### `problems`
+- id uuid pk
+- industry_slug (FK reference by slug)
+- slug unique
+- name
+- description
+- symptom_queries text[]
+- solution_summary
+- recommended_services text[]
+- tags text[]
+- created_at
+
+### `solutions_pages`
+Generated programmatically (no need separate table if derived from industries+problems).
+But can store precomputed:
+- slug
+- industry_slug
+- problem_slug
+- title
+- meta_title
+- meta_description
+- faq jsonb
+- schema jsonb
+- updated_at
+
+### `tools`
+- id uuid pk
+- slug unique
+- name
+- category
+- sub_category
+- pricing_model
+- tagline
+- description
+- website_url
+- affiliate_url
+- logo_url
+- features text[]
+- use_cases text[]
+- pros text[]
+- cons text[]
+- keywords text[]
+- schema_type
+- priority int
+- is_featured boolean
+- is_sponsored boolean default false
+- sponsor_weight int default 0
+- created_at
+
+### `radar_sources`
+- id uuid pk
+- slug unique
+- name
+- url
+- site_url
+- type
+- tier
+- priority int
+- enabled boolean
+- max_items_per_day int
+- language
+- country
+- notes
+- created_at
+
+### `radar_items`
+- id uuid pk
+- source_slug
+- title
+- summary
+- url
+- canonical_url
+- published_at timestamptz
+- author
+- image_url
+- tags text[]
+- hash unique
+- signal_score int
+- is_featured boolean default false
+- why_it_matters text null
+- takeaway text null
+- recommended_solutions jsonb null
+- recommended_tools jsonb null
+- created_at
+
+### `inquiries`
+- id uuid pk
+- name
+- email
+- whatsapp
+- company
+- mode ("marketing"|"academic"|"business")
+- budget_range
+- goal
+- message
+- source_page
+- metadata jsonb
+- created_at
+
+---
+
+# 4) RSS RADAR SOURCES (FINAL SEED)
+Create seed file:
+`data/radar-sources.seed.json`
+
+Use curated list of 30 sources with tiers, priority, caps, enabled flags.
+(Use the final curated JSON list already provided in previous messages.)
+
+**Important display rules:**
+- `signal_score >= 80` → Featured Candidate
+- `signal_score >= 55` → Display in feed
+- `<55` → Store but archive-only
+
+---
+
+# 5) RADAR SCORING ENGINE (DETERMINISTIC)
+Create file:
+`src/lib/radar/scoring.ts`
+
+## Scoring formula:
+signal_score = clamp(
+  source.priority
+  + freshness_boost
+  + title_quality_boost
+  + keyword_boost
+  + noise_penalty,
+  0,
+  100
+)
+
+### Freshness boost:
+- <12h +30
+- <24h +25
+- <48h +18
+- <7d +10
+- else 0
+
+### Keyword boosts:
+- SEO hits *15
+- AI hits *12
+- Engineering hits *10
+
+### Noise penalties:
+- roundup -15
+- podcast/webinar -10
+- sponsored -20
+- summary <120 chars -10
+
+Also implement:
+- `shouldDisplay(score)`
+- `shouldFeature(score)`
+
+---
+
+# 6) RADAR TAGGING ENGINE (NON-AI FALLBACK)
+Create file:
+`src/lib/radar/tagging.ts`
+
+Implement deterministic tag inference:
+- Detect SEO/AI/Engineering/Marketing keywords
+- Normalize tags
+- Always output tags even if AI enrichment fails
+
+---
+
+# 7) CURATION RULES: DAILY CAP + DIVERSITY ENFORCER
+Create:
+`src/lib/radar/curation.ts`
+
+### Daily cap:
+- tier1 max 6/day
+- tier2 max 4/day
+- tier3 max 2/day
+
+### Diversity enforcement:
+For top 10 items enforce:
+- 3 SEO
+- 3 AI
+- 3 Engineering
+- 1 wildcard
+
+This prevents SEO blog spam from dominating.
+
+---
+
+# 8) INTERNAL LINK GRAPH ENGINEERING (THE MONEY PART)
+This site must behave like a self-reinforcing SEO graph.
+
+## Rule of 3 Links (mandatory)
+Every page must contain at least:
+- 2 internal links to sibling pages
+- 2 internal links to solutions pages
+- 2 internal links to radar items
+- 1 internal link to services anchor
+- 1 internal link to inquiry wizard
+
+### Internal linking modules required:
+- `<RelatedSolutions />`
+- `<RecommendedToolStack />`
+- `<LatestRadarInsights />`
+- `<RelatedTools />`
+- `<CTAInquiry />`
+
+---
+
+# 9) TOOLS DIRECTORY INTERNAL LINKING RULES (DETERMINISTIC)
+Create:
+`src/lib/tools/internal-linking.ts`
+
+## Category → Mode → Services anchor
+- seo → marketing → `/services#digital-marketing`
+- marketing → marketing → `/services#digital-marketing`
+- analytics → marketing → `/services#digital-marketing`
+- engineering → business → `/services#business`
+- ai → business → `/services#business`
+- productivity → business → `/services#business`
+- academic → academic → `/services#academic`
+
+## Tool → Solutions linking
+Implement:
+`getSolutionLinksForTool(tool)` returning 2-4 best solutions pages.
+
+Fallback if uncertain:
+- `/solutions/saas/low-signup-conversion`
+- `/solutions/ecommerce/landing-page-low-conversion`
+
+## Tool → Radar linking
+Implement:
+`getRadarTagsForTool(tool)` to filter radar items by tags.
+
+## Tool → Tool alternatives
+Implement:
+- same category
+- same pricing model if possible
+- exclude current slug
+- prioritize featured/sponsored/priority
+
+## Tool → Complementary stack pairing
+Cross-category recommended stack:
+- SEO tool pairs with GA4 + GTM + Hotjar
+- Analytics pairs with SEO tools + A/B testing tools
+- Scraping pairs with SEO APIs + dashboards
+- AI writing pairs with SEO clustering tools
+
+Sponsored placement rules:
+- max 2 sponsored in alternatives
+- max 1 sponsored in stack pairing
+- always label Sponsored
+- outbound affiliate links must be nofollow sponsored
+
+---
+
+# 10) PROGRAMMATIC SEO: SOLUTIONS ENGINE (SERP DOMINATOR)
+Solutions pages are the core pSEO growth engine.
+
+## Route
+`/solutions/[industry]/[problem]`
+
+Each solution page must contain:
+- Executive Summary block (40–70 words)
+- Problem Symptoms list
+- Root Causes list
+- Recommended Framework / Strategy
+- Tool stack recommendation (internal links to tools)
+- Related case studies
+- Related radar insights
+- FAQ injection (6–10 Q/A)
+- Schema JSON-LD (FAQ + ProfessionalService + WebPage)
+
+---
+
+# 11) PAA (PEOPLE ALSO ASK) CAPTURE SYSTEM
+Every solution page must have:
+
+## FAQ Injection Block
+H2: "Pertanyaan yang sering ditanyakan"
+Generate 6–10 questions using templates:
+
+- Apa itu {problem}?
+- Kenapa {problem} terjadi?
+- Berapa biaya untuk mengatasi {problem}?
+- Apa strategi terbaik untuk {industry}?
+- Tool apa yang paling efektif untuk {problem}?
+- Berapa lama hasil biasanya terlihat?
+- Apa kesalahan fatal yang harus dihindari?
+- Apakah solusi ini cocok untuk bisnis kecil?
+
+FAQ answers must be:
+- 40–70 words
+- short, authoritative
+- use the brand voice "engineering + evidence"
+
+Add FAQ schema JSON-LD.
+
+---
+
+# 12) BRAND KEYWORDS BOOSTER (SUGGEST ENGINEERING)
+Implement "Brand Keyword Pairing" systematically.
+
+## Must appear in:
+- H1
+- Title tag
+- Meta description
+- Intro paragraph
+- FAQ questions
+- Image alt tags
+
+### Example pattern:
+"Zadit — Programmatic SEO untuk SaaS"
+"Zadit Growth Architect untuk E-commerce"
+
+### Target Suggest patterns:
+- "zadit seo"
+- "zadit programmatic seo"
+- "zadit growth hacker"
+- "zadit jasa seo"
+- "zadit seo cirebon"
+- "zadit audit seo"
+
+---
+
+# 13) ENTITY ENGINEERING (KNOWLEDGE PANEL SIMULATION)
+Homepage must include Person schema.
+
+## JSON-LD Person schema must include:
+- name
+- jobTitle
+- url
+- image (optional)
+- sameAs links (LinkedIn, GitHub, Medium, etc)
+- worksFor (optional)
+- alumniOf (STAI Al-Bahjah)
+
+Also include:
+- Organization schema (Zadit Consulting)
+- ProfessionalService schema (services)
+- BreadcrumbList schema on all dynamic pages
+
+---
+
+# 14) DISCOVER OPTIMIZATION RULESET (CRITICAL)
+For Google Discover-like performance:
+- publish Radar frequently (auto)
+- each radar post must have unique editorial enrichment:
+  - why_it_matters
+  - takeaway
+  - recommended action
+- include strong title structure:
+  - "Google Confirms X: What It Means for SEO in 2026"
+  - "OpenAI Releases X: Implication for AI Automation"
+
+Include OG meta tags:
+- og:title
+- og:description
+- og:image
+- twitter:card
+
+---
+
+# 15) SMART INQUIRY ENGINE (LEAD MACHINE)
+Build multi-step wizard form.
+
+## Steps
+1. Select intent mode (marketing/academic/business)
+2. Select industry (dropdown from industries table)
+3. Select problem (filtered by industry)
+4. Budget range
+5. Contact info
+6. Submit
+
+## Submission logic
+- Always insert to Supabase `inquiries`
+- If enterprise/budget high → send Resend email
+- If urgent/academic/fast consult → WA redirect with prefilled message
+
+---
+
+# 16) WHATSAPP PREFILLED MESSAGE TEMPLATE (HIGH CONVERSION)
+Implement generator:
+`src/lib/inquiry/wa.ts`
+
+### WA message format:
+Use this template:
+
+Hello Zadit, saya ingin konsultasi.
+
+Mode: {mode}
+Industry: {industry}
+Problem utama: {problem}
+Budget range: {budget}
+
+Tujuan saya:
+{goal}
+
+Kondisi saat ini:
+{message}
+
+Saya menemukan Anda dari:
+{source_page}
+
+Apakah saya bisa mendapatkan rekomendasi strategi + estimasi timeline?
+
+Thanks.
+
+**Rules:**
+- Must be short, structured, easy to scan
+- Include proof-intent phrasing ("timeline", "estimasi")
+- Include source_page to track conversion
+
+---
+
+# 17) TOOLS HUB + DIRECTORY MONETIZATION SYSTEM (MULTI REVENUE)
+This site must support realistic scalable revenue.
+
+## Revenue streams
+### A) Affiliate Tracking
+Tools table includes:
+- affiliate_url
+- pricing_model
+Outbound links:
+- `rel="nofollow sponsored noopener noreferrer"`
+Track clicks:
+- store `tool_click_events` in Supabase
+
+### B) Sponsored Featured Placement
+Add fields:
+- is_sponsored boolean
+- sponsor_weight int
+Ranking algorithm:
+- if sponsored, add sponsor_weight to priority but cap so it doesn't dominate trust
+
+### C) Paid Directory Listing
+Create:
+`/tools/submit`
+Form inserts into `tool_submissions` table.
+
+### D) Newsletter Monetization
+Radar subscribe widget:
+- email capture → Supabase + Resend
+- weekly digest auto generated from top signal_score items
+
+---
+
+# 18) RADAR ENRICHMENT ENGINE (OPTIONAL AI + FALLBACK)
+Implement `/api/cron/radar-enrich`
+
+## Non-AI fallback:
+- summary extraction from RSS content
+- tags from deterministic tagger
+- why_it_matters template:
+  - "This update signals X. It matters because Y. Recommended action: Z."
+
+## AI optional:
+Use Gemini API only for:
+- rewrite into 2-3 sentence insight
+- generate 5 tags
+- generate 5 FAQ questions if needed
+
+AI must not be required for pipeline stability.
+
+---
+
+# 19) TEMPLATE GENERATOR SYSTEM (MANDATORY)
+We need generator functions to build consistent pages at scale.
+
+## Create:
+`src/lib/generators/solutions.ts`
+
+### Must export:
+- `generateSolutionMeta(industry, problem)`
+- `generateSolutionFAQ(problem)`
+- `generateSolutionSchema(industry, problem, faq)`
+- `generateInternalLinks(industry, problem)`
+
+---
+
+# 20) SOLUTION PAGE TEMPLATE (REQUIRED COMPONENTS)
+Create file:
+`src/app/solutions/[industry]/[problem]/page.tsx`
+
+### Layout sections (must follow order):
+1. Hero Title H1 (Brand keyword pairing)
+2. Executive Summary block with id="executive-summary"
+3. Proof Stack (chips)
+4. Symptoms list
+5. Root causes
+6. Strategy framework
+7. Recommended tools (internal links)
+8. Related radar insights
+9. Related solutions
+10. FAQ injection + FAQ schema
+11. CTA Inquiry wizard
+
+**All sections must be modular components.**
+
+---
+
+# 21) TOOL DETAIL PAGE TEMPLATE (REQUIRED)
+Create:
+`src/app/tools/[category]/[slug]/page.tsx`
+
+Sections:
+1. Tool hero
+2. What it does
+3. Best use cases
+4. Pros / cons
+5. Alternatives (internal links)
+6. Complementary stack (internal links)
+7. Recommended solutions (internal links)
+8. Latest radar insights
+9. CTA inquiry wizard (prefilled with tool info)
+
+---
+
+# 22) RADAR PAGE TEMPLATE (REQUIRED)
+Create:
+`src/app/radar/page.tsx`
+
+Must include:
+- Featured section (score>=80)
+- Filters:
+  - tags
+  - type
+  - tier
+  - time range
+- Subscribe widget
+- CTA block linking to services
+- Internal linking to `/solutions` and `/tools`
+
+---
+
+# 23) SEO META GENERATION (GLOBAL)
+Create:
+`src/lib/seo/meta.ts`
+
+Must include:
+- `generateMetadata()` per page
+- canonical URL
+- open graph
+- twitter cards
+- robots meta
+- JSON-LD injection
+
+---
+
+# 24) JSON-LD SCHEMA TEMPLATES (REQUIRED)
+Create:
+`src/lib/seo/schema.ts`
+
+Must support:
+- Person
+- ProfessionalService
+- BreadcrumbList
+- FAQPage
+- Article (radar + guides)
+- WebPage
+
+All dynamic pages must output schema.
+
+---
+
+# 25) CONTENT GOVERNANCE RULES (ANTI THIN CONTENT)
+No page should be empty or auto-generated with thin content.
+
+Minimum content length rules:
+- solution pages: 700–1200 words equivalent
+- tool pages: 500–900 words equivalent
+- radar items: 150–250 words enriched summary
+
+---
+
+# 26) PERFORMANCE RULES (CORE WEB VITALS)
+- Always use next/image
+- Use dynamic imports only when needed
+- Avoid heavy client JS
+- Use ISR where possible
+- Use caching for Supabase reads
+- Use Edge runtime for lightweight routes
+- Use streaming RSC for long pages
+
+---
+
+# 27) INDEXING STRATEGY (DOMINATION)
+Generate:
+- `/sitemap.xml` with all solutions/tools/radar
+- `/robots.txt`
+- Submit to GSC
+
+**Important:** do not index low-score radar items (<55) in sitemap.
+
+---
+
+# 28) CRON PIPELINE (REQUIRED)
+### `/api/cron/radar`
+Fetch enabled sources → parse RSS → hash dedup → upsert radar_items.
+
+### `/api/cron/radar-enrich`
+Enrich missing fields → compute score → tag → link to solutions/tools.
+
+Both must be stable without AI.
+
+---
+
+# 29) HASHING + DEDUP RULESET
+Dedup logic must use:
+- normalized canonical_url
+- fallback to url
+- title + publishedAt hash if no canonical
+
+Hash algorithm:
+- sha256(canonical_url || url || title+date)
+
+Unique constraint on `radar_items.hash`.
+
+---
+
+# 30) LINKING RADAR → SOLUTIONS (AUTOMATIC)
+Implement:
+`src/lib/radar/linking.ts`
+
+Given radar item tags, infer recommended solutions:
+- tags include SEO → map to SEO problems
+- tags include Google Ads → map to CAC/ROAS problems
+- tags include Next.js/Vercel → map to performance problems
+- tags include OpenAI/Agents → map to automation problems
+
+Return top 2 solutions pages per radar item.
+
+---
+
+# 31) MODE AWARE UX (SEGMENTATION-FIRST)
+The UI must maintain "Focus Mode":
+- marketing mode → show marketing proof + marketing CTA
+- academic mode → show academic proof + academic CTA
+- business mode → show engineering proof + business CTA
+
+All pages must adapt:
+- headline
+- CTA label
+- service links
+
+Mode stored in localStorage + query param fallback.
+
+---
+
+# 32) UI MODULES REQUIRED (CRO)
+### Mandatory conversion modules:
+- Sticky CTA (desktop)
+- Floating WA button (mobile)
+- Proof chips under every major header
+- Trust bar marquee
+- Inquiry wizard embedded at bottom of all money pages
+
+### Microcopy rules:
+- Use "Request Blueprint" / "Request Audit"
+- Always mention timeline + deliverables
+- Always mention proof (budget, brands)
+
+---
+
+# 33) MULTI REVENUE SYSTEM (SCALABLE & REALISTIC)
+Implement these monetization modules:
+
+## A) Affiliate link tracking
+- track clicks in Supabase
+- allow outbound redirect endpoint:
+  `/out/tool/[slug]`
+
+## B) Sponsored placement
+- sponsor_weight influences sorting
+- but must preserve trust (cap effect)
+
+## C) Paid featured placement (admin)
+- `sponsor_ends_at`
+- auto disable after expiration
+
+## D) Newsletter / digest
+- weekly digest from top signal_score
+- send via Resend
+
+---
+
+# 34) IMPLEMENTATION TASK LIST (EXECUTION ORDER)
+## Phase A — Data Foundation
+- industries + problems seed
+- tools seed
+- radar sources seed
+
+## Phase B — Generator Engine
+- solutions generator
+- faq generator
+- schema generator
+- internal linking generator
+
+## Phase C — pSEO Pages
+- generate `/solutions` pages
+- generate `/tools` pages
+- ensure sitemap includes them
+
+## Phase D — Radar Growth Engine
+- cron ingest
+- cron enrich
+- scoring + diversity + caps
+
+## Phase E — Lead Machine
+- inquiry wizard
+- Supabase insert
+- Resend notify
+- WA redirect generator
+
+## Phase F — Discover + SERP feature optimization
+- meta tags
+- OG images
+- FAQ schema
+- internal linking graph modules
+
+---
+
+# 35) OUTPUT QUALITY REQUIREMENTS
+### Every dynamic page must output:
+- canonical
+- open graph tags
+- JSON-LD schema
+- internal links modules
+- proof stack chips
+- CTA inquiry
+
+No exceptions.
+
+---
+
+# 36) FINAL DIRECTIVE TO AI CODER
+Proceed implementing this entire blueprint as production-ready code.
+Do not simplify architecture.
+Do not remove SEO modules.
+Do not remove schema injection.
+Do not make Radar dependent on AI.
+Always keep deterministic fallback.
+
+Deliver:
+- seed files
+- seeding scripts
+- generators
+- routing templates
+- cron routes
+- scoring/tagging/linking engines
+- UI modules for CRO
+
+Execute now.
+
+---
+# APPENDIX: REQUIRED FILES SUMMARY
+
+## Seeds
+- `data/industries.seed.json`
+- `data/problems.seed.json`
+- `data/tools.seed.json`
+- `data/radar-sources.seed.json`
+
+## Libraries
+- `src/lib/radar/scoring.ts`
+- `src/lib/radar/tagging.ts`
+- `src/lib/radar/curation.ts`
+- `src/lib/radar/linking.ts`
+- `src/lib/tools/internal-linking.ts`
+- `src/lib/generators/solutions.ts`
+- `src/lib/seo/meta.ts`
+- `src/lib/seo/schema.ts`
+- `src/lib/inquiry/wa.ts`
+
+## Pages
+- `src/app/solutions/[industry]/[problem]/page.tsx`
+- `src/app/tools/[category]/[slug]/page.tsx`
+- `src/app/radar/page.tsx`
+- `src/app/radar/[tag]/page.tsx`
+
+## Cron
+- `/api/cron/radar`
+- `/api/cron/radar-enrich`
+
+## Misc
+- sitemap.xml generator
+- robots.txt
+- outbound redirect `/out/tool/[slug]` tracking
+
+---
+END OF DOCUMENT

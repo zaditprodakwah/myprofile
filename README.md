@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Zadit Intelligence Hub (v3.0)
 
-## Getting Started
+A high-performance, database-driven intelligence platform designed for executive-level solutions, programmatic SEO (pSEO), and AI-driven growth.
 
-First, run the development server:
+## 🚀 Key Features (Upgrade 3.0)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Database-Driven Architecture**: Fully migrated to Supabase (PostgreSQL) for persistent entity management.
+- **Intelligence Radar**: Automated ingestion and synthesis of global industry signals via RSS/API.
+- **Authority pSEO Stack**: Dynamic tools directory and solution pages optimized for AEO/GEO/SERP authority.
+- **AI Synthesis Engine**: Integrated Groq (Llama-3-70b) and Google Gemini (1.5-flash) for autonomous content generation and summaries.
+- **Smart Search Engine**: Global search interface (Cmd+K) with AI-powered suggestions.
+- **Inquiry Wizard**: Multi-step conversion engine with real-time lead capture.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Technology Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend**: Next.js 14+ (App Router), Tailwind CSS, Framer Motion
+- **Backend**: Supabase (PostgreSQL), Vercel Cron
+- **AI**: Groq API, Gemini API
+- **Design**: Premium Glassmorphism, Cinematic Animations, Dark Mode Optimized
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📂 Project Structure
 
-## Learn More
+- `web/`: Main Next.js application.
+- `temp_docs/`: Design documents and technical specifications.
+- `supabase/`: SQL schema and migration scripts.
 
-To learn more about Next.js, take a look at the following resources:
+## 🚦 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Clone the repository**
+2. **Install dependencies**:
+   ```bash
+   cd web
+   npm install
+   ```
+3. **Configure Environment Variables**:
+   Create a `.env.local` in the `web/` directory with:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `GROQ_API_KEY`
+   - `GEMINI_API_KEY`
+4. **Seed the Database**:
+   ```bash
+   npx tsx src/scripts/seed-data.ts
+   ```
+5. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📜 License
 
-## Deploy on Vercel
+MIT License. See [LICENSE](LICENSE) for details.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built with precision by Zadit Intelligence.*

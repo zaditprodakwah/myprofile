@@ -1,0 +1,10 @@
+[
+  { "slug": "sej", "name": "Search Engine Journal", "url": "https://www.searchenginejournal.com/feed/", "site_url": "https://www.searchenginejournal.com", "type": "rss", "tier": 1, "priority": 90 },
+  { "slug": "tc-ai", "name": "TechCrunch AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/", "site_url": "https://techcrunch.com", "type": "rss", "tier": 1, "priority": 85 },
+  { "slug": "arxiv-ai", "name": "ArXiv CS.AI", "url": "https://arxiv.org/rss/cs.ai", "site_url": "https://arxiv.org", "type": "rss", "tier": 2, "priority": 70 },
+  { "slug": "verge-tech", "name": "The Verge Tech", "url": "https://www.theverge.com/rss/index.xml", "site_url": "https://www.theverge.com", "type": "rss", "tier": 2, "priority": 60 },
+  { "slug": "moz-blog", "name": "Moz Blog", "url": "https://moz.com/checkout/feed", "site_url": "https://moz.com/blog", "type": "rss", "tier": 1, "priority": 80 },
+  { "slug": "ai-news", "name": "AI News", "url": "https://www.artificialintelligence-news.com/feed/", "site_url": "https://www.artificialintelligence-news.com", "type": "rss", "tier": 2, "priority": 65 },
+  { "slug": "marketing-dive", "name": "Marketing Dive", "url": "https://www.marketingdive.com/feeds/news/", "site_url": "https://www.marketingdive.com", "type": "rss", "tier": 2, "priority": 75 },
+  { "slug": "venturebeat-ai", "name": "VentureBeat AI", "url": "https://venturebeat.com/category/ai/feed/", "site_url": "https://venturebeat.com", "type": "rss", "tier": 1, "priority": 82 }
+]
