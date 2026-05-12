@@ -1,10 +1,11 @@
 import React from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Radio, Newspaper, Zap, ExternalLink } from "lucide-react";
+import { Newspaper, Zap, ExternalLink, Radio, SearchX } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { AIPulse } from "@/components/ui/AIPulse";
 
 function getRelativeTime(date: string | Date) {
   const now = new Date();
@@ -125,9 +126,19 @@ export default async function RadarPage({ searchParams }: Props) {
               </div>
             ))
           ) : (
-            <div className="py-20 text-center space-y-4">
-              <div className="text-slate-600 font-bold uppercase tracking-widest text-xs">No intelligence found for this segment</div>
-              <Link href="/radar" className="text-blue-500 text-sm font-bold hover:underline">Reset Filters</Link>
+            <div className="py-24 text-center space-y-6 max-w-md mx-auto">
+              <div className="w-16 h-16 rounded-3xl bg-white/2 border border-white/5 flex items-center justify-center mx-auto text-slate-700">
+                <SearchX size={32} />
+              </div>
+              <div className="space-y-2">
+                <div className="text-white font-black uppercase tracking-widest text-sm">Waduh, Zonk Dikit!</div>
+                <p className="text-slate-500 text-sm leading-relaxed">
+                  Radar belum nangkep sinyal intelijen buat segmen ini. Tenang, asisten AI lagi nyisir sumber lain. Coba filter lain dulu, sikat!
+                </p>
+              </div>
+              <Link href="/radar" className="inline-block px-8 py-3 rounded-xl bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-500 transition-colors shadow-xl shadow-blue-500/10">
+                Reset Radar
+              </Link>
             </div>
           )}
         </div>
@@ -158,6 +169,14 @@ export default async function RadarPage({ searchParams }: Props) {
         </div>
       </div>
       <Footer />
+      <AIPulse 
+        messages={[
+          "Sinyal radar aman! Data terbaru sudah mendarat. Sikat!",
+          "Lagi nyisir pola market... Waduh, ada yang menarik nih!",
+          "Zadit Hub siap tempur. Apa yang mau kita bedah hari ini?",
+          "Beres! Sinkronisasi database lancar jaya.",
+        ]}
+      />
     </main>
   );
 }

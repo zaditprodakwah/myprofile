@@ -13,6 +13,7 @@ import { CTASection } from "@/components/home/CTASection";
 import { useMode } from "@/hooks/use-mode";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, ChevronDown } from "lucide-react";
+import { AIPulse } from "@/components/ui/AIPulse";
 
 export default function Home() {
   const { mode, setMode } = useMode();
@@ -124,9 +125,9 @@ export default function Home() {
                   <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-blue-500">
                     <Sparkles size={14} /> Personalize Hub
                   </div>
-                  <h2 className="text-3xl font-outfit font-black tracking-tight">Focus Your Intelligence</h2>
-                  <p className="text-slate-400 text-sm max-w-sm mx-auto">
-                    Pilih rute strategis Anda untuk menyesuaikan seluruh hub dengan kebutuhan spesifik Anda.
+                  <h2 className="text-3xl font-outfit font-black tracking-tight">Mau Fokus ke Mana?</h2>
+                  <p className="text-slate-400 text-sm max-w-sm mx-auto leading-relaxed">
+                    Pilih mode yang paling pas buat Anda sekarang. Biar saya bisa atur seluruh hub sesuai target intelijen Anda. Sikat!
                   </p>
                 </div>
 
@@ -166,6 +167,14 @@ export default function Home() {
           </div>
         )}
       </AnimatePresence>
+      <AIPulse 
+        messages={[
+          "Zadit Hub siap tempur! Apa yang mau kita bedah hari ini?",
+          "Radar intelijen: Sinyal dominasi market terdeteksi!",
+          "Mode Fokus diaktifkan. Ayo sikat targetnya!",
+          "Waduh, ada tren baru nih di industri. Cek radar yuk!",
+        ]}
+      />
     </main>
   );
 }

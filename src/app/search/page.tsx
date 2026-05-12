@@ -9,6 +9,8 @@ import Link from "next/link";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { supabase } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { AIPulse } from "@/components/ui/AIPulse";
+import { SearchX } from "lucide-react";
 
 interface Props {
   searchParams: Promise<{ q?: string }>;
@@ -133,18 +135,18 @@ export default async function SERPPage({ searchParams }: Props) {
                 </div>
               ))
             ) : (
-              <div className="py-32 text-center space-y-6">
-                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-600">
-                  <Search size={32} />
+              <div className="py-32 text-center space-y-8 max-w-sm mx-auto">
+                <div className="w-24 h-24 rounded-full bg-white/2 border border-white/5 flex items-center justify-center mx-auto text-slate-700">
+                  <SearchX size={48} />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-white">No intelligence found</h3>
-                  <p className="text-slate-400 text-sm max-w-xs mx-auto">
-                    Coba gunakan kata kunci yang lebih luas atau cari di direktori tools kami.
+                <div className="space-y-3">
+                  <h3 className="text-2xl font-black text-white">Waduh, Zonk Parah!</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed">
+                    Saya udah nyisir seluruh database intelijen, tapi kata kunci <strong>"{query}"</strong> belum mendarat di radar. Coba kata kunci lain atau cek direktori tools? Sikat!
                   </p>
                 </div>
-                <Link href="/tools" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white/10 transition-all">
-                  Browse Tool Directory <ArrowRight size={16} />
+                <Link href="/tools" className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition-all shadow-2xl shadow-blue-900/40">
+                  Direktori Tools <ArrowRight size={16} />
                 </Link>
               </div>
             )}
@@ -160,17 +162,17 @@ export default async function SERPPage({ searchParams }: Props) {
                  <h3 className="text-sm font-black uppercase tracking-widest text-blue-500 flex items-center gap-2">
                    <Sparkles size={16} /> AI Intelligence Summary
                  </h3>
-                 <p className="text-sm text-slate-300 leading-relaxed italic">
-                   {query ? (
-                     <>
-                        "Query Anda mengenai <strong>{query}</strong> mencakup tren krusial. 
-                        Intelligence kami menyarankan fokus pada integrasi arsitektur data 
-                        untuk otoritas jangka panjang."
-                     </>
-                   ) : (
-                     "Gunakan fitur search untuk mendapatkan ringkasan AI tentang tren industri terkini dan solusi taktis."
-                   )}
-                 </p>
+                  <p className="text-sm text-slate-300 leading-relaxed italic font-medium">
+                    {query ? (
+                      <>
+                        "Analisis saya buat <strong>{query}</strong>: Sinyal ini krusial buat dominasi market. 
+                        Radar menyarankan fokus ke integrasi arsitektur data biar otoritas 
+                        brand makin paten. Sikat!"
+                      </>
+                    ) : (
+                      "Tulis apa aja di search bar, nanti saya bedah secara intelijen buat Anda. Sikat!"
+                    )}
+                  </p>
                </div>
             </div>
 
@@ -198,6 +200,14 @@ export default async function SERPPage({ searchParams }: Props) {
         </div>
       </div>
       <Footer />
+      <AIPulse 
+        messages={[
+          "Sini saya bantu cari intelijen yang paling akurat buat Anda.",
+          "Waduh, hasil pencariannya tajam banget! Sikat!",
+          "Beres! Semua sinyal sudah saya kelompokkan biar gampang dibaca.",
+          "Lagi nyocokkan query sama database... Ketemu!",
+        ]}
+      />
     </main>
   );
 }

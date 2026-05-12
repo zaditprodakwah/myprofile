@@ -3,8 +3,9 @@
 import React from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Mail, MessageSquare, Send, MapPin, Phone } from "lucide-react";
+import { Mail, MessageSquare, Send, MapPin, Phone, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { AIPulse } from "@/components/ui/AIPulse";
 
 export default function ContactPage() {
   return (
@@ -23,8 +24,8 @@ export default function ContactPage() {
             </span>
           </h1>
           <p className="text-xl text-slate-400 leading-relaxed font-medium">
-            Hubungi kami untuk konsultasi strategis, arsitektur kampanye, atau asistensi akademik presisi. 
-            Kami merespons dalam waktu kurang dari 24 jam untuk entitas prioritas.
+            Mau konsultasi strategis, bedah kampanye, atau butuh bantuan akademik yang presisi? 
+            Langsung aja tulis pesan di bawah. Saya pantau radar pesan masuk 24/7. Sikat!
           </p>
         </section>
 
@@ -68,7 +69,7 @@ export default function ContactPage() {
                 />
               </div>
               <button className="w-full py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3">
-                Send Intelligence Request <Send size={18} />
+                Kirim Request Intelijen, Sikat! <Send size={18} />
               </button>
             </div>
           </section>
@@ -118,6 +119,14 @@ export default function ContactPage() {
         </div>
       </div>
       <Footer />
+      <AIPulse 
+        messages={[
+          "Beres! Nanti kalau ada pesan masuk, radar langsung kasih notif ke saya.",
+          "Waduh, ada ide project gokil? Langsung aja kirim, sikat!",
+          "Tenang, data Anda aman di enkripsi radar Zadit Hub.",
+          "Lagi nunggu sinyal kolaborasi baru nih... Sikat!",
+        ]}
+      />
     </main>
   );
 }

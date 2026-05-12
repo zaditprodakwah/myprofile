@@ -10,6 +10,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { supabase } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { AIPulse } from "@/components/ui/AIPulse";
 
 export const metadata: Metadata = {
   title: "Industry Solutions & Problem Mapping | Zadit Intelligence Hub",
@@ -70,8 +71,8 @@ export default async function SolutionsDirectory() {
             </span>
           </h1>
           <p className="text-lg text-slate-400 leading-relaxed font-medium">
-            Kami memetakan kebuntuan strategis di berbagai industri dan memberikan solusi 
-            programmatic yang divalidasi oleh intelligence radar kami. Pilih industri Anda untuk memulai.
+            Radar saya udah nangkep banyak bottleneck di industri sekarang. 
+            Tugas kita cuma satu: bedah masalahnya dan sikat solusinya secara terukur. Pilih industri Anda, kita mulai eksekusi!
           </p>
         </header>
 
@@ -136,10 +137,10 @@ export default async function SolutionsDirectory() {
               <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-600">
                 <BarChart3 size={32} />
               </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-white">No industries mapped yet</h3>
-                <p className="text-slate-400 text-sm max-w-xs mx-auto">
-                  Sistem kami sedang memetakan solusi industri baru. Silakan kembali lagi nanti.
+              <div className="space-y-3">
+                <h3 className="text-2xl font-black text-white">Waduh, Datanya Masih Kosong!</h3>
+                <p className="text-slate-500 text-sm max-w-xs mx-auto leading-relaxed">
+                  Sistem intelijen saya lagi sinkronisasi solusi baru. Tenang, sebentar lagi radar bakal nangkep sinyal industri baru. Tunggu 30 detik ya (eh, atau mungkin lebih dikit). Sikat!
                 </p>
               </div>
             </div>
@@ -174,6 +175,14 @@ export default async function SolutionsDirectory() {
         </section>
       </div>
       <Footer />
+      <AIPulse 
+        messages={[
+          "Banyak industri yang lagi goyang, tapi tenang, solusinya ada di sini. Sikat!",
+          "Mapping problem sudah beres, tinggal pilih yang mau kita eksekusi.",
+          "Waduh, industri ini punya bottleneck unik nih. Mari kita bedah!",
+          "Radar intelijen: Sinyal dominasi market terdeteksi!",
+        ]}
+      />
     </div>
   );
 }
