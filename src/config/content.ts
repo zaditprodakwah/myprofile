@@ -141,6 +141,13 @@ export const siteContent = {
       brand: "Skintific",
       category: "marketing",
       executiveSummary: "Merancang ekosistem anggaran kampanye agresif senilai Rp 85M+ untuk #SkintificGlowUpChallenge. Implementasi pemetaan omnichannel terukur yang dioptimasi untuk ROI maksimal.",
+      challenge: "Managing a massive Rp 85M+ budget across multiple platforms required a highly granular allocation strategy to avoid waste and ensure maximum frequency on target audiences.",
+      solution: "Developed a custom budget architecture matrix that dynamically allocated resources based on real-time performance signals and cross-platform attribution models.",
+      results: [
+        "Rp 85M+ efficiently allocated across platforms",
+        "Significant increase in reach and brand recall during the #SkintificGlowUpChallenge",
+        "Optimized CPA through precision targeting and funnel siloing"
+      ],
       metrics: ["Rp 85M+ Total Cost Allocation", "Cross-Platform Paid Ads Strategy"],
       techStack: ["Performance Marketing", "Media Planning"]
     },
@@ -150,6 +157,13 @@ export const siteContent = {
       brand: "Vidio.com",
       category: "marketing",
       executiveSummary: "Ekseskusi audit SEO Off-Page komprehensif, mengidentifikasi peluang akuisisi backlink otoritas tinggi (DA 80+) dari media nasional untuk mendominasi keyword transaksional.",
+      challenge: "High competition for sports-related keywords required a strategy that focused on high-authority acquisition to outrank established competitors quickly.",
+      solution: "Conducted a semantic gap analysis and secured premium placements on Tier-1 news outlets to boost the domain authority and trust signals.",
+      results: [
+        "Successful mapping of DA 80+ media placement opportunities",
+        "Reduction of spam score to below 3% while increasing overall trust flow",
+        "Improved visibility for critical transactional keywords"
+      ],
       metrics: ["DA 80+ Link Mapping", "Spam Score Mitigation <3%"],
       techStack: ["Ahrefs", "AEO/GEO Optimization"]
     },
@@ -159,6 +173,13 @@ export const siteContent = {
       brand: "Academic Research",
       category: "academic",
       executiveSummary: "Pengolahan data mentah kualitatif dan kuantitatif menjadi visualisasi tabel dan grafik yang memenuhi standar publikasi akademik. Dikerjakan dengan presisi metodologi pendidikan matematika.",
+      challenge: "Raw qualitative and quantitative research data needed to be transformed into publication-ready visualizations that clearly supported the research findings.",
+      solution: "Applied mathematical modeling and rigorous data validation to create high-precision charts and tables using SPSS and automated Excel systems.",
+      results: [
+        "100% accuracy in citation management and data representation",
+        "Seamless integration of complex datasets into readable academic formats",
+        "Full compliance with international academic publication standards"
+      ],
       metrics: ["100% Citation Accuracy", "SPSS/Excel Automated Modeling"],
       techStack: ["Data Analysis", "Academic Writing", "Mendeley"]
     }
