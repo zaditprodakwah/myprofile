@@ -67,7 +67,7 @@ export default async function IndustryPage({ params }: Props) {
               problems.map((prob) => (
                 <Link 
                   key={prob.id}
-                  href={`/solutions/${params.industry}/${prob.slug}`}
+                  href={`/solutions/${industrySlug}/${prob.slug}`}
                   className="group p-8 rounded-[32px] bg-white/2 border border-white/5 hover:bg-white/5 hover:border-blue-500/20 transition-all"
                 >
                   <div className="space-y-4">

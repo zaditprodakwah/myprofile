@@ -155,6 +155,7 @@ export function AppSidebar() {
                     <ChevronRight size={14} className="text-slate-700 group-hover:text-slate-400 transition-colors" />
                   </Link>
                 ))}
+              </nav>
 
               {/* Hub Metrics (EEAT Booster) */}
               <div className="space-y-4">

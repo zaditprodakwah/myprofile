@@ -5,7 +5,17 @@ import { Radio, Newspaper, Zap, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
+
+function getRelativeTime(date: string | Date) {
+  const now = new Date();
+  const then = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - then.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) return "just now";
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  return `${Math.floor(diffInSeconds / 86400)}d ago`;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -91,7 +101,7 @@ export default async function RadarPage({ searchParams }: Props) {
                     </span>
                     <span className="text-[9px] font-bold text-slate-600 uppercase">{item.source_name || "Zadit Intelligence"}</span>
                     <span className="text-[9px] font-medium text-slate-700">
-                      • {item.created_at ? formatDistanceToNow(new Date(item.created_at), { addSuffix: true }) : "recently"}
+                      • {item.created_at ? getRelativeTime(item.created_at) : "recently"}
                     </span>
                   </div>
                   
