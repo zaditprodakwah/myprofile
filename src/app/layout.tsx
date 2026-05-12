@@ -10,6 +10,7 @@ import { JSONLD } from "@/components/seo/JSONLD";
 import { PageTransition } from "@/components/animations/PageTransition";
 import { MouseFollower } from "@/components/animations/MouseFollower";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -39,6 +40,7 @@ export default function RootLayout({
             </Suspense>
           </ModeProvider>
         </Suspense>
+        <Analytics />
       </body>
     </html>
   );
