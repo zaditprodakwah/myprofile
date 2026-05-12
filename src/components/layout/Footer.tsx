@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Radar, Mail, MessageSquare, Linkedin, Twitter, ExternalLink, ShieldCheck } from "lucide-react";
+import { Radar, Mail, MessageSquare, ExternalLink, ShieldCheck, Share2, X } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -51,7 +51,7 @@ export function Footer() {
             </p>
 
             <div className="flex items-center gap-4">
-              {[Twitter, Linkedin, Mail].map((Icon, i) => (
+              {[X, Share2, Mail].map((Icon, i) => (
                 <a 
                   key={i}
                   href="#" 
