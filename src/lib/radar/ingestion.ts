@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/client";
+import { supabaseAdmin as supabase } from "@/lib/supabase/admin";
 import { calculateSignalScore, shouldDisplay } from "./scoring";
 import { inferTags } from "./tagging";
 import { checkDailyCap, enforceDiversity } from "./curation";
@@ -39,6 +39,8 @@ export async function ingestAllFeeds() {
         return { ...raw, score };
       }).filter(item => shouldDisplay(item.score));
 
+      console.log(`Processing ${processedItems.length} items for ${source.name}...`);
+
       // Diversify
       const finalItems = enforceDiversity(processedItems).slice(0, 3);
 
@@ -53,7 +55,10 @@ export async function ingestAllFeeds() {
           .eq("hash", hash)
           .single();
 
-        if (existing) continue;
+        if (existing) {
+          console.log(`Skipping existing item: ${item.title}`);
+          continue;
+        }
 
         const tags = inferTags(item.title, item.description);
         const solutions = getRecommendedSolutions(tags);
@@ -63,31 +68,38 @@ export async function ingestAllFeeds() {
         try {
           synthesis = await getSynthesis(item.title, tags[0] || "General");
         } catch (e) {
-          // Fallback to deterministic template
+          console.error("Synthesis failed for item, using fallback:", e);
           synthesis = {
             intro: `Update terbaru mengenai ${item.title} memberikan sinyal penting bagi industri.`,
             outro: `Rekomendasi: Tinjau implikasi ini pada strategi ${tags[0] || 'operasional'} Anda.`
           };
         }
 
-        const { error } = await supabase.from("radar_items").insert({
+        const insertData = {
           slug,
           hash,
           source_slug: source.slug,
           source_name: source.name,
           title: item.title,
           url: item.link,
-          published_at: new Date(item.pubDate).toISOString(),
+          published_at: new Date(item.pubDate || Date.now()).toISOString(),
           summary: item.description,
           signal_score: item.score,
           tags,
-          why_it_matters: synthesis.intro,
-          takeaway: synthesis.outro,
+          why_it_matters: synthesis?.intro || "",
+          takeaway: synthesis?.outro || "",
           recommended_solutions: solutions,
           is_featured: item.score >= 80
-        });
+        };
 
-        if (!error) results.push({ title: item.title, score: item.score });
+        const { error } = await supabase.from("radar_items").insert(insertData);
+
+        if (error) {
+          console.error(`Error inserting radar item "${item.title}":`, error);
+        } else {
+          console.log(`Successfully ingested: ${item.title}`);
+          results.push({ title: item.title, score: item.score });
+        }
       }
     } catch (e) {
       console.error(`Ingestion failed for ${source.name}:`, e);

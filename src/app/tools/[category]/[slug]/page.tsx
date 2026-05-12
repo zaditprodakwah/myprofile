@@ -19,17 +19,18 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
 interface Props {
-  params: {
+  params: Promise<{
     category: string;
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
   const { data: tool } = await supabase
     .from("tools")
     .select("*")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .single();
 
   if (!tool) return {};
@@ -41,10 +42,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ToolDetailPage({ params }: Props) {
+  const { slug, category } = await params;
   const { data: tool } = await supabase
     .from("tools")
     .select("*")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .single();
 
   if (!tool) notFound();
@@ -52,7 +54,7 @@ export default async function ToolDetailPage({ params }: Props) {
   const schema = generateSoftwareSchema({
     name: tool.name,
     description: tool.description || tool.tagline || "",
-    url: `https://zadit.pro/tools/${params.category}/${params.slug}`,
+    url: `https://zadit.pro/tools/${category}/${slug}`,
     price: tool.pricing_model || "Free"
   });
 

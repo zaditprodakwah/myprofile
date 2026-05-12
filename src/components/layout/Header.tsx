@@ -12,17 +12,15 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const solutions = [
   { label: "Ecommerce", href: "/solutions/ecommerce", icon: Rocket, description: "Scale ROAS & conversion." },
-  { label: "SaaS", href: "/solutions/saas", icon: Zap, description: "pSEO & Growth architecture." },
-  { label: "Education", href: "/solutions/education", icon: BookOpen, description: "Research integrity systems." },
-  { label: "Corporate", href: "/solutions/corporate", icon: Shield, description: "Reporting & Governance." },
-  { label: "Health & Beauty", href: "/solutions/health-beauty", icon: Briefcase, description: "Brand scaling & reputation." },
+  { label: "Marketing", href: "/solutions/marketing", icon: Zap, description: "pSEO & Growth architecture." },
+  { label: "Academic", href: "/solutions/academic", icon: BookOpen, description: "Research integrity systems." },
+  { label: "Business", href: "/solutions/business", icon: Shield, description: "Reporting & Governance." },
 ];
 
 const tools = [
-  { label: "Growth", href: "/tools/growth", icon: Rocket },
-  { label: "Infrastructure", href: "/tools/infrastructure", icon: Settings },
-  { label: "Development", href: "/tools/development", icon: Zap },
-  { label: "Intelligence", href: "/tools/intelligence", icon: Radar },
+  { label: "AI Tools", href: "/tools/ai", icon: Zap },
+  { label: "Marketing", href: "/tools/marketing", icon: Rocket },
+  { label: "Database", href: "/tools/database", icon: Settings },
 ];
 
 export function Header() {

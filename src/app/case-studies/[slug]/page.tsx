@@ -10,8 +10,9 @@ import { ArrowLeft, CheckCircle2, TrendingUp, Target, Shield } from "lucide-reac
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-export default function CaseStudyDetailPage({ params }: { params: { slug: string } }) {
-  const study = siteContent.caseStudies.find((s) => s.slug === params.slug);
+export default function CaseStudyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = React.use(params);
+  const study = siteContent.caseStudies.find((s) => s.slug === resolvedParams.slug);
   if (!study) return notFound();
 
   const { scrollYProgress } = useScroll();

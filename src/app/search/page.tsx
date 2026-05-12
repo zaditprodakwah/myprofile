@@ -3,44 +3,56 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { 
   Search, Filter, Radar, Zap, 
-  Layers, ArrowRight, ExternalLink,
-  ChevronRight, Sparkles, TrendingUp
+  Layers, ArrowRight, TrendingUp, Sparkles
 } from "lucide-react";
 import Link from "next/link";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
-import { Badge } from "@/components/ui/Badge";
+import { supabase } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 
-export const metadata = {
-  title: "Intelligence Search Results | Zadit Hub",
-  description: "Advanced search results for tactical intelligence, tools, and industry solutions.",
-};
+interface Props {
+  searchParams: Promise<{ q?: string }>;
+}
 
-export default function SERPPage({ searchParams }: { searchParams: { q: string } }) {
-  const query = searchParams.q || "";
+export default async function SERPPage({ searchParams }: Props) {
+  const { q: query = "" } = await searchParams;
 
-  // Mock results - in real app, fetch from Supabase search function
+  // Fetch real trending items for sidebar
+  const { data: trendingItems } = await supabase
+    .from("radar_items")
+    .select("id, title, slug, importance_score")
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  // Simple search implementation (searching across titles in radar, tools, and problems)
+  // In a production app, this would be a more complex pg_search or Vector search
+  const { data: radarResults } = await supabase
+    .from("radar_items")
+    .select("id, title, slug, summary")
+    .ilike("title", `%${query}%`)
+    .limit(5);
+
+  const { data: toolResults } = await supabase
+    .from("tools")
+    .select("id, name, slug, tagline, category")
+    .ilike("name", `%${query}%`)
+    .limit(5);
+
   const results = [
-    {
+    ...(radarResults || []).map(r => ({
       type: "radar",
-      title: "Impact of AI Agents on SEO in 2026",
-      desc: "Analisis mendalam tentang bagaimana autonomous agents merubah pola search dan otoritas entitas.",
-      href: "/radar/ai-agents-seo-2026",
+      title: r.title,
+      desc: r.summary || "Tactical intelligence analysis.",
+      href: `/radar/${r.slug}`,
       category: "Intelligence"
-    },
-    {
+    })),
+    ...(toolResults || []).map(t => ({
       type: "tool",
-      title: "Groq LPU Inference Engine",
-      desc: "Benchmark performa Groq untuk aplikasi AI skala enterprise.",
-      href: "/tools/groq-cloud",
+      title: t.name,
+      desc: t.tagline || "Advanced technology platform.",
+      href: `/tools/${t.category?.toLowerCase() || 'general'}/${t.slug}`,
       category: "Authority Stack"
-    },
-    {
-      type: "solution",
-      title: "Optimizing High CAC in SaaS",
-      desc: "Blueprint pSEO untuk menurunkan biaya akuisisi pelanggan secara organik.",
-      href: "/solutions/saas/high-cac-optimization",
-      category: "Mapping"
-    }
+    }))
   ];
 
   return (
@@ -49,24 +61,25 @@ export default function SERPPage({ searchParams }: { searchParams: { q: string }
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Search Header */}
         <header className="space-y-8">
-          <div className="flex items-center gap-4">
+          <form action="/search" method="GET" className="flex items-center gap-4">
              <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
                 <input 
                   type="text" 
+                  name="q"
                   defaultValue={query}
                   placeholder="Search intelligence hub..."
                   className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-lg font-medium text-white focus:outline-none focus:border-blue-500 transition-all shadow-2xl"
                 />
              </div>
-             <button className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-black text-sm hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/20">
+             <button type="submit" className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-black text-sm hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/20">
                Search
              </button>
-          </div>
+          </form>
           
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-black uppercase tracking-widest text-slate-500">
-              Showing results for <span className="text-white">"{query}"</span>
+              Showing {results.length} results for <span className="text-white">"{query || 'latest intelligence'}"</span>
             </h2>
             <div className="flex items-center gap-4">
               <button className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
@@ -80,49 +93,61 @@ export default function SERPPage({ searchParams }: { searchParams: { q: string }
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Main Results */}
           <div className="lg:col-span-8 space-y-8">
-            {results.map((res, i) => (
-              <div 
-                key={i}
-                className="group p-8 rounded-3xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all space-y-4"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center border",
-                    res.type === "radar" ? "bg-blue-600/10 border-blue-500/20 text-blue-500" :
-                    res.type === "tool" ? "bg-amber-600/10 border-amber-500/20 text-amber-500" :
-                    "bg-emerald-600/10 border-emerald-500/20 text-emerald-500"
-                  )}>
-                    {res.type === "radar" ? <Radar size={16} /> : res.type === "tool" ? <Zap size={16} /> : <Layers size={16} />}
+            {results.length > 0 ? (
+              results.map((res, i) => (
+                <div 
+                  key={i}
+                  className="group p-8 rounded-3xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all space-y-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-8 h-8 rounded-lg flex items-center justify-center border",
+                      res.type === "radar" ? "bg-blue-600/10 border-blue-500/20 text-blue-500" :
+                      res.type === "tool" ? "bg-amber-600/10 border-amber-500/20 text-amber-500" :
+                      "bg-emerald-600/10 border-emerald-500/20 text-emerald-500"
+                    )}>
+                      {res.type === "radar" ? <Radar size={16} /> : res.type === "tool" ? <Zap size={16} /> : <Layers size={16} />}
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      {res.category}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    {res.category}
-                  </span>
+                  
+                  <div className="space-y-2">
+                    <Link href={res.href} className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                      {res.title}
+                    </Link>
+                    <p className="text-slate-400 leading-relaxed text-sm">
+                      {res.desc}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 flex items-center justify-between">
+                    <div className="text-[10px] text-slate-600 font-mono">
+                      zadit.pro{res.href}
+                    </div>
+                    <Link href={res.href} className="text-xs font-bold text-white flex items-center gap-2 group-hover:gap-3 transition-all">
+                      Access Intelligence <ArrowRight size={14} />
+                    </Link>
+                  </div>
                 </div>
-                
+              ))
+            ) : (
+              <div className="py-32 text-center space-y-6">
+                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-600">
+                  <Search size={32} />
+                </div>
                 <div className="space-y-2">
-                  <Link href={res.href} className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
-                    {res.title}
-                  </Link>
-                  <p className="text-slate-400 leading-relaxed text-sm">
-                    {res.desc}
+                  <h3 className="text-xl font-bold text-white">No intelligence found</h3>
+                  <p className="text-slate-400 text-sm max-w-xs mx-auto">
+                    Coba gunakan kata kunci yang lebih luas atau cari di direktori tools kami.
                   </p>
                 </div>
-
-                <div className="pt-4 flex items-center justify-between">
-                  <div className="text-[10px] text-slate-600 font-mono">
-                    zadit.dev{res.href}
-                  </div>
-                  <Link href={res.href} className="text-xs font-bold text-white flex items-center gap-2 group-hover:gap-3 transition-all">
-                    Access Intelligence <ArrowRight size={14} />
-                  </Link>
-                </div>
+                <Link href="/tools" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white/10 transition-all">
+                  Browse Tool Directory <ArrowRight size={16} />
+                </Link>
               </div>
-            ))}
-
-            {/* Pagination / Load More */}
-            <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold text-slate-400 hover:text-white hover:bg-white/10 transition-all">
-              Load More Results
-            </button>
+            )}
           </div>
 
           {/* Sidebar: AI Summary & Related */}
@@ -136,9 +161,15 @@ export default function SERPPage({ searchParams }: { searchParams: { q: string }
                    <Sparkles size={16} /> AI Intelligence Summary
                  </h3>
                  <p className="text-sm text-slate-300 leading-relaxed italic">
-                   "Query Anda mengenai <strong>{query}</strong> mencakup tren krusial di 2026. 
-                   Intelligence kami menyarankan fokus pada integrasi AI untuk otoritas search 
-                   daripada hanya volume konten."
+                   {query ? (
+                     <>
+                        "Query Anda mengenai <strong>{query}</strong> mencakup tren krusial. 
+                        Intelligence kami menyarankan fokus pada integrasi arsitektur data 
+                        untuk otoritas jangka panjang."
+                     </>
+                   ) : (
+                     "Gunakan fitur search untuk mendapatkan ringkasan AI tentang tren industri terkini dan solusi taktis."
+                   )}
                  </p>
                </div>
             </div>
@@ -146,18 +177,20 @@ export default function SERPPage({ searchParams }: { searchParams: { q: string }
             <div className="p-8 rounded-3xl bg-white/5 border border-white/5 space-y-6">
                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Trending Intelligence</h3>
                <div className="space-y-4">
-                 {[1, 2, 3].map(i => (
-                   <div key={i} className="flex items-center gap-4 group cursor-pointer">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-800">
-                        <PlaceholderImage text={`T${i}`} variant="minimal" />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <div className="text-xs font-bold text-white group-hover:text-blue-500 transition-colors">Strategic Trend #{i}</div>
-                        <div className="text-[10px] text-slate-600 flex items-center gap-2">
-                          <TrendingUp size={10} /> 4.2k scans
-                        </div>
-                      </div>
-                   </div>
+                 {(trendingItems || []).map((item, i) => (
+                    <Link key={item.id} href={`/radar/${item.slug}`} className="flex items-center gap-4 group">
+                       <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-800 shrink-0">
+                         <PlaceholderImage text={`#${i+1}`} variant="minimal" />
+                       </div>
+                       <div className="flex-1 space-y-1">
+                         <div className="text-xs font-bold text-white group-hover:text-blue-500 transition-colors line-clamp-2">
+                           {item.title}
+                         </div>
+                         <div className="text-[10px] text-slate-600 flex items-center gap-2">
+                           <TrendingUp size={10} /> {Math.floor(item.importance_score * 42)} scans
+                         </div>
+                       </div>
+                    </Link>
                  ))}
                </div>
             </div>
@@ -167,8 +200,4 @@ export default function SERPPage({ searchParams }: { searchParams: { q: string }
       <Footer />
     </main>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }

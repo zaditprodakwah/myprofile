@@ -17,11 +17,20 @@ import { X, Sparkles, ChevronDown } from "lucide-react";
 export default function Home() {
   const { mode, setMode } = useMode();
   const [showIntentModal, setShowIntentModal] = useState(false);
+  const [hasDismissedModal, setHasDismissedModal] = useState(false);
+
+  // Load dismissal state from localStorage on mount
+  useEffect(() => {
+    const dismissed = localStorage.getItem("zadit-intent-modal-dismissed");
+    if (dismissed === "true") {
+      setHasDismissedModal(true);
+    }
+  }, []);
 
   // Intent Detection: If user scrolls without picking a mode
   useEffect(() => {
     const handleScroll = () => {
-      if (mode === "neutral" && !showIntentModal) {
+      if (mode === "neutral" && !showIntentModal && !hasDismissedModal) {
         const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
         if (scrollPercent > 40) {
           setShowIntentModal(true);
@@ -31,7 +40,7 @@ export default function Home() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [mode, showIntentModal]);
+  }, [mode, showIntentModal, hasDismissedModal]);
 
   // Scroll to top when mode changes to provide visual feedback (The "Hook" reaction)
   useEffect(() => {
@@ -84,7 +93,11 @@ export default function Home() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/80 backdrop-blur-md"
-              onClick={() => setShowIntentModal(false)}
+              onClick={() => {
+                setShowIntentModal(false);
+                setHasDismissedModal(true);
+                sessionStorage.setItem("zadit-intent-modal-dismissed", "true");
+              }}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 40 }}
@@ -97,7 +110,11 @@ export default function Home() {
               
               <button 
                 className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/5 text-slate-500 hover:text-white transition-colors"
-                onClick={() => setShowIntentModal(false)}
+                onClick={() => {
+                  setShowIntentModal(false);
+                  setHasDismissedModal(true);
+                  localStorage.setItem("zadit-intent-modal-dismissed", "true");
+                }}
               >
                 <X size={20} />
               </button>

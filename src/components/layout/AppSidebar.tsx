@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Home, Layers, Search, Radar, Briefcase, 
   Settings, User, LogOut, ChevronRight, BarChart3,
-  Rocket, BookOpen, Shield, Globe, Zap
+  Rocket, BookOpen, Shield, Globe, Zap, MessageSquare
 } from "lucide-react";
 import { useMode } from "@/hooks/use-mode";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,13 @@ export function AppSidebar() {
     { label: "Authority Stack", href: "/tools", icon: Zap },
     { label: "Proof of Work", href: "/case-studies", icon: Briefcase },
     { label: "Brand Frameworks", href: "/frameworks", icon: Globe },
+  ];
+
+  const resourceItems = [
+    { label: "Security & Compliance", href: "/security", icon: Shield },
+    { label: "Careers", href: "/careers", icon: User },
+    { label: "Press & Media", href: "/press", icon: Globe },
+    { label: "Direct Contact", href: "/contact", icon: MessageSquare },
   ];
 
   return (
@@ -130,6 +137,24 @@ export function AppSidebar() {
                   </Link>
                 ))}
               </nav>
+
+              {/* Institutional Links */}
+              <nav className="space-y-1">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4 px-2">Resources</h3>
+                {resourceItems.map((item) => (
+                  <Link 
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 group transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon size={18} className="text-slate-500 group-hover:text-blue-500 transition-colors" />
+                      <span className="text-sm font-medium text-slate-300 group-hover:text-white">{item.label}</span>
+                    </div>
+                    <ChevronRight size={14} className="text-slate-700 group-hover:text-slate-400 transition-colors" />
+                  </Link>
+                ))}
 
               {/* Hub Metrics (EEAT Booster) */}
               <div className="space-y-4">

@@ -2,67 +2,58 @@ import React from "react";
 import Link from "next/link";
 import { 
   Rocket, Zap, BookOpen, Shield, 
-  Briefcase, ArrowRight, Grid, Globe,
-  BarChart3, Sparkles
+  Briefcase, ArrowRight, Grid,
+  TrendingUp, BarChart3
 } from "lucide-react";
 import { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { supabase } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Industry Solutions & Problem Mapping | Zadit Intelligence Hub",
-  description: "Advanced strategic solutions for Ecommerce, SaaS, Education, and Corporate sectors. Programmatic intelligence for specific industry bottlenecks.",
+  description: "Advanced strategic solutions mapped to specific industry bottlenecks, validated by real-time intelligence.",
 };
 
-const industries = [
-  {
-    id: "ecommerce",
-    title: "Ecommerce & Retail",
-    icon: Rocket,
-    description: "Scale ROAS, optimize conversion paths, and automate inventory intelligence.",
-    color: "blue",
-    problems: 12,
-    solutions: 45
-  },
-  {
-    id: "saas",
-    title: "SaaS & Tech",
-    icon: Zap,
-    description: "pSEO architecture, product-led growth systems, and churn prediction models.",
-    color: "emerald",
-    problems: 8,
-    solutions: 32
-  },
-  {
-    id: "education",
-    title: "Education & Academic",
-    icon: BookOpen,
-    description: "Research integrity, automated citation mapping, and institutional knowledge hubs.",
-    color: "indigo",
-    problems: 15,
-    solutions: 28
-  },
-  {
-    id: "corporate",
-    title: "Corporate & Enterprise",
-    icon: Shield,
-    description: "Strategic governance, executive reporting, and compliance automation.",
-    color: "amber",
-    problems: 6,
-    solutions: 19
-  },
-  {
-    id: "health-beauty",
-    title: "Health & Beauty",
-    icon: Briefcase,
-    description: "Brand scaling, reputation management, and high-conversion landing systems.",
-    color: "rose",
-    problems: 9,
-    solutions: 24
-  }
-];
+const iconMap: Record<string, any> = {
+  ecommerce: Rocket,
+  marketing: Zap,
+  academic: BookOpen,
+  business: Shield,
+  corporate: Shield,
+  saas: Zap,
+  education: BookOpen,
+  "health-beauty": Briefcase
+};
 
-export default function SolutionsDirectory() {
+const colorMap: Record<string, string> = {
+  ecommerce: "blue",
+  marketing: "emerald",
+  academic: "indigo",
+  business: "amber",
+  corporate: "amber",
+  saas: "emerald",
+  education: "indigo"
+};
+
+export default async function SolutionsDirectory() {
+  const { data: dbIndustries } = await supabase
+    .from("industries")
+    .select("*")
+    .order("name");
+
+  // Fallback to static list if DB is empty, but prioritized DB data
+  const industries = (dbIndustries || []).map(ind => ({
+    id: ind.slug,
+    title: ind.name,
+    icon: iconMap[ind.slug] || Briefcase,
+    description: ind.description || "Strategic mapping for this specific industry segment.",
+    color: colorMap[ind.slug] || "blue",
+    problems: 8, // Placeholder stats
+    solutions: 24
+  }));
+
   return (
     <div className="min-h-screen pt-32 pb-24 px-6 bg-[#020617]">
       <Header />
@@ -86,59 +77,73 @@ export default function SolutionsDirectory() {
 
         {/* Industry Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {industries.map((ind) => (
-            <Link 
-              key={ind.id}
-              href={`/solutions/${ind.id}`}
-              className="group relative p-8 rounded-3xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all overflow-hidden"
-            >
-              {/* Background Glow */}
-              <div className={cn(
-                "absolute -top-24 -right-24 w-48 h-48 blur-[80px] opacity-10 transition-opacity group-hover:opacity-20",
-                ind.color === "blue" ? "bg-blue-500" : 
-                ind.color === "emerald" ? "bg-emerald-500" : 
-                ind.color === "rose" ? "bg-rose-500" : 
-                ind.color === "amber" ? "bg-amber-500" : "bg-indigo-500"
-              )} />
-
-              <div className="space-y-6 relative z-10">
+          {industries.length > 0 ? (
+            industries.map((ind) => (
+              <Link 
+                key={ind.id}
+                href={`/solutions/${ind.id}`}
+                className="group relative p-8 rounded-3xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all overflow-hidden"
+              >
+                {/* Background Glow */}
                 <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center border",
-                  ind.color === "blue" ? "bg-blue-600/10 border-blue-500/20 text-blue-500" : 
-                  ind.color === "emerald" ? "bg-emerald-600/10 border-emerald-500/20 text-emerald-500" : 
-                  ind.color === "rose" ? "bg-rose-600/10 border-rose-500/20 text-rose-500" : 
-                  ind.color === "amber" ? "bg-amber-600/10 border-amber-500/20 text-amber-500" : "bg-indigo-600/10 border-indigo-500/20 text-indigo-500"
-                )}>
-                  <ind.icon size={28} />
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-black text-white group-hover:text-blue-400 transition-colors">
-                    {ind.title}
-                  </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">
-                    {ind.description}
-                  </p>
-                </div>
+                  "absolute -top-24 -right-24 w-48 h-48 blur-[80px] opacity-10 transition-opacity group-hover:opacity-20",
+                  ind.color === "blue" ? "bg-blue-500" : 
+                  ind.color === "emerald" ? "bg-emerald-500" : 
+                  ind.color === "rose" ? "bg-rose-500" : 
+                  ind.color === "amber" ? "bg-amber-500" : "bg-indigo-500"
+                )} />
 
-                <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="text-center">
-                      <div className="text-xs font-black text-white">{ind.problems}</div>
-                      <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Problems</div>
-                    </div>
-                    <div className="text-center border-l border-white/10 pl-4">
-                      <div className="text-xs font-black text-white">{ind.solutions}</div>
-                      <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Solutions</div>
-                    </div>
+                <div className="space-y-6 relative z-10">
+                  <div className={cn(
+                    "w-14 h-14 rounded-2xl flex items-center justify-center border",
+                    ind.color === "blue" ? "bg-blue-600/10 border-blue-500/20 text-blue-500" : 
+                    ind.color === "emerald" ? "bg-emerald-600/10 border-emerald-500/20 text-emerald-500" : 
+                    ind.color === "rose" ? "bg-rose-600/10 border-rose-500/20 text-rose-500" : 
+                    ind.color === "amber" ? "bg-amber-600/10 border-amber-500/20 text-amber-500" : "bg-indigo-600/10 border-indigo-500/20 text-indigo-500"
+                  )}>
+                    <ind.icon size={28} />
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 group-hover:bg-white/10 group-hover:text-white transition-all">
-                    <ArrowRight size={18} />
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black text-white group-hover:text-blue-400 transition-colors">
+                      {ind.title}
+                    </h3>
+                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">
+                      {ind.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-6 border-t border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <div className="text-xs font-black text-white">{ind.problems}</div>
+                        <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Problems</div>
+                      </div>
+                      <div className="text-center border-l border-white/10 pl-4">
+                        <div className="text-xs font-black text-white">{ind.solutions}</div>
+                        <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Solutions</div>
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 group-hover:bg-white/10 group-hover:text-white transition-all">
+                      <ArrowRight size={18} />
+                    </div>
                   </div>
                 </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-full py-32 text-center space-y-6">
+              <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-600">
+                <BarChart3 size={32} />
               </div>
-            </Link>
-          ))}
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-white">No industries mapped yet</h3>
+                <p className="text-slate-400 text-sm max-w-xs mx-auto">
+                  Sistem kami sedang memetakan solusi industri baru. Silakan kembali lagi nanti.
+                </p>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Global Authority Section */}
@@ -171,9 +176,4 @@ export default function SolutionsDirectory() {
       <Footer />
     </div>
   );
-}
-
-// Helper component for class names
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }

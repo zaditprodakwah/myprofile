@@ -1,24 +1,47 @@
 import React from "react";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import { Search, Grid, List, Zap, Star, ShieldCheck, ChevronRight, ArrowRight } from "lucide-react";
+import { Zap, Star, ShieldCheck, ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
-export const metadata: Metadata = {
-  title: "Authority Tool Directory | Zadit Intelligence Hub",
-  description: "Daftar eksklusif tools dan platform yang kami gunakan untuk menskalakan infrastruktur klien kami.",
-};
+interface Props {
+  params: Promise<{ category: string }>;
+}
 
-export default async function ToolsDirectoryPage() {
-  const { data: tools } = await supabase
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { category } = await params;
+  const decodedCategory = decodeURIComponent(category);
+  return {
+    title: `${decodedCategory.toUpperCase()} Tools | Zadit Intelligence Hub`,
+    description: `Daftar eksklusif tools dalam kategori ${decodedCategory} yang kami rekomendasikan.`,
+  };
+}
+
+export default async function ToolCategoryPage({ params }: Props) {
+  const { category: categorySlug } = await params;
+  
+  // Fetch tools. We need to match category case-insensitively or after normalization.
+  // The DB likely has "AI", "Marketing", etc.
+  // We'll fetch all tools and filter in JS to handle the case normalization simply, 
+  // or use an ILIKE query if possible.
+  
+  const { data: allTools } = await supabase
     .from("tools")
     .select("*")
     .order("priority", { ascending: false });
 
-  const categories = Array.from(new Set((tools || []).map(t => t.category)));
+  if (!allTools) return notFound();
+
+  const filteredTools = allTools.filter(t => t.category.toLowerCase() === categorySlug.toLowerCase());
+  
+  if (filteredTools.length === 0) return notFound();
+
+  const categories = Array.from(new Set(allTools.map(t => t.category)));
+  const currentCategoryName = filteredTools[0].category;
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-200 selection:bg-amber-500/30">
@@ -28,14 +51,14 @@ export default async function ToolsDirectoryPage() {
         <div className="absolute inset-0 bg-linear-to-b from-amber-500/5 to-transparent pointer-events-none" />
         <div className="max-w-5xl mx-auto text-center space-y-8 relative">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest text-amber-500">
-            <Zap size={14} /> The Executive Tech Stack
+            <Zap size={14} /> {currentCategoryName} Tech Stack
           </div>
           <h1 className="text-5xl lg:text-7xl font-black text-white tracking-tight">
-            Authority <br />
-            <span className="text-amber-500">Tool Directory.</span>
+            {currentCategoryName} <br />
+            <span className="text-amber-500">Intelligence.</span>
           </h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto font-medium">
-            Kumpulan platform kelas dunia yang telah melalui audit performa, skalabilitas, dan ROI oleh Zadit Framework.
+            Kumpulan platform {currentCategoryName} pilihan yang dioptimalkan untuk performa dan ROI maksimal.
           </p>
         </div>
       </section>
@@ -47,16 +70,20 @@ export default async function ToolsDirectoryPage() {
           <div className="space-y-4">
             <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Categories</h3>
             <div className="flex flex-col gap-2">
-              <Link href="/tools" className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-sm">
-                All Tools <ChevronRight size={14} className="text-slate-500" />
+              <Link href="/tools" className="flex items-center justify-between p-3 rounded-xl border border-transparent text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold">
+                All Tools <ChevronRight size={14} className="opacity-0 hover:opacity-100" />
               </Link>
               {categories.map(cat => (
                 <Link 
                   key={cat} 
                   href={`/tools/${cat.toLowerCase()}`}
-                  className="flex items-center justify-between p-3 rounded-xl border border-transparent text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold"
+                  className={`flex items-center justify-between p-3 rounded-xl transition-all text-sm font-bold ${
+                    cat.toLowerCase() === categorySlug.toLowerCase() 
+                    ? "bg-white/5 border border-white/10 text-white" 
+                    : "border border-transparent text-slate-400 hover:text-white hover:bg-white/5"
+                  }`}
                 >
-                  {cat} <ChevronRight size={14} className="opacity-0 group-hover:opacity-100" />
+                  {cat} <ChevronRight size={14} className={cat.toLowerCase() === categorySlug.toLowerCase() ? "text-slate-500" : "opacity-0 hover:opacity-100"} />
                 </Link>
               ))}
             </div>
@@ -64,9 +91,9 @@ export default async function ToolsDirectoryPage() {
 
           <div className="p-6 rounded-3xl bg-linear-to-br from-amber-600/10 to-transparent border border-amber-500/20 space-y-4">
             <ShieldCheck className="text-amber-500" size={24} />
-            <h4 className="font-bold text-white">Zadit Verified</h4>
+            <h4 className="font-bold text-white">Verified Stack</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Semua tool dalam direktori ini telah kami gunakan dalam proyek produksi skala besar.
+              Kategori ini berisi tools yang telah terbukti secara operasional dalam alur kerja {currentCategoryName}.
             </p>
           </div>
         </aside>
@@ -74,7 +101,7 @@ export default async function ToolsDirectoryPage() {
         {/* Tools List */}
         <div className="lg:col-span-9 space-y-8">
           <div className="grid sm:grid-cols-2 gap-6">
-            {(tools || []).map((tool, i) => (
+            {filteredTools.map((tool) => (
               <Link 
                 key={tool.id} 
                 href={`/tools/${tool.category.toLowerCase()}/${tool.slug}`}

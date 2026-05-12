@@ -11,11 +11,12 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
 interface Props {
-  params: { industry: string; problem: string };
+  params: Promise<{ industry: string; problem: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const content = await generateSolutionContent(params.industry, params.problem);
+  const { industry, problem } = await params;
+  const content = await generateSolutionContent(industry, problem);
   if (!content) return {};
   return {
     title: `${content.title} | Zadit Intelligence Hub`,
@@ -24,7 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SolutionPage({ params }: Props) {
-  const content = await generateSolutionContent(params.industry, params.problem);
+  const { industry, problem } = await params;
+  const content = await generateSolutionContent(industry, problem);
 
   if (!content) notFound();
 
@@ -39,8 +41,8 @@ export default async function SolutionPage({ params }: Props) {
   const { data: relatedSolutions } = await supabase
     .from("problems")
     .select("id, title, slug, industry_slug")
-    .eq("industry_slug", params.industry)
-    .neq("slug", params.problem)
+    .eq("industry_slug", industry)
+    .neq("slug", problem)
     .limit(2)
     .then(res => ({
       data: res.data?.map(s => ({
@@ -58,7 +60,7 @@ export default async function SolutionPage({ params }: Props) {
         <ChevronRight size={12} />
         <Link href="/solutions" className="hover:text-blue-500 transition-colors">Solutions</Link>
         <ChevronRight size={12} />
-        <span className="text-slate-300">{params.industry}</span>
+        <span className="text-slate-300">{industry}</span>
       </nav>
 
       <section className="max-w-7xl mx-auto px-6 py-12 lg:py-24 grid lg:grid-cols-12 gap-16">
@@ -137,7 +139,7 @@ export default async function SolutionPage({ params }: Props) {
                 Isi formulir di bawah untuk mendapatkan rekomendasi kustom berdasarkan kondisi infrastruktur Anda saat ini.
               </p>
             </div>
-            <InquiryWizard initialMode={params.industry as any} />
+            <InquiryWizard initialMode={industry as any} />
             
             <div className="p-6 rounded-3xl bg-linear-to-br from-slate-900 to-slate-950 border border-white/5 space-y-4">
               <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Next Action</div>

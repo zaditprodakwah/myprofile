@@ -10,21 +10,23 @@ import { Recommendations } from "@/components/shared/Recommendations";
 import { Footer } from "@/components/layout/Footer";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { data: item } = await supabase.from("radar_items").select("*").eq("slug", params.slug).single();
+  const { slug } = await params;
+  const { data: item } = await supabase.from("radar_items").select("*").eq("slug", slug).single();
   if (!item) return {};
   return getBaseMetadata(
     item.title,
     item.summary || "",
-    `/radar/${params.slug}`
+    `/radar/${slug}`
   );
 }
 
 export default async function RadarItemPage({ params }: Props) {
-  const { data: item } = await supabase.from("radar_items").select("*").eq("slug", params.slug).single();
+  const { slug } = await params;
+  const { data: item } = await supabase.from("radar_items").select("*").eq("slug", slug).single();
 
   if (!item) notFound();
 

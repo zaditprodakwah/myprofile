@@ -1,58 +1,31 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Header } from "@/components/layout/Header";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { Footer } from "@/components/layout/Footer";
-import { Radio, Newspaper, Zap, ExternalLink, Filter } from "lucide-react";
+import { Radio, Newspaper, Zap, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
 
-interface RadarItem {
-  id: string;
-  title: string;
-  source: string;
-  category: string;
-  timestamp: string;
-  url: string;
-  isHot?: boolean;
+export const dynamic = "force-dynamic";
+
+interface Props {
+  searchParams: Promise<{ category?: string }>;
 }
 
-const mockRadarItems: RadarItem[] = [
-  {
-    id: "1",
-    title: "Google Core Update May 2026: Impact on Local Services",
-    source: "Search Engine Journal",
-    category: "Marketing",
-    timestamp: "2h ago",
-    url: "#",
-    isHot: true
-  },
-  {
-    id: "2",
-    title: "New AI Framework for Quantitative Research in Social Sciences",
-    source: "Arxiv",
-    category: "Academic",
-    timestamp: "5h ago",
-    url: "#"
-  },
-  {
-    id: "3",
-    title: "SE Asia Venture Capital Trends: Focus on Strategic Document Quality",
-    source: "Tech in Asia",
-    category: "Business",
-    timestamp: "1d ago",
-    url: "#"
-  }
-];
+export default async function RadarPage({ searchParams }: Props) {
+  const { category: activeTab = "all" } = await searchParams;
 
-export default function RadarPage() {
-  const [items, setItems] = useState<RadarItem[]>(mockRadarItems);
-  const [activeTab, setActiveTab] = useState("all");
+  const { data: items } = await supabase
+    .from("radar_items")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const filteredItems = items.filter(
-    (item) => activeTab === "all" || item.category.toLowerCase() === activeTab.toLowerCase()
+  const filteredItems = (items || []).filter(
+    (item) => activeTab === "all" || item.category?.toLowerCase() === activeTab.toLowerCase()
   );
+
+  const categories = ["all", "marketing", "academic", "business"];
 
   return (
     <main className="min-h-screen bg-[#020617]">
@@ -65,21 +38,21 @@ export default function RadarPage() {
             <Radio size={24} className="animate-pulse" />
             <div className="text-[10px] font-black uppercase tracking-[0.3em]">Industry Intelligence Live</div>
           </div>
-          <h1 className="text-4xl md:text-6xl font-outfit font-black tracking-tight leading-[1.1]">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1] text-white">
             The Radar <span className="text-slate-700">Hub.</span>
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl leading-relaxed">
-            Curated intelligence on the intersection of data, growth, and academic precision. Updated every 6 hours.
+            Curated intelligence on the intersection of data, growth, and academic precision. Updated in real-time via autonomous ingestion.
           </p>
         </div>
 
         {/* Intelligence Filters */}
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
           <div className="flex gap-8 overflow-x-auto no-scrollbar">
-            {["all", "marketing", "academic", "business"].map((tab) => (
-              <button
+            {categories.map((tab) => (
+              <Link
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                href={`/radar?category=${tab}`}
                 className={cn(
                   "text-xs font-bold uppercase tracking-widest pb-4 relative transition-colors",
                   activeTab === tab ? "text-blue-500" : "text-slate-500 hover:text-white"
@@ -87,29 +60,19 @@ export default function RadarPage() {
               >
                 {tab}
                 {activeTab === tab && (
-                  <motion.div 
-                    layoutId="radar-tab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
-                  />
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
                 )}
-              </button>
+              </Link>
             ))}
           </div>
-          <button className="hidden md:flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-white transition-colors">
-            <Filter size={14} /> Filter Source
-          </button>
         </div>
 
         {/* Feed */}
         <div className="space-y-4">
-          <AnimatePresence mode="popLayout">
-            {filteredItems.map((item, i) => (
-              <motion.div
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item) => (
+              <div
                 key={item.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={{ delay: i * 0.05 }}
                 className="group p-6 rounded-2xl bg-white/2 border border-white/5 hover:border-white/10 hover:bg-white/4 transition-all flex items-start gap-6"
               >
                 <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
@@ -126,28 +89,37 @@ export default function RadarPage() {
                     )}>
                       {item.category}
                     </span>
-                    <span className="text-[9px] font-bold text-slate-600 uppercase">{item.source}</span>
-                    <span className="text-[9px] font-medium text-slate-700">• {item.timestamp}</span>
+                    <span className="text-[9px] font-bold text-slate-600 uppercase">{item.source_name || "Zadit Intelligence"}</span>
+                    <span className="text-[9px] font-medium text-slate-700">
+                      • {item.created_at ? formatDistanceToNow(new Date(item.created_at), { addSuffix: true }) : "recently"}
+                    </span>
                   </div>
                   
-                  <Link href={`/radar/${item.id}`} className="block">
+                  <Link href={`/radar/${item.slug}`} className="block">
                     <h3 className="text-lg font-bold text-slate-200 group-hover:text-blue-500 transition-colors flex items-center gap-2">
                       {item.title}
-                      {item.isHot && <Zap size={14} className="fill-amber-500 text-amber-500" />}
+                      {item.importance_score > 80 && <Zap size={14} className="fill-amber-500 text-amber-500" />}
                     </h3>
                   </Link>
                 </div>
 
-                <a 
-                  href={item.url} 
-                  target="_blank"
-                  className="p-3 rounded-xl bg-white/5 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-white hover:bg-white/10"
-                >
-                  <ExternalLink size={18} />
-                </a>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+                {item.source_url && (
+                  <a 
+                    href={item.source_url} 
+                    target="_blank"
+                    className="p-3 rounded-xl bg-white/5 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity hover:text-white hover:bg-white/10"
+                  >
+                    <ExternalLink size={18} />
+                  </a>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="py-20 text-center space-y-4">
+              <div className="text-slate-600 font-bold uppercase tracking-widest text-xs">No intelligence found for this segment</div>
+              <Link href="/radar" className="text-blue-500 text-sm font-bold hover:underline">Reset Filters</Link>
+            </div>
+          )}
         </div>
 
         {/* Subscribe CTA */}
@@ -155,7 +127,7 @@ export default function RadarPage() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[80px] -mr-32 -mt-32 rounded-full" />
           
           <div className="relative z-10 max-w-xl space-y-4">
-            <h2 className="text-3xl font-outfit font-black tracking-tight leading-tight">
+            <h2 className="text-3xl font-black tracking-tight leading-tight">
               Get the Intelligence Digest. <br /> Straight to your inbox.
             </h2>
             <p className="text-blue-100 text-sm">
