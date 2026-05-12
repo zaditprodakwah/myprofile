@@ -27,16 +27,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scroll-smooth" suppressHydrationWarning>
       <body className={cn(inter.variable, outfit.variable, "font-sans antialiased text-slate-100")}>
-        <JSONLD />
-        <MouseFollower />
-        <AppSidebar />
-        <Suspense fallback={<div className="min-h-screen bg-[#020617]" />}>
-          <ModeProvider>
+        <ModeProvider>
+          <JSONLD />
+          <MouseFollower />
+          <AppSidebar />
+          <Suspense fallback={<div className="min-h-screen bg-[#020617]" />}>
             <PageTransition>
               {children}
             </PageTransition>
-          </ModeProvider>
-        </Suspense>
+          </Suspense>
+        </ModeProvider>
       </body>
     </html>
   );
