@@ -53,7 +53,6 @@ async function main() {
   const tools = JSON.parse(fs.readFileSync('data/tools.seed.json', 'utf8'));
   await seedTable('tools', tools);
 
-  const radarSources = JSON.parse(fs.readFileSync('data/radar-sources.seed.json', 'utf8'));
   await seedTable('radar_sources', radarSources, (item) => ({
     name: item.name,
     slug: item.slug || slugify(item.name),
@@ -62,6 +61,7 @@ async function main() {
     type: 'rss',
     priority: item.priority || 0,
     enabled: item.is_active ?? true,
+    category: item.category || 'general',
     tier: item.priority > 80 ? 1 : (item.priority > 50 ? 2 : 3)
   }));
 

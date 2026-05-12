@@ -80,6 +80,7 @@ export async function ingestAllFeeds() {
           hash,
           source_slug: source.slug,
           source_name: source.name,
+          category: source.category || 'general',
           title: item.title,
           url: item.link,
           published_at: new Date(item.pubDate || Date.now()).toISOString(),
