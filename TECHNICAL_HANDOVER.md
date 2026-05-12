@@ -124,7 +124,7 @@ Sistem menghasilkan ribuan variasi halaman melalui struktur:
     - snake_case untuk kolom database (`signal_score`).
 
 ### AI-Agent Optimization
-Dokumen ini dirancang agar AI Coder (seperti Cursor/Antigravity) dapat membaca `TECHNICAL_HANDOVER.md` dan langsung memahami dependensi antar file tanpa perlu melakukan `grep` berlebihan.
+Dokumen ini dirancang agar AI Coder (seperti Cursor/Zadit Hub Agent) dapat membaca `TECHNICAL_HANDOVER.md` dan langsung memahami dependensi antar file tanpa perlu melakukan `grep` berlebihan.
 
 ---
 **Prepared by:** Zadit Intelligence Architect  

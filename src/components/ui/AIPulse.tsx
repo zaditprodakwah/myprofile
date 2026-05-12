@@ -62,7 +62,7 @@ export function AIPulse({
             
             <div className="space-y-1">
               <div className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-200 opacity-80">
-                Antigravity Intelligence
+                Zadit Hub Intelligence
               </div>
               <motion.p 
                 key={index}
