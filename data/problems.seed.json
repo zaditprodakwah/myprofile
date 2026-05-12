@@ -1,34 +1,114 @@
 [
-  { 
-    "industry_slug": "marketing", 
-    "slug": "low-signup-conversion", 
-    "title": "Low Signup Conversion on Landing Pages",
-    "symptom_queries": ["why is my landing page not converting", "low conversion rate marketing"],
-    "solution_summary": "Implement behavior-based triggers and high-intent copy optimization.",
-    "tags": ["CRO", "LPO", "Marketing"]
-  },
-  { 
-    "industry_slug": "academic", 
-    "slug": "citation-management-chaos", 
-    "title": "Citation & Reference Management Chaos",
-    "symptom_queries": ["how to manage citations automatically", "bibtex automation tools"],
-    "solution_summary": "Automated workflow for Zotero to BibTex synchronization with LLM enrichment.",
-    "tags": ["Research", "Academia", "Tools"]
-  },
-  { 
-    "industry_slug": "business", 
-    "slug": "manual-reporting-bottleneck", 
-    "title": "Manual Executive Reporting Bottleneck",
-    "symptom_queries": ["automate executive reports", "business intelligence dashboard automation"],
-    "solution_summary": "Dynamic BI data connectors with automated synthesis for executive summaries.",
-    "tags": ["BI", "Reporting", "Efficiency"]
+  {
+    "industry_slug": "ecommerce",
+    "slug": "high-cac-low-roas",
+    "title": "High CAC & Low ROAS",
+    "symptom_queries": ["how to lower cac ecommerce", "increase roas shopify ads", "why is my ad spend increasing"],
+    "solution_summary": "Implementing data-driven attribution and high-intent funnel optimization to reduce acquisition costs while boosting revenue.",
+    "tags": ["Ecommerce", "Ads", "Marketing", "ROI"]
   },
   {
     "industry_slug": "ecommerce",
-    "slug": "cart-abandonment",
-    "title": "High Cart Abandonment Rate",
-    "symptom_queries": ["reduce checkout abandonment", "ecommerce cart recovery strategies"],
-    "solution_summary": "One-click checkout implementation with retargeting automation.",
-    "tags": ["ecommerce", "UX", "sales"]
+    "slug": "landing-page-low-conversion",
+    "title": "Low Conversion Landing Pages",
+    "symptom_queries": ["landing page not converting", "increase shopify product page conversion", "cro for ecommerce"],
+    "solution_summary": "Conversion Rate Optimization (CRO) focused on removing friction and implementing social proof loops.",
+    "tags": ["Ecommerce", "CRO", "UX"]
+  },
+  {
+    "industry_slug": "ecommerce",
+    "slug": "weak-organic-authority",
+    "title": "Weak Organic Authority",
+    "symptom_queries": ["ecommerce seo strategy", "increase organic traffic shopify", "brand visibility in search"],
+    "solution_summary": "Building domain authority through programmatic content and strategic internal linking.",
+    "tags": ["Ecommerce", "SEO", "Growth"]
+  },
+  {
+    "industry_slug": "education",
+    "slug": "low-enrollment",
+    "title": "Low Enrollment Rates",
+    "symptom_queries": ["increase student enrollment university", "digital marketing for education", "online course signups"],
+    "solution_summary": "Multichannel lead generation and automated nurturing systems for educational institutions.",
+    "tags": ["Education", "Marketing", "Leads"]
+  },
+  {
+    "industry_slug": "education",
+    "slug": "citation-and-writing-system",
+    "title": "Complex Citation & Writing Systems",
+    "symptom_queries": ["how to manage citations automatically", "bibtex automation tools", "academic writing workflow"],
+    "solution_summary": "Automated citation management and writing orchestration frameworks to maintain research integrity.",
+    "tags": ["Academic", "Research", "Workflow"]
+  },
+  {
+    "industry_slug": "education",
+    "slug": "research-methodology-confusion",
+    "title": "Research Methodology Confusion",
+    "symptom_queries": ["choosing research methodology", "quantitative vs qualitative framework", "academic research design"],
+    "solution_summary": "Standardized methodology templates and data analysis protocols for high-impact research.",
+    "tags": ["Academic", "Research", "Analysis"]
+  },
+  {
+    "industry_slug": "health-beauty",
+    "slug": "brand-reputation-risk",
+    "title": "Brand Reputation Risk",
+    "symptom_queries": ["manage beauty brand reputation", "handling negative cosmetic reviews", "crisis management lifestyle brand"],
+    "solution_summary": "Proactive sentiment monitoring and social proof fortification systems.",
+    "tags": ["Health", "Beauty", "PR", "Reputation"]
+  },
+  {
+    "industry_slug": "health-beauty",
+    "slug": "campaign-scaling-instability",
+    "title": "Campaign Scaling Instability",
+    "symptom_queries": ["scaling skincare ads", "budget management beauty niche", "roas drop after scaling"],
+    "solution_summary": "Stable scaling frameworks using algorithmic pacing and audience fragmentation control.",
+    "tags": ["Health", "Beauty", "Ads", "Scaling"]
+  },
+  {
+    "industry_slug": "saas",
+    "slug": "programmatic-seo-architecture",
+    "title": "Programmatic SEO Architecture",
+    "symptom_queries": ["how to build programmatic seo", "pseo for saas", "scale landing pages automatically"],
+    "solution_summary": "Database-driven page generation to capture long-tail high-intent search traffic at scale.",
+    "tags": ["SaaS", "SEO", "Engineering", "pSEO"]
+  },
+  {
+    "industry_slug": "saas",
+    "slug": "low-signup-conversion",
+    "title": "Low Signup Conversion",
+    "symptom_queries": ["increase saas signup rate", "saas onboarding optimization", "product led growth conversion"],
+    "solution_summary": "Optimizing activation flows and trial-to-paid conversion triggers.",
+    "tags": ["SaaS", "CRO", "Growth"]
+  },
+  {
+    "industry_slug": "saas",
+    "slug": "weak-authority-backlinks",
+    "title": "Weak Authority Backlinks",
+    "symptom_queries": ["get high quality saas backlinks", "link building for ai tools", "increase domain rating saas"],
+    "solution_summary": "Authority-first link building through unique data research and strategic outreach.",
+    "tags": ["SaaS", "SEO", "Authority"]
+  },
+  {
+    "industry_slug": "corporate",
+    "slug": "messy-reporting-no-kpi",
+    "title": "Messy Reporting & No KPIs",
+    "symptom_queries": ["how to set business kpis", "executive reporting dashboard", "clean business metrics"],
+    "solution_summary": "Consolidated business intelligence dashboards with clear, actionable KPI frameworks.",
+    "tags": ["Corporate", "BI", "Analytics"]
+  },
+  {
+    "industry_slug": "corporate",
+    "slug": "brand-authority-fragmented",
+    "title": "Fragmented Brand Authority",
+    "symptom_queries": ["corporate branding consistency", "rebranding enterprise", "unify brand messaging"],
+    "solution_summary": "Strategic brand governance and unified identity frameworks for multi-stakeholder environments.",
+    "tags": ["Corporate", "Branding", "Strategy"]
+  },
+  {
+    "industry_slug": "corporate",
+    "slug": "documentation-sop-needed",
+    "title": "Documentation & SOP Needed",
+    "symptom_queries": ["how to write sops", "business process documentation", "standardize corporate operations"],
+    "solution_summary": "Operational efficiency through standardized operating procedures and knowledge management systems.",
+    "tags": ["Corporate", "Operations", "SOP"]
   }
 ]

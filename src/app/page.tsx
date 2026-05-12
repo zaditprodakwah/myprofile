@@ -31,6 +31,7 @@ export default function Home() {
   // Intent Detection: If user scrolls without picking a mode
   useEffect(() => {
     const handleScroll = () => {
+      // Don't show if mode is already set, or modal is already showing, or user already dismissed
       if (mode === "neutral" && !showIntentModal && !hasDismissedModal) {
         const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
         if (scrollPercent > 40) {
@@ -97,7 +98,7 @@ export default function Home() {
               onClick={() => {
                 setShowIntentModal(false);
                 setHasDismissedModal(true);
-                sessionStorage.setItem("zadit-intent-modal-dismissed", "true");
+                localStorage.setItem("zadit-intent-modal-dismissed", "true");
               }}
             />
             <motion.div
@@ -119,6 +120,7 @@ export default function Home() {
               >
                 <X size={20} />
               </button>
+
 
               <div className="space-y-8">
                 <div className="space-y-3 text-center">

@@ -1,6 +1,7 @@
 [
-  { "slug": "marketing", "name": "Digital Marketing & Agency", "description": "Scale ROAS & dominate search SERPs", "priority": 10, "tags": ["SEO", "PPC", "CRO"] },
-  { "slug": "academic", "name": "Academic & Research", "description": "Research integrity & automated mapping", "priority": 8, "tags": ["citations", "research", "paper"] },
-  { "slug": "business", "name": "Business & Enterprise", "description": "Executive assets & strategic reporting", "priority": 9, "tags": ["BI", "reporting", "SaaS"] },
-  { "slug": "ecommerce", "name": "E-commerce & Retail", "description": "Conversion optimization and headless commerce", "priority": 7, "tags": ["shopify", "conversion", "sales"] }
+  { "slug": "ecommerce", "name": "E-commerce & Retail", "description": "Conversion optimization and headless commerce", "priority": 10, "tags": ["E-Commerce", "Marketplace", "Shopify", "Retail"] },
+  { "slug": "education", "name": "Academic & Research", "description": "Research integrity and automated publishing systems", "priority": 9, "tags": ["Education", "Academic", "Research", "Thesis"] },
+  { "slug": "health-beauty", "name": "Health & Beauty", "description": "Brand reputation and performance scaling for lifestyle brands", "priority": 8, "tags": ["Beauty", "Skincare", "Health", "Lifestyle"] },
+  { "slug": "saas", "name": "SaaS & AI", "description": "Growth architecture and programmatic SEO for software companies", "priority": 10, "tags": ["SaaS", "AI", "Software", "Cloud"] },
+  { "slug": "corporate", "name": "Corporate & Enterprise", "description": "Business intelligence and strategic reporting", "priority": 7, "tags": ["Enterprise", "Corporate", "Business", "KPI"] }
 ]

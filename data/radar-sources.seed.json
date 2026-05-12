@@ -1,10 +1,250 @@
 [
-  { "slug": "sej", "name": "Search Engine Journal", "url": "https://www.searchenginejournal.com/feed/", "site_url": "https://www.searchenginejournal.com", "type": "rss", "tier": 1, "priority": 90 },
-  { "slug": "tc-ai", "name": "TechCrunch AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/", "site_url": "https://techcrunch.com", "type": "rss", "tier": 1, "priority": 85 },
-  { "slug": "arxiv-ai", "name": "ArXiv CS.AI", "url": "https://arxiv.org/rss/cs.ai", "site_url": "https://arxiv.org", "type": "rss", "tier": 2, "priority": 70 },
-  { "slug": "verge-tech", "name": "The Verge Tech", "url": "https://www.theverge.com/rss/index.xml", "site_url": "https://www.theverge.com", "type": "rss", "tier": 2, "priority": 60 },
-  { "slug": "moz-blog", "name": "Moz Blog", "url": "https://moz.com/checkout/feed", "site_url": "https://moz.com/blog", "type": "rss", "tier": 1, "priority": 80 },
-  { "slug": "ai-news", "name": "AI News", "url": "https://www.artificialintelligence-news.com/feed/", "site_url": "https://www.artificialintelligence-news.com", "type": "rss", "tier": 2, "priority": 65 },
-  { "slug": "marketing-dive", "name": "Marketing Dive", "url": "https://www.marketingdive.com/feeds/news/", "site_url": "https://www.marketingdive.com", "type": "rss", "tier": 2, "priority": 75 },
-  { "slug": "venturebeat-ai", "name": "VentureBeat AI", "url": "https://venturebeat.com/category/ai/feed/", "site_url": "https://venturebeat.com", "type": "rss", "tier": 1, "priority": 82 }
+  {
+    "name": "Google Search Central Blog",
+    "rss_url": "https://developers.google.com/search/blog/rss.xml",
+    "site_url": "https://developers.google.com/search/blog",
+    "category": "seo",
+    "priority": 100,
+    "is_active": true
+  },
+  {
+    "name": "Google AI Blog",
+    "rss_url": "https://blog.google/technology/ai/rss/",
+    "site_url": "https://blog.google/technology/ai/",
+    "category": "ai",
+    "priority": 95,
+    "is_active": true
+  },
+  {
+    "name": "OpenAI Blog",
+    "rss_url": "https://openai.com/blog/rss.xml",
+    "site_url": "https://openai.com/blog",
+    "category": "ai",
+    "priority": 95,
+    "is_active": true
+  },
+  {
+    "name": "Vercel Blog",
+    "rss_url": "https://vercel.com/blog/rss.xml",
+    "site_url": "https://vercel.com/blog",
+    "category": "engineering",
+    "priority": 90,
+    "is_active": true
+  },
+  {
+    "name": "Cloudflare Blog",
+    "rss_url": "https://blog.cloudflare.com/rss/",
+    "site_url": "https://blog.cloudflare.com",
+    "category": "engineering",
+    "priority": 90,
+    "is_active": true
+  },
+  {
+    "name": "Supabase Blog",
+    "rss_url": "https://supabase.com/blog/rss.xml",
+    "site_url": "https://supabase.com/blog",
+    "category": "engineering",
+    "priority": 85,
+    "is_active": true
+  },
+  {
+    "name": "Ahrefs Blog",
+    "rss_url": "https://ahrefs.com/blog/feed/",
+    "site_url": "https://ahrefs.com/blog",
+    "category": "seo",
+    "priority": 88,
+    "is_active": true
+  },
+  {
+    "name": "SEMrush Blog",
+    "rss_url": "https://www.semrush.com/blog/rss/",
+    "site_url": "https://www.semrush.com/blog/",
+    "category": "seo",
+    "priority": 85,
+    "is_active": true
+  },
+  {
+    "name": "Search Engine Journal",
+    "rss_url": "https://www.searchenginejournal.com/feed/",
+    "site_url": "https://www.searchenginejournal.com",
+    "category": "seo",
+    "priority": 80,
+    "is_active": true
+  },
+  {
+    "name": "Search Engine Land",
+    "rss_url": "https://searchengineland.com/feed",
+    "site_url": "https://searchengineland.com",
+    "category": "seo",
+    "priority": 82,
+    "is_active": true
+  },
+  {
+    "name": "Moz Blog",
+    "rss_url": "https://moz.com/blog/feed",
+    "site_url": "https://moz.com/blog",
+    "category": "seo",
+    "priority": 75,
+    "is_active": true
+  },
+  {
+    "name": "Backlinko Blog",
+    "rss_url": "https://backlinko.com/feed",
+    "site_url": "https://backlinko.com",
+    "category": "seo",
+    "priority": 70,
+    "is_active": true
+  },
+  {
+    "name": "Neil Patel Blog",
+    "rss_url": "https://neilpatel.com/feed/",
+    "site_url": "https://neilpatel.com/blog/",
+    "category": "marketing",
+    "priority": 55,
+    "is_active": true
+  },
+  {
+    "name": "HubSpot Marketing Blog",
+    "rss_url": "https://blog.hubspot.com/marketing/rss.xml",
+    "site_url": "https://blog.hubspot.com/marketing",
+    "category": "marketing",
+    "priority": 75,
+    "is_active": true
+  },
+  {
+    "name": "Think with Google",
+    "rss_url": "https://www.thinkwithgoogle.com/intl/en-154/rss/",
+    "site_url": "https://www.thinkwithgoogle.com",
+    "category": "marketing",
+    "priority": 80,
+    "is_active": true
+  },
+  {
+    "name": "Google Ads Blog",
+    "rss_url": "https://ads.googleblog.com/feeds/posts/default?alt=rss",
+    "site_url": "https://ads.googleblog.com",
+    "category": "marketing",
+    "priority": 85,
+    "is_active": true
+  },
+  {
+    "name": "Meta for Business Newsroom",
+    "rss_url": "https://www.facebook.com/business/news/rss",
+    "site_url": "https://www.facebook.com/business/news",
+    "category": "marketing",
+    "priority": 75,
+    "is_active": true
+  },
+  {
+    "name": "TikTok Business Blog",
+    "rss_url": "https://www.tiktok.com/business/en/blog/rss",
+    "site_url": "https://www.tiktok.com/business/en/blog",
+    "category": "marketing",
+    "priority": 70,
+    "is_active": true
+  },
+  {
+    "name": "The Verge",
+    "rss_url": "https://www.theverge.com/rss/index.xml",
+    "site_url": "https://www.theverge.com",
+    "category": "tech",
+    "priority": 60,
+    "is_active": true
+  },
+  {
+    "name": "TechCrunch",
+    "rss_url": "https://techcrunch.com/feed/",
+    "site_url": "https://techcrunch.com",
+    "category": "startup",
+    "priority": 65,
+    "is_active": true
+  },
+  {
+    "name": "Ars Technica",
+    "rss_url": "https://feeds.arstechnica.com/arstechnica/index",
+    "site_url": "https://arstechnica.com",
+    "category": "tech",
+    "priority": 65,
+    "is_active": true
+  },
+  {
+    "name": "The Hacker News",
+    "rss_url": "https://feeds.feedburner.com/TheHackersNews",
+    "site_url": "https://thehackernews.com",
+    "category": "security",
+    "priority": 75,
+    "is_active": true
+  },
+  {
+    "name": "Krebs on Security",
+    "rss_url": "https://krebsonsecurity.com/feed/",
+    "site_url": "https://krebsonsecurity.com",
+    "category": "security",
+    "priority": 70,
+    "is_active": true
+  },
+  {
+    "name": "OWASP News",
+    "rss_url": "https://owasp.org/www-project-news/feeds/rss.xml",
+    "site_url": "https://owasp.org",
+    "category": "security",
+    "priority": 65,
+    "is_active": true
+  },
+  {
+    "name": "GitHub Blog",
+    "rss_url": "https://github.blog/feed/",
+    "site_url": "https://github.blog",
+    "category": "engineering",
+    "priority": 80,
+    "is_active": true
+  },
+  {
+    "name": "Netflix Tech Blog",
+    "rss_url": "https://netflixtechblog.com/feed",
+    "site_url": "https://netflixtechblog.com",
+    "category": "engineering",
+    "priority": 60,
+    "is_active": true
+  },
+  {
+    "name": "Stripe Blog",
+    "rss_url": "https://stripe.com/blog/rss",
+    "site_url": "https://stripe.com/blog",
+    "category": "product",
+    "priority": 70,
+    "is_active": true
+  },
+  {
+    "name": "Shopify Engineering",
+    "rss_url": "https://shopify.engineering/blog.atom",
+    "site_url": "https://shopify.engineering",
+    "category": "engineering",
+    "priority": 60,
+    "is_active": true
+  },
+  {
+    "name": "Google Cloud Blog",
+    "rss_url": "https://cloud.google.com/blog/rss",
+    "site_url": "https://cloud.google.com/blog",
+    "category": "engineering",
+    "priority": 75,
+    "is_active": true
+  },
+  {
+    "name": "AWS News Blog",
+    "rss_url": "https://aws.amazon.com/blogs/aws/feed/",
+    "site_url": "https://aws.amazon.com/blogs/aws/",
+    "category": "engineering",
+    "priority": 75,
+    "is_active": true
+  },
+  {
+    "name": "Microsoft Developer Blog",
+    "rss_url": "https://devblogs.microsoft.com/feed/",
+    "site_url": "https://devblogs.microsoft.com",
+    "category": "engineering",
+    "priority": 65,
+    "is_active": true
+  }
 ]
