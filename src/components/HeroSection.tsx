@@ -9,6 +9,11 @@ interface HeroSectionProps {
   subheading?: string;
   whatsappNumber?: string;
   availabilityStatus?: string;
+  liveStats?: {
+    totalDirectories: number;
+    totalAudits: number;
+    systemStatus: string;
+  };
 }
 
 // Performance-safe Magnetic Button using Spring Physics
@@ -99,6 +104,7 @@ export default function HeroSection({
   headline = "Code doesn't scale without story. Story doesn't convert without data. Data doesn't persuade without execution.",
   subheading = "Saya membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
   whatsappNumber = "6282316363177",
+  liveStats,
 }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [stats, setStats] = useState({ years: 0, projects: 0, clients: 0 });
@@ -343,8 +349,9 @@ export default function HeroSection({
 
             <div className="space-y-3">
               {[
-                { label: 'ANALITIK DATA', icon: Check, val: 'TERHUBUNG', color: 'text-teal-accent' },
-                { label: 'PERFORMA WEB LCP', icon: Zap, val: lcpScore ? `${lcpScore.toFixed(2)}s` : '< 1.8s', color: 'text-teal-accent' },
+                { label: 'ANTREAN AUDIT WEB', icon: Zap, val: liveStats?.totalAudits ? `${liveStats.totalAudits} Kueri` : 'Aktif', color: 'text-teal-accent' },
+                { label: 'PROFIL TERINDEKS', icon: Users, val: liveStats?.totalDirectories ? `${liveStats.totalDirectories} Entitas` : 'Optimal', color: 'text-teal-accent' },
+                { label: 'PERFORMA WEB LCP', icon: Check, val: lcpScore ? `${lcpScore.toFixed(2)}s` : '< 1.8s', color: 'text-teal-accent' },
                 { label: 'PROTOKOL KEAMANAN', icon: Shield, val: 'SSL TERVERIFIKASI', color: 'text-teal-accent' },
               ].map(({ label, icon: Icon, val, color }) => (
                 <div key={label} className="flex justify-between items-center text-xs">

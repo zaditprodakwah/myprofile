@@ -2,8 +2,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { routeLLM } from "@/lib/llm-router";
 import { supabase } from "@/lib/supabase";
-import { ChevronRight, ArrowLeft, Send, Clock } from 'lucide-react';
+import { ChevronRight, ArrowLeft, Send, Clock, Zap } from 'lucide-react';
 import Link from 'next/link';
+import SocialShare from '@/components/SocialShare';
 
 interface Article {
   title: string;
@@ -245,6 +246,9 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
     ]
   };
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://zadit.dev';
+  const fullUrl = `${siteUrl}/blog/${article.slug}`;
+
   return (
     <>
       <script
@@ -278,11 +282,17 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
               </p>
             </div>
 
-            {/* Rich text container */}
+            {/* Rich text container with Definition-Lead styling */}
             <div 
-              className="prose max-w-none prose-sm md:prose-base text-text-muted leading-relaxed space-y-6 pt-6 border-t border-brand-border prose-headings:text-text-primary prose-headings:font-heading-sans prose-a:text-teal-accent"
+              className="prose max-w-none prose-sm md:prose-base text-text-muted leading-relaxed space-y-6 pt-6 border-t border-brand-border prose-headings:text-text-primary prose-headings:font-heading-sans prose-a:text-teal-accent
+              [&>p:first-of-type]:text-lg [&>p:first-of-type]:md:text-xl [&>p:first-of-type]:text-text-primary [&>p:first-of-type]:font-medium [&>p:first-of-type]:leading-relaxed"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
+
+            {/* Bottom Share */}
+            <div className="mt-16 pt-8 border-t border-brand-border">
+              <SocialShare url={fullUrl} title={article.title} />
+            </div>
 
             {/* Dynamic FAQ Accordions */}
             {article.faq_items && article.faq_items.length > 0 && (
@@ -307,20 +317,38 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
 
           {/* Sticky Conversion Sidebar (Right - 4 columns) */}
           <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
-            <div className="bg-white border border-brand-border rounded-2xl p-6 space-y-6 shadow-sm">
-              <h3 className="font-heading-sans font-bold text-text-primary text-lg">Butuh Implementasi Serupa?</h3>
-              <p className="text-xs text-text-muted leading-relaxed">
-                Seluruh ekosistem blog otomatis ramah pencarian, performa website cepat, dan sistem indeks konten instan ini bisa diintegrasikan langsung untuk bisnis Anda.
-              </p>
+            {/* Desktop Share Widget */}
+            <div className="hidden lg:block bg-white border border-brand-border rounded-2xl p-6 shadow-sm">
+              <SocialShare url={fullUrl} title={article.title} />
+            </div>
+
+            {/* Conversion Card */}
+            <div className="bg-gradient-to-br from-brand-slate to-[#1a2b3c] border border-brand-slate rounded-2xl p-6 text-text-inverse relative overflow-hidden group shadow-xl">
+              {/* Background glow */}
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-teal-accent/20 blur-[50px] rounded-full pointer-events-none" />
               
-              <a
-                href={`https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20dengan%20sistem%20blog%20otomatis%20dan%20optimasi%20pencarian%20seperti%20artikel%20${article.slug}.%20Mari%20jadwalkan%20diskusi!`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans font-bold uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-sm text-xs"
-              >
-                Konsultasikan Sekarang <Send className="w-4 h-4" />
-              </a>
+              <div className="relative z-10 space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-teal-accent/20 flex items-center justify-center text-teal-accent mb-2">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <h3 className="text-xl font-heading-sans font-bold leading-tight">
+                  Butuh Implementasi Sistem Serupa?
+                </h3>
+                <p className="text-sm text-text-inverse/70 leading-relaxed font-sans">
+                  Dapatkan arsitektur web berkecepatan tinggi, SEO teknikal, dan ekosistem data yang meningkatkan konversi bisnis Anda.
+                </p>
+                
+                <div className="pt-2">
+                  <a 
+                    href={`https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20membaca%20artikel%20"${encodeURIComponent(article.title)}"%20dan%20tertarik%20berdiskusi%20kemitraan.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full bg-teal-accent hover:bg-white hover:text-brand-slate text-text-inverse text-center font-heading-sans font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all duration-300"
+                  >
+                    Konsultasikan Sekarang <Send className="w-4 h-4 inline-block ml-1" />
+                  </a>
+                </div>
+              </div>
             </div>
 
             <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-sm">

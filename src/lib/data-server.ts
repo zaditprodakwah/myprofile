@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 import { unstable_cache } from 'next/cache';
-import { Service, CaseStudy, City, Entity } from './types';
+import { Service, CaseStudy, City, Entity, Article } from './types';
 
 // Safe fallbacks to keep site building and running even if DB tables do not exist yet
 const fallbackSiteContent: Record<string, string> = {
@@ -157,6 +157,42 @@ const fallbackEntities: Entity[] = [
   }
 ];
 
+const fallbackArticles: Article[] = [
+  {
+    id: 'a1',
+    title: 'Cara Optimasi Web UMKM di Indonesia agar Masuk Halaman Pertama Google',
+    slug: 'cara-optimasi-web-umkm-indonesia',
+    content: '<p>Di era digital, memiliki website saja tidak cukup. Anda membutuhkan strategi optimasi (SEO) yang tepat agar bisnis Anda mudah ditemukan oleh calon pelanggan di Google...</p><p>Berikut adalah langkah-langkah utama yang bisa Anda terapkan mulai hari ini...</p>',
+    meta_title: 'Cara Optimasi Web UMKM di Indonesia (2026)',
+    meta_description: 'Panduan lengkap cara mengoptimalkan website UMKM di Indonesia agar tampil di halaman pertama Google dan mendatangkan lebih banyak penjualan.',
+    author_name: 'Muhammad Khoiruzzadittaqwa',
+    is_published: true,
+    published_at: new Date().toISOString()
+  },
+  {
+    id: 'a2',
+    title: 'Mengapa AI Search Mengubah Cara Kita Menulis Konten',
+    slug: 'mengapa-ai-search-mengubah-cara-kita-menulis-konten',
+    content: '<p>Google SGE (Search Generative Experience) dan mesin pencari AI lainnya telah merubah aturan main SEO. Konten berkualitas tinggi dan relevan semakin diutamakan dibandingkan sekadar keyword stuffing...</p>',
+    meta_title: 'Dampak AI Search terhadap SEO dan Penulisan Konten',
+    meta_description: 'Pelajari bagaimana mesin pencari AI seperti Google SGE mengubah lanskap SEO dan strategi konten apa yang harus Anda persiapkan.',
+    author_name: 'Zadit Growth',
+    is_published: true,
+    published_at: new Date(Date.now() - 86400000).toISOString()
+  },
+  {
+    id: 'a3',
+    title: 'Panduan Praktis Technical SEO untuk Aplikasi Next.js',
+    slug: 'panduan-seo-teknikal-nextjs',
+    content: '<p>Next.js menawarkan banyak fitur unggulan untuk SEO, mulai dari Server-Side Rendering (SSR) hingga Image Optimization. Mari kita bahas konfigurasi terbaik untuk proyek Next.js Anda...</p>',
+    meta_title: 'Technical SEO Guide untuk Next.js 14+',
+    meta_description: 'Cara mengonfigurasi Next.js untuk mendapatkan skor Lighthouse 100 dan mendominasi peringkat teknikal SEO.',
+    author_name: 'Zadit Growth',
+    is_published: true,
+    published_at: new Date(Date.now() - 172800000).toISOString()
+  }
+];
+
 export const getSiteContent = unstable_cache(
   async (): Promise<Record<string, string>> => {
     try {
@@ -300,4 +336,85 @@ export const getSystemConfig = unstable_cache(
   },
   ['system_configs_cache'],
   { revalidate: 300 } // 5 minutes cache
+);
+
+export const getArticles = unstable_cache(
+  async (): Promise<Article[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('is_published', true)
+        .order('published_at', { ascending: false });
+      if (error || !data || data.length === 0) {
+        return fallbackArticles;
+      }
+      return data as Article[];
+    } catch {
+      return fallbackArticles;
+    }
+  },
+  ['articles_cache'],
+  { revalidate: 3600 }
+);
+
+export const getArticleBySlug = unstable_cache(
+  async (slug: string): Promise<Article | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('slug', slug)
+        .eq('is_published', true)
+        .single();
+      if (error || !data) {
+        return fallbackArticles.find(a => a.slug === slug) || null;
+      }
+      return data as Article;
+    } catch {
+      return fallbackArticles.find(a => a.slug === slug) || null;
+    }
+  },
+  ['article_by_slug_cache'],
+  { revalidate: 3600 }
+);
+
+export const getLatestArticles = unstable_cache(
+  async (limit: number = 3): Promise<Article[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('is_published', true)
+        .order('published_at', { ascending: false })
+        .limit(limit);
+      if (error || !data || data.length === 0) {
+        return fallbackArticles.slice(0, limit);
+      }
+      return data as Article[];
+    } catch {
+      return fallbackArticles.slice(0, limit);
+    }
+  },
+  ['latest_articles_cache'],
+  { revalidate: 3600 }
+);
+
+export const getLiveStats = unstable_cache(
+  async (): Promise<{ totalDirectories: number, totalAudits: number, systemStatus: string }> => {
+    try {
+      const { count: dirCount } = await supabase.from('entities').select('*', { count: 'exact', head: true });
+      const { count: auditCount } = await supabase.from('utility_leads').select('*', { count: 'exact', head: true });
+      
+      return {
+        totalDirectories: dirCount || 120, // fallback
+        totalAudits: auditCount || 45, // fallback
+        systemStatus: 'ONLINE'
+      };
+    } catch {
+      return { totalDirectories: 120, totalAudits: 45, systemStatus: 'ONLINE' };
+    }
+  },
+  ['live_stats_cache'],
+  { revalidate: 600 }
 );

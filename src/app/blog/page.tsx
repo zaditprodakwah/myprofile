@@ -1,80 +1,13 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { supabase } from "@/lib/supabase";
 import { Clock, ArrowRight, BookOpen } from "lucide-react";
 import Link from "next/link";
+import { getArticles } from "@/lib/data-server";
 
-export const revalidate = 60; // fast cache refresh for blog index
-
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  meta_description: string;
-  published_at: string;
-}
-
-// Fallback articles in case the DB is not seeded or articles table is empty
-const fallbackArticles: Article[] = [
-  {
-    id: '4',
-    title: 'Rekomendasi Riset Libraries & Resources UI/UX Premium Next.js',
-    slug: 'rekomendasi-riset-libraries-resources-ui-ux-premium-nextjs',
-    meta_description: 'Kumpulan rekomendasi libraries gerakan (Motion), komponen interaktif (Aceternity UI, Magic UI, HeroUI), rendering 3D (React Three Fiber), dan optimasi performa.',
-    published_at: '2026-06-18T00:00:00.000Z'
-  },
-  {
-    id: '1',
-    title: 'Cara Optimasi Web UMKM Indonesia di Era Digital',
-    slug: 'cara-optimasi-web-umkm-indonesia',
-    meta_description: 'Pelajari bagaimana taktik SEO teknikal sederhana dan kecepatan web Next.js dapat meningkatkan visibilitas mesin pencari dan penjualan lokal.',
-    published_at: '2026-06-17T12:00:00.000Z'
-  },
-  {
-    id: '2',
-    title: 'Mengapa AI Search Mengubah Cara Kita Menulis Konten',
-    slug: 'mengapa-ai-search-mengubah-cara-kita-menulis-konten',
-    meta_description: 'Analisis mendalam mengenai pergeseran optimasi kata kunci biasa (SEO) menuju Answer Engine Optimization (AEO) untuk ChatGPT dan Gemini.',
-    published_at: '2026-06-16T09:30:00.000Z'
-  },
-  {
-    id: '3',
-    title: 'Panduan Praktis SEO Teknikal Next.js untuk Developer',
-    slug: 'panduan-seo-teknikal-nextjs',
-    meta_description: 'Cara mengoptimalkan dynamic metadata, sitemap dinamis, dan ISR caching di Next.js 16 untuk menaikkan skor Core Web Vitals.',
-    published_at: '2026-06-15T15:00:00.000Z'
-  }
-];
-
+export const revalidate = 3600; // ISR cache 1 hour
 
 export default async function BlogIndexPage() {
-  let articles: Article[] = [];
-
-  try {
-    const { data } = await supabase
-      .from('articles')
-      .select('id, title, slug, meta_description, published_at')
-      .eq('is_published', true)
-      .order('published_at', { ascending: false });
-
-    if (data && data.length > 0) {
-      articles = data.map((d: unknown) => {
-        const item = d as Record<string, unknown> & { content?: string };
-        return {
-          id: String(item.id || ''),
-          title: String(item.title || ''),
-          slug: String(item.slug || ''),
-          meta_description: String(item.meta_description || item.content?.substring(0, 150) || '') + '...',
-          published_at: String(item.published_at || '')
-        };
-      });
-    } else {
-      articles = fallbackArticles;
-    }
-  } catch (err) {
-    console.error('Failed to load blog posts, falling back', err);
-    articles = fallbackArticles;
-  }
+  const articles = await getArticles();
 
   const blogSchema = {
     "@context": "https://schema.org",
