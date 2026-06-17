@@ -42,7 +42,7 @@ export async function groundedSearch(query: string) {
   }
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
-    tools: [{ googleSearch: {} } as any],
+    tools: [{ googleSearch: {} } as unknown as import('@google/generative-ai').Tool],
   });
 
   const result = await model.generateContent(query);

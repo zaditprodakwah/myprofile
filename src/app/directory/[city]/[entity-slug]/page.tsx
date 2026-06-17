@@ -3,8 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Check, Globe, Phone, MapPin, Shield, Star, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowLeft, Globe, Phone, MapPin, Shield, Star, RefreshCw } from 'lucide-react';
 
 interface Entity {
   id: string;
@@ -80,15 +79,15 @@ export default function EntityDetailPage() {
     return (
       <>
         <Header />
-        <main className="flex-1 bg-brand-slate pt-32 pb-24 px-6 flex flex-col items-center justify-center text-center">
+        <main className="flex-1 bg-alabaster pt-32 pb-24 px-6 flex flex-col items-center justify-center text-center">
           <Shield className="w-12 h-12 text-gold-accent mb-4" />
-          <h1 className="text-2xl font-heading font-bold text-text-inverse">Profil Tidak Tersedia</h1>
+          <h1 className="text-2xl font-heading-serif font-bold text-text-primary">Profil Tidak Tersedia</h1>
           <p className="text-text-muted mt-2 max-w-sm">
             Profil entitas ini tidak ditemukan atau belum terverifikasi untuk tayang publik.
           </p>
           <button 
             onClick={() => router.back()}
-            className="mt-6 flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-teal-glow hover:underline"
+            className="mt-6 flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-teal-accent hover:underline"
           >
             <ArrowLeft className="w-4 h-4" /> Kembali Ke Direktori
           </button>
@@ -101,43 +100,43 @@ export default function EntityDetailPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-brand-slate pt-28 pb-24 px-6 min-h-screen">
+      <main className="flex-1 bg-alabaster pt-28 pb-24 px-6 min-h-screen">
         <div className="max-w-4xl mx-auto space-y-8">
           
           {/* Back Button */}
           <button 
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-xs font-mono text-text-muted hover:text-text-inverse uppercase tracking-wider transition-colors"
+            className="flex items-center gap-2 text-xs font-mono text-text-muted hover:text-text-primary uppercase tracking-wider transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Kembali ke Direktori
           </button>
 
           {/* Main Info Box */}
-          <div className="bg-brand-mid/40 border border-brand-border rounded-2xl p-8 lg:p-12 space-y-8 relative overflow-hidden">
+          <div className="bg-white border border-brand-border rounded-2xl p-8 lg:p-12 space-y-8 relative overflow-hidden shadow-sm">
             {/* Ambient Background Glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-teal-accent/5 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-brand-border/40">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-brand-border">
               
               <div className="flex gap-4 items-start">
-                <div className="w-16 h-16 rounded-2xl bg-brand-slate border border-brand-border flex items-center justify-center text-text-inverse font-heading font-extrabold text-3xl flex-shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-brand-slate text-text-inverse flex items-center justify-center font-heading-sans font-extrabold text-3xl flex-shrink-0">
                   {entity.name.charAt(0)}
                 </div>
                 <div className="space-y-1">
-                  <span className="inline-block bg-teal-accent/10 border border-teal-accent/20 text-teal-glow font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 rounded">
+                  <span className="inline-block bg-teal-accent/10 border border-teal-accent/25 text-teal-accent font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 rounded">
                     Verified profile
                   </span>
-                  <h1 className="text-2xl md:text-3xl font-heading font-bold text-text-inverse">{entity.name}</h1>
+                  <h1 className="text-2xl md:text-3xl font-heading-sans font-bold text-text-primary">{entity.name}</h1>
                   <p className="text-xs font-mono text-gold-accent uppercase">{entity.category}</p>
                 </div>
               </div>
 
               {/* Trust Score badge */}
-              <div className="bg-brand-slate/60 border border-brand-border/60 rounded-xl px-4 py-3 text-center md:self-start flex flex-col items-center">
+              <div className="bg-offwhite border border-brand-border rounded-xl px-4 py-3 text-center md:self-start flex flex-col items-center">
                 <span className="text-[9px] font-mono text-text-muted uppercase tracking-wider">TRUST SCORE</span>
                 <div className="flex items-center gap-1.5 mt-1">
                   <Star className="w-4 h-4 text-gold-accent fill-gold-accent" />
-                  <span className="font-heading font-extrabold text-text-inverse">{entity.trustScore}</span>
+                  <span className="font-heading-sans font-extrabold text-text-primary">{entity.trustScore}</span>
                   <span className="text-xs text-text-muted">/ 5.0</span>
                 </div>
               </div>
@@ -146,19 +145,19 @@ export default function EntityDetailPage() {
 
             {/* Description & About */}
             <div className="space-y-4">
-              <h3 className="text-xs font-mono text-text-muted uppercase tracking-wider">// TENTANG ENTITAS</h3>
-              <p className="text-sm md:text-base text-text-inverse leading-relaxed">
+              <h3 className="text-xs font-mono text-text-muted uppercase tracking-wider">{'// TENTANG ENTITAS'}</h3>
+              <p className="text-sm md:text-base text-text-primary leading-relaxed font-sans">
                 {entity.description}
               </p>
             </div>
 
             {/* Contact & Location details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-brand-border/40 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-brand-border text-sm">
               <div className="flex gap-3 items-start">
                 <MapPin className="w-4 h-4 text-teal-accent mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Alamat Terdaftar</p>
-                  <p className="text-text-inverse mt-1 leading-relaxed">{entity.address}</p>
+                  <p className="text-text-primary mt-1 leading-relaxed">{entity.address}</p>
                 </div>
               </div>
 
@@ -166,7 +165,7 @@ export default function EntityDetailPage() {
                 <Phone className="w-4 h-4 text-teal-accent mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Kontak Resmi</p>
-                  <p className="text-text-inverse mt-1">{entity.phone || 'Tidak tersedia'}</p>
+                  <p className="text-text-primary mt-1">{entity.phone || 'Tidak tersedia'}</p>
                 </div>
               </div>
 
@@ -179,7 +178,7 @@ export default function EntityDetailPage() {
                       href={entity.website} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-teal-accent hover:underline mt-1 block"
+                      className="text-teal-accent hover:underline mt-1 block font-medium"
                     >
                       {entity.website.replace('https://', '')}
                     </a>
@@ -193,20 +192,20 @@ export default function EntityDetailPage() {
           </div>
 
           {/* Audit Logs & Change History */}
-          <div className="bg-brand-mid/40 border border-brand-border rounded-2xl p-8 space-y-6">
-            <h3 className="text-xs font-mono text-text-inverse uppercase tracking-widest flex items-center gap-2">
-              <RefreshCw className="w-4 h-4 text-gold-accent animate-spin-slow" /> Riwayat Verifikasi & Perubahan Profil
+          <div className="bg-white border border-brand-border rounded-2xl p-8 space-y-6 shadow-sm">
+            <h3 className="text-xs font-mono text-text-primary uppercase tracking-widest flex items-center gap-2">
+              <RefreshCw className="w-4 h-4 text-gold-accent" /> Riwayat Verifikasi & Perubahan Profil
             </h3>
             
-            <div className="relative border-l border-brand-border/60 pl-6 space-y-6 ml-2.5">
+            <div className="relative border-l border-brand-border pl-6 space-y-6 ml-2.5">
               {entity.history.map((hist, idx) => (
                 <div key={idx} className="relative">
                   {/* Timeline point */}
-                  <span className="absolute -left-[31px] top-1.5 w-2.5 h-2.5 rounded-full bg-teal-accent border border-brand-slate" />
+                  <span className="absolute -left-[31px] top-1.5 w-2.5 h-2.5 rounded-full bg-teal-accent border border-white" />
                   
                   <div className="space-y-1">
                     <span className="text-[10px] font-mono text-text-muted">{hist.date}</span>
-                    <p className="text-sm text-text-inverse">{hist.change}</p>
+                    <p className="text-sm text-text-primary">{hist.change}</p>
                   </div>
                 </div>
               ))}

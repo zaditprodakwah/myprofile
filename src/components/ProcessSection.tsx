@@ -47,7 +47,7 @@ export default function ProcessSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let ctx: any;
+    let ctx: { revert: () => void } | null = null;
 
     const initGsap = async () => {
       try {
@@ -92,10 +92,10 @@ export default function ProcessSection() {
   }, []);
 
   return (
-    <div ref={triggerRef} id="process" className="bg-brand-slate py-24 border-b border-brand-border/40 overflow-hidden">
+    <div ref={triggerRef} id="process" className="bg-offwhite py-24 border-b border-brand-border overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 mb-16 lg:mb-12">
-        <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">// FRAMEWORK KERJA</span>
-        <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-text-inverse mt-2">
+        <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// FRAMEWORK KERJA'}</span>
+        <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2">
           Metodologi Pertumbuhan Terpadu
         </h2>
         <p className="text-text-muted mt-4 max-w-xl">
@@ -104,21 +104,20 @@ export default function ProcessSection() {
       </div>
 
       {/* Steps Container */}
-      <div className="relative">
+      <div className="relative overflow-x-auto lg:overflow-x-visible scrollbar-hide" data-lenis-prevent style={{ scrollbarWidth: 'none' }}>
         <div 
           ref={scrollRef} 
-          className="flex gap-6 px-6 lg:px-24 w-max lg:flex-nowrap overflow-x-auto lg:overflow-x-visible pb-8 scrollbar-hide"
-          style={{ scrollbarWidth: 'none' }}
+          className="flex gap-6 px-6 lg:px-24 w-max lg:flex-nowrap pb-8"
         >
           {steps.map((step) => {
             const Icon = step.icon;
             return (
               <div 
                 key={step.no} 
-                className="w-[290px] md:w-[360px] bg-brand-mid/50 border border-brand-border rounded-2xl p-8 flex-shrink-0 relative overflow-hidden group hover:border-teal-glow transition-colors duration-300"
+                className="w-[290px] md:w-[360px] bg-white border border-brand-border rounded-2xl p-8 flex-shrink-0 relative overflow-hidden group hover:border-teal-accent hover:shadow-lg transition-all duration-300 shadow-sm"
               >
                 {/* Large Background Step Number */}
-                <span className="absolute -right-4 -top-8 text-8xl font-heading font-extrabold text-white/[0.02] select-none group-hover:text-teal-accent/[0.04] transition-colors duration-300">
+                <span className="absolute -right-4 -top-8 text-8xl font-heading-sans font-extrabold text-brand-slate/[0.03] select-none group-hover:text-teal-accent/[0.05] transition-colors duration-300">
                   {step.no}
                 </span>
 
@@ -129,7 +128,7 @@ export default function ProcessSection() {
                     </div>
                     
                     <p className="text-xs font-mono text-gold-accent tracking-wider uppercase mb-2">Langkah {step.no}</p>
-                    <h3 className="text-xl font-heading font-bold text-text-inverse">{step.title}</h3>
+                    <h3 className="text-xl font-heading-sans font-bold text-text-primary">{step.title}</h3>
                   </div>
 
                   <p className="text-sm text-text-muted leading-relaxed">

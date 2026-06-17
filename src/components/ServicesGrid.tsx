@@ -1,101 +1,111 @@
 'use client';
 
-import { Globe, BarChart3, Search, PenTool, FileText } from 'lucide-react';
+import { useState } from 'react';
+import * as LucideIcons from 'lucide-react';
+import { Service } from '@/lib/types';
+import { motion } from 'framer-motion';
 
-const services = [
-  {
-    title: 'Ecosystem & Web Management',
-    desc: 'Pembuatan & pengelolaan web performa tinggi menggunakan Next.js App Router dan database dinamis (Supabase). Solusi digital mandiri yang cepat, responsif, dan siap tumbuh.',
-    icon: Globe,
-    techs: ['Next.js 16', 'TypeScript', 'Supabase', 'ISR Caching'],
-    colSpan: 'lg:col-span-8',
-    color: 'from-teal-900/30 to-brand-slate',
-  },
-  {
-    title: 'Analytics & Data Intelligence',
-    desc: 'Tracking presisi perilaku pengguna, audit kebocoran konversi, visualisasi visual data analitik, dan A/B testing sistematis untuk keputusan pemasaran berbasis bukti.',
-    icon: BarChart3,
-    techs: ['Google Analytics 4', 'Search Console', 'GTM', 'Heatmaps'],
-    colSpan: 'lg:col-span-4',
-    color: 'from-brand-border/30 to-brand-slate',
-  },
-  {
-    title: 'SEO & AEO/GEO Optimization',
-    desc: 'Memastikan bisnis Anda ditemukan tidak hanya oleh pencarian konvensional (Google SERP), tetapi juga dioptimalkan untuk mesin AI generatif (Gemini, ChatGPT, Claude).',
-    icon: Search,
-    techs: ['Technical SEO', 'Entity Schema', 'GEO Optimization', 'pSEO'],
-    colSpan: 'lg:col-span-4',
-    color: 'from-brand-border/30 to-brand-slate',
-  },
-  {
-    title: 'Conversion Copywriting',
-    desc: 'Kata-kata yang memicu tindakan. Penulisan naskah penjualan untuk landing page, materi kampanye, dan narasi brand yang didasarkan pada psikologi konsumen terukur.',
-    icon: PenTool,
-    techs: ['Direct Response Copy', 'Landing Page Wireframe', 'PAS Framework'],
-    colSpan: 'lg:col-span-8',
-    color: 'from-gold-accent/10 to-brand-slate',
-  },
-  {
-    title: 'Executive Documentation',
-    desc: 'Penyusunan dokumen bisnis tingkat tinggi yang memenangkan pendanaan dan kemitraan. Desain pitch deck investor profesional, proposal bisnis institusional, dan brief kolaborasi KOL strategis.',
-    icon: FileText,
-    techs: ['Pitch Deck Layout', 'Executive Brief', 'KOL Brief Design', 'Math Data Viz'],
-    colSpan: 'lg:col-span-12',
-    color: 'from-teal-900/20 to-brand-slate',
-  },
-];
+interface ServicesGridProps {
+  services: Service[];
+}
 
-export default function ServicesGrid() {
+// Spotlight Card component implementing Taste-Skill Bento 2.0 aesthetics
+function SpotlightCard({ 
+  svc, 
+  index 
+}: { 
+  svc: Service; 
+  index: number; 
+}) {
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { currentTarget, clientX, clientY } = e;
+    const { left, top } = currentTarget.getBoundingClientRect();
+    setCoords({
+      x: clientX - left,
+      y: clientY - top
+    });
+  };
+
+  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[svc.icon_name] || LucideIcons.Globe;
+  
+  // Bento col-spans (Layout Variance 8)
+  const colSpan = svc.size === 'large' ? 'lg:col-span-8' : svc.size === 'full' ? 'lg:col-span-12' : 'lg:col-span-4';
+
   return (
-    <section id="services" className="bg-brand-slate py-24 border-b border-brand-border/40">
+    <div
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`relative bg-white border border-brand-border rounded-[2rem] p-8 flex flex-col justify-between gap-6 transition-all duration-500 hover:border-teal-accent/40 shadow-[0_12px_24px_-10px_rgba(15,23,42,0.03)] overflow-hidden group ${colSpan}`}
+    >
+      {/* Spotlight Background Glow */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: `radial-gradient(350px circle at ${coords.x}px ${coords.y}px, rgba(13, 148, 136, 0.07), transparent 80%)`
+        }}
+      />
+
+      {/* Subtle border spotlight */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none border border-teal-accent/30 rounded-[2rem]"
+        style={{
+          clipPath: `circle(80px at ${coords.x}px ${coords.y}px)`
+        }}
+      />
+
+      <div className="relative z-10 space-y-4">
+        {/* Animated Icon Container */}
+        <motion.div 
+          whileHover={{ scale: 1.05 }}
+          className="w-10 h-10 rounded-xl bg-teal-accent/5 border border-teal-accent/10 flex items-center justify-center text-teal-accent group-hover:bg-teal-accent/10 group-hover:border-teal-accent/20 transition-colors duration-300"
+        >
+          <Icon className="w-5 h-5" />
+        </motion.div>
+        
+        <h3 className="text-lg font-heading-sans font-bold text-text-primary tracking-tight">{svc.title}</h3>
+        <p className="text-xs text-text-muted leading-relaxed max-w-2xl">{svc.description}</p>
+      </div>
+
+      {/* Tech tags footer */}
+      <div className="relative z-10 flex flex-wrap gap-2 pt-4 border-t border-brand-border/60">
+        {svc.tags && svc.tags.map((tech) => (
+          <span
+            key={tech}
+            className="bg-offwhite border border-brand-border text-text-muted font-mono text-[9px] tracking-wider uppercase px-2.5 py-1 rounded-md"
+          >
+            {tech}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function ServicesGrid({ services }: ServicesGridProps) {
+  return (
+    <section id="services" className="bg-[#f9fafb] py-24 border-b border-brand-border">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Header */}
         <div className="mb-16">
-          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">// PILAR KEAHLIAN</span>
-          <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-text-inverse mt-2">
+          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// PILAR KEAHLIAN'}</span>
+          <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2 leading-tight">
             Layanan & Solusi Terintegrasi
           </h2>
-          <p className="text-text-muted mt-4 max-w-xl">
+          <p className="text-text-muted mt-4 max-w-xl text-sm leading-relaxed">
             Arsitektur pertumbuhan holistik yang menggabungkan rekayasa kode, riset analitik, optimasi mesin pencari, dan seni narasi konversi.
           </p>
         </div>
 
-        {/* Bento Grid */}
+        {/* Bento Grid (Variance 8 layout) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {services.map((svc, i) => {
-            const Icon = svc.icon;
-            return (
-              <div
-                key={i}
-                className={`bg-brand-mid/30 border border-brand-border rounded-2xl p-8 flex flex-col justify-between gap-6 transition-all duration-300 hover:border-teal-glow hover:-translate-y-1 relative overflow-hidden group ${svc.colSpan}`}
-              >
-                {/* Accent Gradient Glow */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${svc.color} opacity-40 pointer-events-none`} />
-
-                <div className="relative z-10 space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent">
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  
-                  <h3 className="text-xl font-heading font-bold text-text-inverse">{svc.title}</h3>
-                  <p className="text-sm text-text-muted leading-relaxed max-w-2xl">{svc.desc}</p>
-                </div>
-
-                {/* Tech tags */}
-                <div className="relative z-10 flex flex-wrap gap-2 pt-4 border-t border-brand-border/30">
-                  {svc.techs.map((tech) => (
-                    <span
-                      key={tech}
-                      className="bg-brand-slate border border-brand-border/60 text-text-muted font-mono text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+          {services && services.map((svc, i) => (
+            <SpotlightCard key={svc.id || i} svc={svc} index={i} />
+          ))}
         </div>
 
       </div>
