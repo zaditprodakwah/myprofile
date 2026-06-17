@@ -4,7 +4,7 @@ import { useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import { Article } from '@/lib/types';
-import { ArrowRight, Clock, ChevronRight } from 'lucide-react';
+import { ArrowRight, Clock, ChevronRight, BookOpen } from 'lucide-react';
 
 interface LatestInsightsProps {
   articles: Article[];
@@ -25,6 +25,10 @@ function ArticleCard({ article, index }: { article: Article; index: number }) {
   const dateStr = article.published_at 
     ? new Date(article.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
     : 'Baru Saja';
+
+  // Estimate reading time (average adult reads 200-250 words per minute)
+  const wordCount = article.content ? article.content.replace(/<[^>]*>?/gm, '').split(/\s+/).length : 0;
+  const readingTime = Math.max(1, Math.ceil(wordCount / 225));
 
   return (
     <motion.div
@@ -49,9 +53,15 @@ function ArticleCard({ article, index }: { article: Article; index: number }) {
 
       <div className="relative z-10 space-y-4 flex-1">
         <div className="flex justify-between items-start">
-          <div className="flex items-center gap-1.5 text-[9px] font-mono text-text-muted uppercase tracking-wider">
-            <Clock className="w-3 h-3 text-teal-accent" />
-            {dateStr}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 text-[9px] font-mono text-text-muted uppercase tracking-wider">
+              <Clock className="w-3 h-3 text-teal-accent" />
+              {dateStr}
+            </div>
+            <div className="flex items-center gap-1.5 text-[9px] font-mono text-text-muted uppercase tracking-wider">
+              <BookOpen className="w-3 h-3 text-teal-accent" />
+              {readingTime} min read
+            </div>
           </div>
           <span className="bg-brand-slate text-alabaster text-[9px] font-mono tracking-wider uppercase px-2 py-0.5 rounded-full">
             Blog
@@ -59,7 +69,7 @@ function ArticleCard({ article, index }: { article: Article; index: number }) {
         </div>
 
         <div>
-          <h3 className="text-lg font-heading-serif font-bold text-text-primary tracking-tight leading-snug group-hover:text-teal-accent transition-colors duration-300 line-clamp-3">
+          <h3 className="text-lg font-heading-sans font-bold text-text-primary tracking-tight leading-snug group-hover:text-teal-accent transition-colors duration-300 line-clamp-3">
             {article.title}
           </h3>
           <p className="text-sm text-text-muted leading-relaxed mt-2 line-clamp-3">
@@ -98,7 +108,7 @@ export default function LatestInsights({ articles }: LatestInsightsProps) {
             <span className="text-xs font-mono tracking-widest text-teal-accent uppercase">
               Wawasan & Riset Terbaru
             </span>
-            <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2 leading-tight">
+            <h2 className="text-3xl md:text-4xl font-heading-sans font-bold text-text-primary mt-2 leading-tight">
               Latest <span className="gradient-text-teal">Insights</span>
             </h2>
             <p className="text-text-muted mt-3 max-w-xl text-sm leading-relaxed">
