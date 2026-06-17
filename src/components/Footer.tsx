@@ -154,7 +154,6 @@ export default function Footer() {
                 { href: '/directory', label: 'Direktori Bisnis Kredibel' },
                 { href: '/utility/audit-engine', label: 'Audit Kecepatan Website' },
                 { href: '/blog', label: 'Blog & Artikel Edukasi' },
-                { href: '/admin/dashboard', label: 'Portal Manajemen Konten' },
                 { href: 'https://kontak.link/muhzadit', label: 'Kontak.Link', external: true },
               ].map(({ href, label, external }) => (
                 <li key={href}>
@@ -191,7 +190,7 @@ export default function Footer() {
             <Link href="/llms.txt" className="hover:text-gold-accent transition-colors uppercase tracking-wider hover-underline">
               Dokumentasi AI
             </Link>
-            <Link href="#" className="hover:text-teal-accent transition-colors uppercase tracking-wider hover-underline">
+            <Link href="/privacy-policy" className="hover:text-teal-accent transition-colors uppercase tracking-wider hover-underline">
               Privacy Policy
             </Link>
             <a

@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/rss",
+      "schedule": "0 */4 * * *"
+    },
+    {
+      "path": "/api/cron/worker-db",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

@@ -2,17 +2,20 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { routeLLM } from "@/lib/llm-router";
 import { supabase } from "@/lib/supabase";
-import { ChevronRight, ArrowLeft, Send, Clock, Zap } from 'lucide-react';
+import { ChevronRight, ArrowLeft, Send, Clock, Zap, Home, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import SocialShare from '@/components/SocialShare';
+import ArticleInteractiveWidgets from '@/components/ArticleInteractiveWidgets';
 
 interface Article {
+  id?: string;
   title: string;
   slug: string;
   original_url: string;
   content: string;
   semantic_keywords: string;
   faq_items: Array<{ question: string; answer: string }>;
+  published_at?: string;
 }
 
 // Generate human-friendly title from slug
@@ -28,6 +31,7 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
   const { slug } = params;
 
   let article: Article | null = null;
+  let relatedPosts: any[] = [];
 
   try {
     // 1. Check if article exists in Supabase
@@ -37,94 +41,35 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
       .eq('slug', slug)
       .single();
 
-    if (slug === 'rekomendasi-riset-libraries-resources-ui-ux-premium-nextjs') {
+    if (data) {
       article = {
-        title: 'Rekomendasi Riset Libraries & Resources UI/UX Premium Next.js',
-        slug: 'rekomendasi-riset-libraries-resources-ui-ux-premium-nextjs',
-        original_url: '',
-        content: `
-          <p><strong>Rekomendasi riset libraries, repo, dan resources terbaik</strong> untuk membangun UI/UX frontend & Design System di proyek React/Next.js/TypeScript yang mewah, premium, unik, 3D/animatif, interaktif, responsif, high-performance (khususnya mobile), dan luxurious di desktop.</p>
-
-          <h2>1. Core Animation & Motion Library (Wajib)</h2>
-          <p><strong>Motion (sebelumnya Framer Motion)</strong> adalah standar de facto untuk animasi smooth, gesture, scroll-driven, layout animations, dan micro-interactions. Ringan, performa tinggi, dan sangat kompatibel dengan Next.js (termasuk dukungan React 19). Gunakan untuk membuat feel "premium" dengan parallax, hover effects, dan transitions mewah.</p>
-          <ul>
-            <li><strong>Docs:</strong> <a href="https://motion.dev" target="_blank" rel="noopener noreferrer">motion.dev</a></li>
-            <li><strong>Contoh Premium:</strong> Banyak situs pemenang Awwwards menggunakan library ini sebagai fondasi interaksinya.</li>
-          </ul>
-
-          <h2>2. Animated & Premium Component Libraries (Copy-Paste Style)</h2>
-          <p>Untuk mempercepat visualisasi prototipe tanpa membuang waktu mendesain dari nol, kombinasi library berikut sangat disarankan:</p>
-          <ul>
-            <li><strong>Aceternity UI</strong> (<a href="https://ui.aceternity.com" target="_blank" rel="noopener noreferrer">ui.aceternity.com</a>): 200+ komponen cantik dengan Tailwind + Framer Motion. Sangat unik, animatif, cocok untuk landing pages mewah/SaaS. Banyak efek glow, 3D-like cards, parallax, dan interactive elements. Dipercaya oleh ribuan developer.</li>
-            <li><strong>Magic UI</strong> (<a href="https://magicui.design" target="_blank" rel="noopener noreferrer">magicui.design</a>): 150++ animated components & effects (React, TS, Tailwind, Motion). Companion sempurna untuk <strong>shadcn/ui</strong>. Fokus pada landing pages premium dengan particle effects, text animations, dll. Open-source dan sangat populer.</li>
-            <li><strong>HeroUI (sebelumnya NextUI)</strong> (<a href="https://heroui.com" target="_blank" rel="noopener noreferrer">heroui.com</a>): Beautiful by default, dibangun di atas React Aria + Tailwind. Animasi sangat smooth, mendukung dark mode, dan memiliki aksesibilitas tinggi secara default.</li>
-          </ul>
-          <p><strong>shadcn/ui + extensions (basis terbaik untuk custom premium):</strong></p>
-          <ul>
-            <li>Mulai dengan <strong>shadcn/ui</strong> (unstyled primitives dari Radix + Tailwind, full control & TypeScript native).</li>
-            <li>Tambahkan Aceternity/Magic UI, atau paid blocks seperti Shadcnblocks.com, Shadcn Studio, dll. Banyak repo GitHub dengan shadcn-fintech, sci-fi themes, dan animated bento grids.</li>
-          </ul>
-
-          <h2>3. 3D & Immersive Experiences</h2>
-          <ul>
-            <li><strong>React Three Fiber (R3F) + @react-three/drei:</strong> Renderer Three.js untuk React. Declarative, mudah diintegrasikan dengan state React. Sangat cocok untuk model 3D, interactive scenes, shaders, product viewers, atau background mewah.
-              <ul>
-                <li>Kombinasikan dengan Framer Motion untuk hybrid 2D/3D.</li>
-                <li>Contoh & Tutorial: <a href="https://docs.pmnd.rs/react-three-fiber/getting-started/introduction" target="_blank" rel="noopener noreferrer">docs.pmnd.rs</a>, saluran YouTube Wawa Sensei, atau Anderson Mancini untuk landing page 3D.</li>
-                <li>Performa mobile: Optimasi dengan suspense, LOD (Level of Detail), dan matikan efek berat di layar kecil.</li>
-              </ul>
-            </li>
-            <li><strong>Lamina & drei helpers:</strong> Untuk advanced materials & effects shading.</li>
-          </ul>
-
-          <h2>4. Design System & Tailwind-First Premium</h2>
-          <ul>
-            <li><strong>Tailwind CSS + shadcn/ui:</strong> Sebagai fondasi paling fleksibel untuk luxury custom look.</li>
-            <li><strong>Untitled UI, AlignUI, Tailwind Plus (Tailwind UI):</strong> Koleksi components profesional, responsive, dan customizable.</li>
-            <li><strong>Radix UI + React Aria:</strong> Primitives headless untuk build design system sendiri dengan aksesibilitas & interaktivitas premium.</li>
-          </ul>
-
-          <h2>5. Resources & Repos Lainnya</h2>
-          <ul>
-            <li><strong>Awwwards + Motion websites:</strong> Cari inspirasi situs dengan Framer Motion/R3F untuk mempelajari luxury feel.</li>
-            <li><strong>GitHub Awesome lists:</strong> <code>brillout/awesome-react-components</code> dan <code>birobirobiro/awesome-shadcn-ui</code>.</li>
-            <li><strong>Figma kits:</strong> Cocokkan Figma design dengan shadcn (shadcn Studio, dll.) untuk workflow design-to-code yang smooth.</li>
-            <li><strong>Performance Tips:</strong>
-              <ul>
-                <li>Gunakan Next.js App Router + Server Components.</li>
-                <li>Lazy load 3D/animasi berat menggunakan dynamic imports.</li>
-                <li>Optimalkan gambar menggunakan komponen Next Image dan lakukan bundle analysis secara berkala.</li>
-                <li>Lakukan pengujian intensif di mobile: R3F bisa sangat berat, prioritaskan fallback atau reduced effects.</li>
-              </ul>
-            </li>
-          </ul>
-
-          <h2>Kesimpulan: Stack Rekomendasi Utama untuk "Mewah & Unik"</h2>
-          <ol>
-            <li>Next.js App Router + TypeScript</li>
-            <li>Tailwind CSS v4</li>
-            <li>shadcn/ui + Aceternity/Magic UI</li>
-            <li>Motion untuk animasi</li>
-            <li>React Three Fiber untuk 3D elements secara selektif</li>
-            <li>Custom Design Tokens + Dark Mode</li>
-          </ol>
-        `,
-        semantic_keywords: 'ui/ux, nextjs, react, framer motion, react three fiber, design system, premium',
-        faq_items: [
-          { question: 'Apa library animasi terbaik untuk Next.js?', answer: 'Motion (sebelumnya Framer Motion) adalah standar utama untuk animasi smooth dan gesture di Next.js.' },
-          { question: 'Bagaimana cara menambahkan interaksi 3D premium di website?', answer: 'Gunakan React Three Fiber (R3F) yang dikombinasikan dengan Framer Motion untuk perpaduan elemen 2D dan 3D yang interaktif.' },
-          { question: 'Apakah React Three Fiber berat di HP/mobile?', answer: 'Bisa cukup berat. Solusinya adalah menggunakan lazy load, level of detail (LOD) yang dinamis, atau menyembunyikan efek 3D berat pada layar kecil.' }
-        ]
-      };
-    } else if (data) {
-      article = {
+        id: data.id,
         title: data.title,
         slug: data.slug,
         original_url: data.original_url || '',
         content: data.content,
         semantic_keywords: Array.isArray(data.semantic_keywords) ? data.semantic_keywords.join(', ') : data.semantic_keywords || '',
         faq_items: Array.isArray(data.faq_items) ? data.faq_items : [],
+        published_at: data.published_at
       };
+
+      // Fetch related posts based on semantic keywords or just latest posts if no keywords match
+      const kws = Array.isArray(data.semantic_keywords) ? data.semantic_keywords : [];
+      let query = supabase.from('articles').select('id, title, slug').neq('id', data.id).limit(4);
+      
+      if (kws.length > 0) {
+        query = query.contains('semantic_keywords', [kws[0]]);
+      }
+      
+      const { data: relatedData } = await query;
+      if (relatedData && relatedData.length > 0) {
+        relatedPosts = relatedData;
+      } else {
+        // Fallback to latest
+        const { data: latestData } = await supabase.from('articles').select('id, title, slug').neq('id', data.id).order('published_at', { ascending: false }).limit(4);
+        relatedPosts = latestData || [];
+      }
+
     } else {
       // 2. AGC Trigger: Generate article dynamically using Multi-LLM Routing
       const title = getTitleFromSlug(slug);
@@ -169,21 +114,25 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
         published_at: new Date().toISOString()
       };
 
-      const { error: insertError } = await supabase
+      const { data: insertedData, error: insertError } = await supabase
         .from('articles')
-        .insert(newArticle);
+        .insert(newArticle)
+        .select('id')
+        .single();
 
       if (insertError) {
         console.warn('Could not save AGC article to Supabase database', insertError);
       }
 
       article = {
+        id: insertedData?.id,
         title: newArticle.title,
         slug: newArticle.slug,
         original_url: '',
         content: newArticle.content,
         semantic_keywords: newArticle.semantic_keywords.join(', '),
-        faq_items: newArticle.faq_items
+        faq_items: newArticle.faq_items,
+        published_at: newArticle.published_at
       };
     }
   } catch (err) {
@@ -237,17 +186,21 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
           "@type": "Organization",
           "name": "Zadit Growth Engine"
         },
-        "datePublished": new Date().toISOString()
+        "datePublished": article.published_at || new Date().toISOString()
       },
-      {
+      ...(faqList.length > 0 ? [{
         "@type": "FAQPage",
         "mainEntity": faqList
-      }
+      }] : [])
     ]
   };
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://zadit.dev';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
   const fullUrl = `${siteUrl}/blog/${article.slug}`;
+
+  // Estimate Read Time
+  const wordCount = article.content.replace(/<[^>]*>?/gm, '').split(/\s+/).length;
+  const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
   return (
     <>
@@ -265,29 +218,52 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
           
           {/* Main Article Content (Left - 8 columns) */}
           <article className="lg:col-span-8 space-y-6">
-            <Link 
-              href="/blog" 
-              className="inline-flex items-center gap-2 text-xs font-mono text-text-muted hover:text-text-primary uppercase tracking-wider transition-colors mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" /> Kembali Ke Blog
-            </Link>
+            
+            {/* Breadcrumb */}
+            <nav className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-text-muted mb-6">
+              <Link href="/" className="hover:text-teal-accent flex items-center gap-1"><Home className="w-3 h-3" /> Beranda</Link>
+              <ChevronRight className="w-3 h-3" />
+              <Link href="/blog" className="hover:text-teal-accent">Blog</Link>
+              <ChevronRight className="w-3 h-3" />
+              <span className="text-text-primary truncate max-w-[200px]">{article.title}</span>
+            </nav>
 
             <div className="space-y-4">
               <span className="text-xs font-mono text-gold-accent tracking-widest uppercase">Wawasan Pertumbuhan</span>
               <h1 className="text-3xl md:text-5xl font-heading-serif font-bold text-text-primary leading-tight">
                 {article.title}
               </h1>
-              <p className="inline-flex items-center gap-1.5 text-xs font-mono text-text-muted">
-                Penulis: Muhammad Khoiruzzadittaqwa | <Clock className="w-3.5 h-3.5 text-teal-accent" /> 4 Menit Baca
-              </p>
+              <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-text-muted">
+                <span>Penulis: Muhammad Khoiruzzadittaqwa</span>
+                <span className="inline-flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-teal-accent" /> {readTime} Menit Baca</span>
+                {article.published_at && (
+                  <span>{new Date(article.published_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                )}
+              </div>
             </div>
+
+            {/* Interactive Widgets: Like, View, TTS, Bookmark */}
+            <ArticleInteractiveWidgets articleId={article.id || article.slug} />
 
             {/* Rich text container with Definition-Lead styling */}
             <div 
-              className="prose max-w-none prose-sm md:prose-base text-text-muted leading-relaxed space-y-6 pt-6 border-t border-brand-border prose-headings:text-text-primary prose-headings:font-heading-sans prose-a:text-teal-accent
+              id="article-content"
+              className="prose max-w-none prose-sm md:prose-base text-text-muted leading-relaxed space-y-6 pt-2 prose-headings:text-text-primary prose-headings:font-heading-sans prose-a:text-teal-accent
               [&>p:first-of-type]:text-lg [&>p:first-of-type]:md:text-xl [&>p:first-of-type]:text-text-primary [&>p:first-of-type]:font-medium [&>p:first-of-type]:leading-relaxed"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
+
+            {/* Source Reference Link if ingested from external feed */}
+            {article.original_url && (
+              <div className="mt-8 p-4 bg-offwhite border border-brand-border rounded-xl">
+                <p className="text-sm text-text-muted font-sans flex items-center gap-2">
+                  <span className="font-bold">Sumber Referensi:</span> 
+                  <a href={article.original_url} target="_blank" rel="nofollow noopener noreferrer" className="text-teal-accent hover:underline flex items-center gap-1">
+                    Baca Artikel Asli <ExternalLink className="w-3 h-3" />
+                  </a>
+                </p>
+              </div>
+            )}
 
             {/* Bottom Share */}
             <div className="mt-16 pt-8 border-t border-brand-border">
@@ -352,24 +328,21 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
             </div>
 
             <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-sm">
-              <h4 className="text-xs font-mono text-text-primary uppercase tracking-wider mb-4">ARTIKEL LAIN</h4>
-              <ul className="space-y-3 text-xs">
-                <li>
-                  <Link href="/blog/cara-optimasi-web-umkm-indonesia" className="text-text-muted hover:text-teal-accent flex items-center gap-1.5 transition-colors">
-                    <ChevronRight className="w-3.5 h-3.5 text-teal-accent" /> Cara Optimasi Web UMKM Indonesia
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog/mengapa-ai-search-mengubah-cara-kita-menulis-konten" className="text-text-muted hover:text-teal-accent flex items-center gap-1.5 transition-colors">
-                    <ChevronRight className="w-3.5 h-3.5 text-teal-accent" /> Mengapa AI Search Mengubah Cara Menulis Konten
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog/panduan-seo-teknikal-nextjs" className="text-text-muted hover:text-teal-accent flex items-center gap-1.5 transition-colors">
-                    <ChevronRight className="w-3.5 h-3.5 text-teal-accent" /> Panduan SEO Teknikal Next.js 16
-                  </Link>
-                </li>
-              </ul>
+              <h4 className="text-xs font-mono text-text-primary uppercase tracking-wider mb-4">ARTIKEL TERKAIT</h4>
+              {relatedPosts.length > 0 ? (
+                <ul className="space-y-3 text-xs">
+                  {relatedPosts.map((rp) => (
+                    <li key={rp.id}>
+                      <Link href={`/blog/${rp.slug}`} className="text-text-muted hover:text-teal-accent flex items-start gap-2 transition-colors">
+                        <ChevronRight className="w-3.5 h-3.5 text-teal-accent shrink-0 mt-0.5" /> 
+                        <span className="leading-snug">{rp.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-xs text-text-muted">Belum ada artikel terkait.</p>
+              )}
             </div>
           </aside>
 

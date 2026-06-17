@@ -56,7 +56,9 @@ export default function AdminDashboardPage() {
     available_status: 'AVAILABLE',
     ai_prompt: '',
     site_title: '',
-    analytics_id: ''
+    analytics_id: '',
+    rss_feeds: '[]',
+    link_hijacks: '[]'
   });
 
   // Dynamic Forms State
@@ -614,13 +616,22 @@ export default function AdminDashboardPage() {
       const keys = Object.keys(sysConfigs) as Array<keyof typeof sysConfigs>;
       for (const k of keys) {
         let cleanVal: string = sysConfigs[k];
+        let valToSave: any = cleanVal;
         if (k === 'available_status' || k === 'whatsapp_number' || k === 'site_title' || k === 'analytics_id') {
           // Keep as string value inside json
-          cleanVal = cleanVal.trim();
+          valToSave = cleanVal.trim();
+        } else {
+          try {
+            if (cleanVal.startsWith('[') || cleanVal.startsWith('{')) {
+              valToSave = JSON.parse(cleanVal);
+            }
+          } catch(e) {}
         }
+        
+        // Let supabase-js serialize valToSave natively (it handles primitive strings and objects appropriately for JSONB)
         const { error } = await supabase.from('system_configs').upsert({
           key: k,
-          value: cleanVal
+          value: valToSave
         }, { onConflict: 'key' });
         
         if (error) throw error;
@@ -2075,11 +2086,35 @@ export default function AdminDashboardPage() {
                       <div className="col-span-1 md:col-span-2">
                         <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Sistem AI Prompt default (AGC)</label>
                         <textarea
-                          rows={6}
+                          rows={4}
                           required
                           value={sysConfigs.ai_prompt}
                           onChange={(e) => setSysConfigs({ ...sysConfigs, ai_prompt: e.target.value })}
                           className="w-full bg-offwhite border border-brand-border rounded-xl p-4 font-sans text-sm text-text-primary focus:ring-2 focus:ring-teal-accent focus:border-transparent outline-none leading-relaxed"
+                        />
+                      </div>
+                      
+                      <div className="col-span-1 md:col-span-2">
+                        <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Multi RSS Feeds (JSON Array)</label>
+                        <textarea
+                          rows={4}
+                          required
+                          value={sysConfigs.rss_feeds}
+                          onChange={(e) => setSysConfigs({ ...sysConfigs, rss_feeds: e.target.value })}
+                          placeholder='[{"id":"1","name":"Tech","url":"https://.../rss","is_active":true}]'
+                          className="w-full bg-offwhite border border-brand-border rounded-xl p-4 font-mono text-xs text-text-primary focus:ring-2 focus:ring-teal-accent focus:border-transparent outline-none leading-relaxed"
+                        />
+                      </div>
+
+                      <div className="col-span-1 md:col-span-2">
+                        <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Link Hijacking / Affiliate Keywords (JSON Array)</label>
+                        <textarea
+                          rows={4}
+                          required
+                          value={sysConfigs.link_hijacks}
+                          onChange={(e) => setSysConfigs({ ...sysConfigs, link_hijacks: e.target.value })}
+                          placeholder='[{"keyword":"Hosting","url":"https://...","is_dofollow":false}]'
+                          className="w-full bg-offwhite border border-brand-border rounded-xl p-4 font-mono text-xs text-text-primary focus:ring-2 focus:ring-teal-accent focus:border-transparent outline-none leading-relaxed"
                         />
                       </div>
                     </div>

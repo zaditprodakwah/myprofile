@@ -1,29 +1,24 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { routeLLM } from '@/lib/llm-router';
 
-// POST /api/agc
-// Triggered by Admin dashboard or Cron to fetch external RSS and rewrite articles
+// No-AI Pure XML Parser
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const { secret, feedUrl = 'https://news.google.com/rss/search?q=seo+growth+marketing+indonesia&hl=id&gl=ID&ceid=ID:id' } = body;
 
-    // Validate admin key
     const adminKey = process.env.ADMIN_SECRET_KEY || 'zadit_growth_secret_2026';
     if (secret !== adminKey) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    // Fetch the RSS feed
     const res = await fetch(feedUrl, { cache: 'no-store' });
     if (!res.ok) {
       return new NextResponse('Failed to fetch RSS feed', { status: 500 });
     }
     const xmlText = await res.text();
 
-    // Parse items using regex to avoid external packages
-    const itemsRegex = /<item>([\s\S]*?)<\/item>/g;
+    const itemsRegex = /<item>([\s\S]*?)<\/item>/gi;
     const matchedItems = xmlText.match(itemsRegex) || [];
 
     if (matchedItems.length === 0) {
@@ -33,24 +28,23 @@ export async function POST(request: Request) {
     let createdCount = 0;
     let skippedCount = 0;
 
-    // Process top 3 items to prevent Vercel Timeout (Hobby limit is 10s)
-    const itemsToProcess = matchedItems.slice(0, 3);
+    // Process up to 5 items directly since it's very fast without AI
+    const itemsToProcess = matchedItems.slice(0, 5);
 
     for (const itemXml of itemsToProcess) {
-      // Extract title
-      const titleMatch = itemXml.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/) || itemXml.match(/<title>([\s\S]*?)<\/title>/);
+      // 1. Title
+      const titleMatch = itemXml.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i) || itemXml.match(/<title>([\s\S]*?)<\/title>/i);
       let title = titleMatch ? titleMatch[1].trim() : '';
-      
-      // Extract original URL
-      const linkMatch = itemXml.match(/<link>([\s\S]*?)<\/link>/);
+
+      // 2. Original URL
+      const linkMatch = itemXml.match(/<link>([\s\S]*?)<\/link>/i);
       const originalUrl = linkMatch ? linkMatch[1].trim() : '';
 
-      // Clean up google news tracking redirects if present
-      title = title.replace(/\s+-\s+.*$/, ''); // remove source name suffix e.g., " - Kompas.com"
+      // Clean up google news suffix
+      title = title.replace(/\s+-\s+.*$/, '');
 
       if (!title || !originalUrl) continue;
 
-      // Generate clean slug from title
       const slug = title
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
@@ -58,7 +52,7 @@ export async function POST(request: Request) {
         .replace(/-+/g, '-')
         .trim();
 
-      // Check if already parsed
+      // Check if exists
       const { data: existing } = await supabase
         .from('articles')
         .select('id')
@@ -70,48 +64,56 @@ export async function POST(request: Request) {
         continue;
       }
 
-      // Dynamic AI Rewrite using our LLM router (Gemini Flash primary)
-      const systemInstruction = `Tulis artikel panduan SEO & growth marketing yang komprehensif dalam Bahasa Indonesia yang informatif dan formal-conversational. 
-      Panjang 600-800 kata. 
-      Gunakan struktur Definition-Lead pada 200 kata pertama (contoh: "X adalah Y yang berfungsi untuk Z..."). 
-      Bagi artikel menjadi 3 subjudul H2.
-      Gunakan format HTML yang bersih (menggunakan <p>, <h2>, <ul>, <ol>).`;
-
-      const promptText = `Tulis artikel SEO komprehensif berdasarkan berita/topik: "${title}". Hubungkan topik ini dengan strategi digital marketing, rekayasa web Next.js/Supabase, dan conversion rate optimization (CRO) untuk pasar Indonesia.`;
-
-      const generatedContent = await routeLLM('content', promptText, systemInstruction);
-
-      // Generate FAQ array dynamically using AI
-      const faqPrompt = `Buat 3 FAQ (Pertanyaan dan Jawaban) format JSON array berdasarkan artikel berikut. Format output HANYA array JSON [{question: "...", answer: "..."}]. Artikel: ${generatedContent.substring(0, 1000)}`;
-      const rawFaq = await routeLLM('seo', faqPrompt, 'Kembalikan format JSON array saja.');
+      // 3. Extract description/content (snippet curation)
+      const descMatch = itemXml.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/i) || itemXml.match(/<description>([\s\S]*?)<\/description>/i);
+      let description = descMatch ? descMatch[1].trim() : '';
       
-      let faqItems = [];
-      try {
-        const cleanJson = rawFaq.match(/\[\s*\{[\s\S]*\}\s*\]/)?.[0] || '[]';
-        faqItems = JSON.parse(cleanJson);
-      } catch {
-        faqItems = [
-          { question: `Apa fokus utama dari ${title}?`, answer: `Artikel ini membahas bagaimana ${title} memengaruhi peningkatan optimasi web dan digital marketing.` }
-        ];
+      const contentMatch = itemXml.match(/<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/i) || itemXml.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/i);
+      const fullContent = contentMatch ? contentMatch[1].trim() : description;
+
+      // Extract 1-2 paragraphs for snippet
+      const cleanText = fullContent.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+      const snippet = cleanText.split('. ').slice(0, 3).join('. ') + '.';
+
+      // 4. Extract Thumbnail
+      let thumbnailUrl = '';
+      const mediaMatch = itemXml.match(/<media:content[^>]*url="([^"]*)"/i) || itemXml.match(/<enclosure[^>]*url="([^"]*)"/i);
+      if (mediaMatch) thumbnailUrl = mediaMatch[1];
+      else {
+        // try finding img src inside description
+        const imgMatch = fullContent.match(/<img[^>]*src="([^"]*)"/i);
+        if (imgMatch) thumbnailUrl = imgMatch[1];
       }
 
-      // Save to Supabase
+      // 5. Build HTML content safely
+      const finalHtmlContent = `
+        ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="${title}" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;" />` : ''}
+        <p class="text-base text-text-primary leading-relaxed">${snippet}</p>
+        <div class="mt-6 flex justify-center">
+          <a href="${originalUrl}" target="_blank" rel="nofollow noopener noreferrer" class="inline-flex items-center gap-2 bg-teal-accent text-white font-bold px-6 py-3 rounded-xl hover:bg-teal-glow transition-colors">
+            Baca Selengkapnya di Sumber Asli
+          </a>
+        </div>
+      `;
+
       const { error } = await supabase.from('articles').insert({
         title,
         slug,
         source_feed: feedUrl,
         original_url: originalUrl,
-        content: generatedContent,
+        content: finalHtmlContent,
         meta_title: `${title} | Zadit Growth Blog`,
-        meta_description: `${title}. Panduan terlengkap mengenai optimasi ekosistem digital untuk pertumbuhan bisnis Anda secara berkelanjutan.`,
-        semantic_keywords: [slug.replace(/-/g, ' '), 'seo teknikal', 'growth marketing'],
-        faq_items: faqItems,
+        meta_description: snippet.substring(0, 160),
+        semantic_keywords: [slug.replace(/-/g, ' ')],
         is_published: true,
         published_at: new Date().toISOString()
       });
 
       if (!error) {
         createdCount++;
+        // Auto Ping Google Search Console
+        const sitemapUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app'}/sitemap.xml`;
+        fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`).catch(() => {});
       } else {
         console.error('Failed to insert article:', error);
       }
@@ -119,7 +121,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Processed RSS feed. Created: ${createdCount}, Skipped: ${skippedCount}`
+      message: `Processed RSS feed (No-AI). Created: ${createdCount}, Skipped: ${skippedCount}`
     });
   } catch (err) {
     console.error('AGC Router Error:', err);
