@@ -7,8 +7,8 @@ import { motion, useInView } from 'framer-motion';
 const steps = [
   {
     no: '01',
-    title: 'Pemetaan Data & Diagnosis',
-    description: 'Audit menyeluruh performa digital, analisis gap kompetitor, dan pemetaan kebocoran konversi.',
+    title: 'Pemetaan Data & Deteksi Anomali',
+    description: 'Kami membedah struktur lalu lintas pencarian audiens Anda, menemukan kebocoran konversi pada corong pemasaran saat ini, dan merumuskan target kata kunci yang relevan.',
     icon: Search,
     color: 'from-teal-accent/20 to-teal-accent/5',
     iconBg: 'bg-teal-accent/10 border-teal-accent/20',
@@ -16,8 +16,8 @@ const steps = [
   },
   {
     no: '02',
-    title: 'Arsitektur Strategi GTM',
-    description: 'Penyusunan blueprint konten, pemetaan kata kunci (keyword map), dan rancangan corong konversi.',
+    title: 'Formulasi Arsitektur GTM',
+    description: 'Menyusun draf strategi terintegrasi yang menyatukan alokasi konten, rencana pembuatan media digital mandiri, hingga penentuan metrik keberhasilan (KPI) yang terukur.',
     icon: Map,
     color: 'from-blue-500/15 to-blue-500/5',
     iconBg: 'bg-blue-500/10 border-blue-500/20',
@@ -25,8 +25,8 @@ const steps = [
   },
   {
     no: '03',
-    title: 'Penulisan & Copy Konversi',
-    description: 'Menyusun naskah penjualan berbasis psikologi konsumen dan SEO/AEO-ready copy.',
+    title: 'Penulisan Konversi & Otoritas',
+    description: 'Menyusun naskah landing page yang persuasif dengan psikologi Nudge, artikel edukasi bebas thin-content, dan rilis pers untuk membangun kepercayaan publik.',
     icon: PenTool,
     color: 'from-violet-500/15 to-violet-500/5',
     iconBg: 'bg-violet-500/10 border-violet-500/20',
@@ -34,8 +34,8 @@ const steps = [
   },
   {
     no: '04',
-    title: 'Rekayasa Web Performa Tinggi',
-    description: 'Pembuatan website super cepat, responsif mobile, terverifikasi aman, dan mudah diakses oleh semua pengguna.',
+    title: 'Rekayasa Web Berkinerja Tinggi',
+    description: 'Membangun platform Next.js yang bersih, ramah aksesibilitas (A11y 100%), dan super cepat di bawah satu detik (LCP < 1.0s) bahkan pada jaringan seluler 3G.',
     icon: Zap,
     color: 'from-gold-accent/20 to-gold-accent/5',
     iconBg: 'bg-gold-accent/10 border-gold-accent/20',
@@ -43,8 +43,8 @@ const steps = [
   },
   {
     no: '05',
-    title: 'Dokumentasi Eksekutif',
-    description: 'Pembuatan pitch deck investor, proposal kemitraan strategis, dan KOL campaign brief terstruktur.',
+    title: 'Visualisasi Slide & Dokumen Eksekutif',
+    description: 'Menerjemahkan sistem bisnis yang rumit menjadi slide presentasi (PPT/Keynote) visual bernilai tinggi untuk meyakinkan investor, komite, atau direksi.',
     icon: FileText,
     color: 'from-emerald-500/15 to-emerald-500/5',
     iconBg: 'bg-emerald-500/10 border-emerald-500/20',
@@ -52,8 +52,8 @@ const steps = [
   },
   {
     no: '06',
-    title: 'Optimasi & Iterasi Berkelanjutan',
-    description: 'Pemantauan performa secara berkala, analisis efektivitas halaman, dan pemeliharaan konten secara konsisten.',
+    title: 'Pemantauan Transparan & Iterasi',
+    description: 'Menyajikan dasbor analitik yang mudah dipahami tanpa jargon teknologi rumit, mengevaluasi data interaksi riil, dan terus memoles performa sistem.',
     icon: BarChart3,
     color: 'from-teal-accent/20 to-teal-accent/5',
     iconBg: 'bg-teal-accent/10 border-teal-accent/20',
@@ -119,14 +119,13 @@ export default function ProcessSection() {
         transition={{ duration: 0.6 }}
         className="max-w-6xl mx-auto px-6 mb-14 relative z-10"
       >
-        <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Framework Kerja</span>
+        <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Metodologi</span>
         <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2">
           Metodologi{' '}
           <span className="gradient-text-teal">Pertumbuhan Terpadu</span>
         </h2>
         <p className="text-text-muted mt-3 max-w-xl text-sm leading-relaxed">
-          Pendekatan sistematis langkah-demi-langkah untuk mengubah data digital menjadi
-          konversi dan otoritas pasar yang defensif.
+          Proses kerja terukur yang dirancang untuk mengamankan kejelasan pesan, kecepatan web, dan konversi maksimal.
         </p>
 
         {/* Step count indicator */}

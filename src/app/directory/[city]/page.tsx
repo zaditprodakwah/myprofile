@@ -224,10 +224,10 @@ export default function CityDirectoryPage() {
           <div className="space-y-4">
             <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Kredibilitas Publik Regional</span>
             <h1 className="text-3xl md:text-5xl font-heading-serif font-bold text-text-primary">
-              Direktori Bisnis & Layanan {getCityTitle(citySlug)}
+              Konsultan Digital Marketing & Web Development di {getCityTitle(citySlug)}
             </h1>
             <p className="text-sm md:text-base text-text-muted max-w-2xl leading-relaxed">
-              Daftar profil entitas instansi, layanan publik, agensi, dan bisnis lokal terverifikasi di wilayah {getCityTitle(citySlug)}.
+              Membantu UMKM dan institusi di {getCityTitle(citySlug)} mendapatkan lebih banyak visibilitas lokal dan pelanggan baru.
             </p>
           </div>
 
@@ -323,7 +323,7 @@ export default function CityDirectoryPage() {
                       <div className="flex gap-2">
                         {ent.verified ? (
                           <span className="bg-teal-accent/10 border border-teal-accent/25 text-teal-accent font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 rounded flex items-center gap-1">
-                            <Check className="w-2.5 h-2.5" /> Terverifikasi
+                            <Check className="w-2.5 h-2.5" /> Rekanan Zadit Terverifikasi di {getCityTitle(citySlug)}
                           </span>
                         ) : (
                           <span className="bg-gold-accent/10 border border-gold-accent/25 text-gold-accent font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 rounded flex items-center gap-1">
@@ -405,7 +405,7 @@ export default function CityDirectoryPage() {
                       <div className="flex items-center gap-2">
                         {selectedEntity.verified ? (
                           <span className="bg-teal-accent/15 border border-teal-accent/25 text-teal-accent font-mono text-xs uppercase px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                            <Check className="w-3.5 h-3.5" /> Terverifikasi Publik
+                            <Check className="w-3.5 h-3.5" /> Rekanan Zadit Terverifikasi di {getCityTitle(citySlug)}
                           </span>
                         ) : (
                           <span className="bg-gold-accent/15 border border-gold-accent/25 text-gold-accent font-mono text-xs uppercase px-2.5 py-1 rounded-full flex items-center gap-1.5">

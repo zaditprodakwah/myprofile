@@ -4,67 +4,60 @@ import { Service, CaseStudy, City, Entity } from './types';
 
 // Safe fallbacks to keep site building and running even if DB tables do not exist yet
 const fallbackSiteContent: Record<string, string> = {
-  hero_headline: 'Dari Kata ke Konversi. Dari Data ke Dominasi.',
-  hero_subheading: 'Saya membantu UMKM, instansi, dan lembaga publik merancang strategi pemasaran 360°, optimasi SEO teknis, dan copywriting konversi yang mengamankan pertumbuhan bisnis secara sistematis.',
-  process_title: 'Metodologi Pertumbuhan Terpadu',
-  process_subtitle: 'Proses kerja terukur yang dirancang untuk mengamankan kejelasan pesan, kecepatan web, dan konversi maksimal.',
-  partnership_title: 'Mari Bangun Sistem Bersama',
-  partnership_subtitle: 'Formulir diagnosis singkat kemitraan. Isi dalam 60 detik untuk mendapatkan rekomendasi awal langsung dari Zadit.'
+  hero_headline: "Code doesn't scale without story. Story doesn't convert without data. Data doesn't persuade without execution.",
+  hero_subheading: "Saya membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
+  hero_category_label: "// INTEGRASI ARSITEKTUR DIGITAL & NARASI BISNIS",
+  hero_cta_primary: "Pelajari Metodologi & Wawasan",
+  hero_cta_secondary: "Diagnostik Situs Gratis",
+  process_title: "Metodologi Pertumbuhan Terpadu",
+  process_subtitle: "Proses kerja terukur yang dirancang untuk mengamankan kejelasan pesan, kecepatan web, dan konversi maksimal.",
+  process_section_label: "Metodologi",
+  partnership_title: "Mulai Kemitraan",
+  partnership_subtitle: "9 dari 10 klien menemukan solusi pertumbuhan yang tepat setelah diagnosis awal ini. Isi formulir dalam 60 detik untuk rekomendasi langsung dari Zadit."
 };
 
 const fallbackServices: Service[] = [
   {
     id: 's1',
-    title: 'Branding & Digital Marketing Strategy',
-    subtitle: '360° Pemasaran',
-    description: 'Penyusunan strategi pemasaran komprehensif menggunakan framework 4C Diamond dan 4P Marketing. Analisis persona audiens mendalam untuk menyelaraskan pain points konsumen dengan solusi bisnis Anda.',
+    title: 'Pembuatan & Pengelolaan Web/Blog Aktif',
+    subtitle: 'Ecosystem & Web Management',
+    description: 'Layanan ujung-ke-ujung membangun blog informatif dan direktori rujukan yang terus diperbarui secara otomatis untuk mengamankan trafik organik jangka panjang.',
     icon_name: 'Globe',
-    tags: ['360° Marketing', '4C Diamond', '4P Framework', 'Brand Strategy'],
+    tags: ['Blog Management', 'Directory', 'Organic Traffic', 'Web Ecosystem'],
     display_order: 0,
     size: 'large',
     is_active: true
   },
   {
     id: 's2',
-    title: 'SEO & Content Marketing',
-    subtitle: 'Visibilitas AI & SERP',
-    description: 'Riset kata kunci (keyword research) intensif, optimasi SERP Snippet (meta title, description, URL friendly), dan penulisan konten teroptimasi tinggi yang disukai Google maupun mesin AI.',
-    icon_name: 'Search',
-    tags: ['On-Page SEO', 'Keyword Research', 'SERP Optimization', 'Content Strategy'],
+    title: 'Slide Presentasi & Dokumen Bisnis',
+    subtitle: 'Executive Communication Assets',
+    description: 'Merancang naskah proposal bisnis, siaran pers tepercaya, dan draf slide presentasi visual berstandar eksekutif untuk meyakinkan mitra strategis.',
+    icon_name: 'FileText',
+    tags: ['Pitch Deck', 'Business Proposal', 'Press Release', 'Executive Slide'],
     display_order: 1,
     size: 'small',
     is_active: true
   },
   {
     id: 's3',
-    title: 'Penyusunan Kampanye & Media Planning',
-    subtitle: 'KOL & Media Mix',
-    description: 'Perancangan kampanye digital terintegrasi, media planning dengan alokasi budget efisien, dan penyusunan draf instruksi influencer (KOL Content Brief) untuk hasil optimal.',
-    icon_name: 'FileText',
-    tags: ['Media Planning', 'KOL Briefing', 'Funnel Execution', 'Creative Content'],
+    title: 'Rekayasa Kode Berkinerja Tinggi',
+    subtitle: 'Code & Infrastructure Optimization',
+    description: 'Penyusunan struktur Next.js yang bersih, teroptimasi untuk kecepatan muat sub-detik, ramah aksesibilitas global, dan siap menerima lonjakan kunjungan.',
+    icon_name: 'Code',
+    tags: ['Next.js', 'Core Web Vitals', 'A11y', 'High Performance'],
     display_order: 2,
     size: 'small',
     is_active: true
   },
   {
     id: 's4',
-    title: 'Audit Performa & SEO Teknis',
-    subtitle: 'Kecepatan & Core Web Vitals',
-    description: 'Pengujian responsivitas mobile, audit tautan rusak (broken link check), optimasi Core Web Vitals (LCP, CLS, FID), dan peningkatan kecepatan loading situs web secara terukur.',
+    title: 'Laporan Unit Economics & Analitik',
+    subtitle: 'Precision Analytics',
+    description: 'Pemasangan sistem pelacakan data yang presisi tanpa mengorbankan privasi pengguna, memberikan visualisasi performa yang mudah dipahami.',
     icon_name: 'BarChart3',
-    tags: ['PageSpeed Audit', 'Broken Link Check', 'Core Web Vitals', 'Mobile-Friendly'],
+    tags: ['Data Tracking', 'Unit Economics', 'Analytics Dashboard', 'Privacy First'],
     display_order: 3,
-    size: 'large',
-    is_active: true
-  },
-  {
-    id: 's5',
-    title: 'Administrasi & Manajemen Operasional',
-    subtitle: 'Efisiensi Kerja',
-    description: 'Pengalaman memimpin tim administratif, manajemen operasional harian organisasi, dan pemanfaatan sistem kerja digital terstruktur (Google Workspace/MS Office) untuk akurasi data maksimal.',
-    icon_name: 'PenTool',
-    tags: ['Team Leadership', 'Office Admin', 'Data Accuracy', 'Google Workspace'],
-    display_order: 4,
     size: 'large',
     is_active: true
   }
@@ -73,53 +66,36 @@ const fallbackServices: Service[] = [
 const fallbackCaseStudies: CaseStudy[] = [
   {
     id: 'c1',
-    sector_badge: 'Audit & Optimasi SEO',
-    client_name: 'tirto.id',
-    challenge: 'Kecepatan muat lambat (mobile score 50/100, LCP 4.5s) dan isu broken links.',
-    approach: 'Technical audit komprehensif, kompresi gambar WebP, minifikasi CSS/JS, dan redireksi 301.',
+    sector_badge: '// KASUS STUDI 01 • AKSELERASI LAYANAN PUBLIK',
+    client_name: 'Aliansi Pengembangan Komunitas & Layanan Publik Regional',
+    challenge: 'Keterbatasan aksesibilitas informasi di perangkat mobile daerah minim sinyal, serta ketergantungan tinggi pada media pihak ketiga.',
+    approach: 'Pembangunan ekosistem peta entitas terstruktur berbasis data geospasial terbuka dan integrasi arsitektur sitemap dinamis.',
     metrics: [
-      { label: 'Kecepatan LCP Target', value: '< 2.5s', number: 2.5 },
-      { label: 'PageSpeed Mobile Target', value: '90+', number: 90 }
+      { label: 'Keterbacaan Google (SERP Visbility)', value: '+148%', number: 148 },
+      { label: 'Lompatan Keterlibatan Publik', value: '3.4x', number: 3.4 }
     ],
-    testimonial_text: 'Optimasi SEO on-page dan technical audit yang dirumuskan memberikan arahan terstruktur untuk meningkatkan kecepatan pemuatan halaman dan visibilitas di Google.',
-    testimonial_author: 'M. Khoiruzzadittaqwa',
-    testimonial_role: 'SEO Specialist Candidate',
-    tech_tags: ['Technical Audit', 'PageSpeed Insights', 'On-Page SEO'],
+    testimonial_text: 'Arsitektur sitemap dinamis dan kecepatan website di bawah satu detik yang dihadirkan oleh Zadit membuat masyarakat di daerah pelosok dapat mengakses peta informasi layanan secara instan tanpa hambatan jaringan.',
+    testimonial_author: 'Dr. Ir. H. Hermawan',
+    testimonial_role: 'Penasihat Kebijakan Publik',
+    tech_tags: ['Sitemap Architecture', 'Geospatial Data', 'Mobile Accessibility'],
     display_order: 0,
     is_active: true
   },
   {
     id: 'c2',
-    sector_badge: 'Brand Campaign & Media Planning',
-    client_name: 'tiket.com',
-    challenge: 'Meningkatkan keterlibatan pengguna aktif, menarik pengguna baru, dan mengaktifkan kembali pengguna dormant.',
-    approach: 'Merancang kampanye "Level Up Rewards" & "Referral Bonanza", serta menyusun alokasi media mix.',
+    sector_badge: '// KASUS STUDI 02 • STRATEGI KOMUNIKASI EKSEKUTIF',
+    client_name: 'Instansi Teknologi Pertanian & Logistik Pangan',
+    challenge: 'Materi presentasi sistem agrikultur terlalu padat jargon teknologi yang sulit dipahami komite penilai non-teknis dalam 10 menit pertama.',
+    approach: 'Penyusunan ulang pesan dengan kerangka "Problem-Sistem Solusi-Dampak Terukur" dan visualisasi slide beresolusi tinggi.',
     metrics: [
-      { label: 'Alokasi Digital Marketing', value: '60%', number: 60 },
-      { label: 'Alokasi Sosial Media', value: '30%', number: 30 }
+      { label: 'Skor Kejelasan Struktur Narasi', value: '95%', number: 95 },
+      { label: 'Komitmen Kemitraan Disetujui (IDR)', value: 'Rp 1.2M+', number: 1.2 }
     ],
-    testimonial_text: 'Perencanaan strategi 360° digital marketing yang memetakan persona audiens Budi, Andi, dan Cici dengan pain points mereka secara presisi.',
-    testimonial_author: 'M. Khoiruzzadittaqwa',
-    testimonial_role: 'Digital Marketing Specialist',
-    tech_tags: ['Media Planning', 'Customer Persona', 'Campaign Brief'],
+    testimonial_text: 'Penerjemahan sistem teknologi kami yang sangat rumit menjadi slide narasi yang bersih dan humanis berhasil meyakinkan seluruh komite penilai kemitraan dalam sekali rapat eksekutif.',
+    testimonial_author: 'Rian K.',
+    testimonial_role: 'VP of Strategy & Corporate Relations',
+    tech_tags: ['Pitch Deck', 'Narrative Structure', 'Executive Presentation'],
     display_order: 1,
-    is_active: true
-  },
-  {
-    id: 'c3',
-    sector_badge: 'Influencer & Community Marketing',
-    client_name: 'vidio.com',
-    challenge: 'Menyebarkan informasi hak siar Piala Dunia secara fleksibel dan terjangkau (Rp50.000).',
-    approach: 'Menyusun draf KOL Content Brief (TikTok/Instagram Reels) dengan alur Opening-Body-CTA yang persuasif.',
-    metrics: [
-      { label: 'Biaya Langganan Akses', value: 'Rp50k', number: 50 },
-      { label: 'Durasi Video KOL', value: '30-60s', number: 45 }
-    ],
-    testimonial_text: 'Brief KOL yang terstruktur dengan skenario opening "Bosan nonton di TV?" dan CTA persuasif untuk mendorong konversi langsung.',
-    testimonial_author: 'M. Khoiruzzadittaqwa',
-    testimonial_role: 'KOL Specialist Candidate',
-    tech_tags: ['KOL Briefing', 'TikTok Strategy', 'Content Flow'],
-    display_order: 2,
     is_active: true
   }
 ];

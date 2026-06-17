@@ -96,8 +96,8 @@ const TRUST_BADGES = [
 ];
 
 export default function HeroSection({
-  headline = "Dari Kata ke Konversi. Dari Data ke Dominasi.",
-  subheading = "Saya membantu UMKM, instansi, dan lembaga publik merancang ekosistem digital yang bukan hanya tampil — tapi mengkonversi secara sistematis.",
+  headline = "Code doesn't scale without story. Story doesn't convert without data. Data doesn't persuade without execution.",
+  subheading = "Saya membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
   whatsappNumber = "6282316363177",
 }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -148,8 +148,8 @@ export default function HeroSection({
 
   const headlineWords = headline.split(' ');
   const geoSubheading = subheading.replace(
-    'UMKM, instansi,',
-    `UMKM & instansi di ${geoData.city},`
+    'UMKM, instansi swasta, hingga',
+    `UMKM & instansi di ${geoData.city}, hingga`
   );
   const waLink = `https://wa.me/${whatsappNumber}?text=Halo%20Zadit%2C%20saya%20dari%20${geoData.city}%20tertarik%20untuk%20berdiskusi%20mengenai%20kemitraan%20dan%20growth%20strategy.%20Mari%20jadwalkan%20pertemuan!`;
 
@@ -199,9 +199,9 @@ export default function HeroSection({
               <Globe className="w-3 h-3" />
               Wilayah: {geoData.city}, {geoData.country}
             </span>
-            <span className="trust-badge">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-accent pulse-badge" />
-              Tersedia untuk Kemitraan
+            <span className="trust-badge uppercase font-bold tracking-widest text-gold-accent">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold-accent pulse-badge" />
+              // INTEGRASI ARSITEKTUR DIGITAL & NARASI BISNIS
             </span>
           </motion.div>
 
@@ -252,19 +252,17 @@ export default function HeroSection({
             className="flex flex-col sm:flex-row gap-3 pt-1"
           >
             <MagneticButton
-              href={waLink}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/#process"
               className="relative inline-flex items-center justify-center gap-2 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans font-bold uppercase tracking-wider px-8 py-4 rounded-xl text-xs text-center transition-colors duration-300 shadow-md shadow-teal-accent/20 shimmer select-none group"
             >
-              <span>Ajak Kemitraan</span>
+              <span>Pelajari Metodologi & Wawasan</span>
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
             </MagneticButton>
             <a
-              href="#case-studies"
+              href="/utility/audit-engine"
               className="inline-flex items-center justify-center gap-2 border border-brand-border hover:border-teal-accent text-text-primary hover:text-teal-accent font-heading-sans font-bold uppercase tracking-wider px-8 py-4 rounded-xl text-xs bg-white transition-all duration-300 shadow-xs select-none group card-hover-lift"
             >
-              <span>Lihat Studi Kasus</span>
+              <span>Diagnostik Situs Gratis</span>
               <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform duration-200" />
             </a>
           </motion.div>

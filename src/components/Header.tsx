@@ -7,11 +7,11 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NAV_LINKS = [
-  { href: '/#process', label: 'Proses' },
+  { href: '/#hero', label: 'Overview' },
+  { href: '/#process', label: 'Metodologi' },
   { href: '/#case-studies', label: 'Studi Kasus' },
-  { href: '/#services', label: 'Layanan' },
-  { href: '/directory', label: 'Direktori' },
-  { href: '/utility/audit-engine', label: 'Audit Gratis' },
+  { href: '/#services', label: 'Spesialisasi' },
+  { href: '/#partnership', label: 'Mulai Kemitraan' },
 ];
 
 export default function Header() {
@@ -65,7 +65,7 @@ export default function Header() {
               Zadit Growth
             </span>
             <span className="font-mono text-[8px] tracking-[0.2em] text-teal-accent uppercase">
-              Mitra Pertumbuhan
+              // Growth Architect
             </span>
           </div>
         </Link>
@@ -76,7 +76,7 @@ export default function Header() {
             <Link
               key={href}
               href={href}
-              className="text-[10px] font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors relative hover-underline"
+              className="text-[10px] font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors duration-150 ease-out relative hover-underline"
             >
               {label}
             </Link>
@@ -95,13 +95,13 @@ export default function Header() {
               }`}
             />
             <span className="font-mono text-[9px] tracking-wider text-text-primary uppercase font-semibold">
-              {availability === 'AVAILABLE' ? 'Tersedia' : 'Sibuk'}
+              ● Ekosistem Aktif // Vercel Edge Runtime 2026
             </span>
           </div>
 
           <Link
-            href="/#contact"
-            className="bg-teal-accent hover:bg-brand-slate text-text-inverse text-[10px] font-heading-sans font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all duration-300 shadow-sm shadow-teal-accent/20"
+            href="/#partnership"
+            className="bg-teal-accent hover:bg-brand-slate text-text-inverse text-[10px] font-heading-sans font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all duration-150 ease-out shadow-sm shadow-teal-accent/20"
           >
             Konsultasi
           </Link>
@@ -111,7 +111,7 @@ export default function Header() {
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           whileTap={{ scale: 0.94 }}
-          className="md:hidden text-text-primary hover:text-teal-accent transition-colors"
+          className="md:hidden text-text-primary hover:text-teal-accent transition-colors duration-150 ease-out"
           aria-label="Toggle navigation menu"
         >
           {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -133,16 +133,16 @@ export default function Header() {
                 key={href}
                 href={href}
                 onClick={() => setIsOpen(false)}
-                className="text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-3 transition-colors border-b border-brand-border/50 flex items-center justify-between"
+                className="text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-3 transition-colors duration-150 ease-out border-b border-brand-border/50 flex items-center justify-between"
               >
                 {label}
                 <span className="text-text-muted/40">→</span>
               </Link>
             ))}
             <Link
-              href="/#contact"
+              href="/#partnership"
               onClick={() => setIsOpen(false)}
-              className="mt-4 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans text-xs font-bold uppercase tracking-wider text-center py-3.5 rounded-xl transition-all"
+              className="mt-4 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans text-xs font-bold uppercase tracking-wider text-center py-3.5 rounded-xl transition-all duration-150 ease-out"
             >
               Konsultasi Kemitraan
             </Link>

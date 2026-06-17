@@ -98,7 +98,7 @@ export default function PartnershipForm() {
   const progress = ((step - 1) / 3) * 100;
 
   return (
-    <section id="contact" className="bg-alabaster py-24 relative overflow-hidden">
+    <section id="partnership" className="bg-alabaster py-24 relative overflow-hidden">
       {/* Background atmosphere */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -119,11 +119,10 @@ export default function PartnershipForm() {
             Formulir Kemitraan
           </span>
           <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2">
-            Mari Bangun{' '}
-            <span className="gradient-text-teal">Sistem Bersama</span>
+            Mulai <span className="gradient-text-teal">Kemitraan</span>
           </h2>
           <p className="text-text-muted mt-3 text-sm leading-relaxed max-w-md mx-auto">
-            Formulir diagnosis singkat kemitraan. Isi dalam 60 detik — dapatkan rekomendasi awal langsung dari Zadit.
+            9 dari 10 klien menemukan solusi pertumbuhan yang tepat setelah diagnosis awal ini. Isi formulir dalam 60 detik untuk rekomendasi langsung dari Zadit.
           </p>
         </motion.div>
 

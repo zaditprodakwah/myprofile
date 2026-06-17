@@ -10,10 +10,9 @@ interface CaseStudiesSectionProps {
 }
 
 // Client logo mapping — real brand signals for EEAT
-const CLIENT_META: Record<string, { color: string; domain: string }> = {
-  'tirto.id': { color: '#e63946', domain: 'tirto.id' },
-  'tiket.com': { color: '#0057b7', domain: 'tiket.com' },
-  'vidio.com': { color: '#7209b7', domain: 'vidio.com' },
+const CLIENT_META: Record<string, { color: string; domain?: string }> = {
+  'layanan publik': { color: '#0d9488' }, // teal
+  'teknologi pertanian': { color: '#d97706' }, // gold
 };
 
 // Single case study card
@@ -250,9 +249,9 @@ export default function CaseStudiesSection({ caseStudies }: CaseStudiesSectionPr
 
           {/* Authority signal */}
           <div className="flex-shrink-0 flex flex-col items-end gap-2">
-            <p className="text-[10px] font-mono text-text-muted uppercase tracking-widest">Portofolio Riil</p>
+            <p className="text-[10px] font-mono text-text-muted uppercase tracking-widest">Sektor Keahlian</p>
             <div className="flex items-center gap-2">
-              {['tirto.id', 'tiket.com', 'vidio.com'].map((domain) => (
+              {['Sektor Publik', 'Agritech', 'B2B Eksekutif'].map((domain) => (
                 <div
                   key={domain}
                   className="bg-white border border-brand-border rounded-lg px-2.5 py-1.5 text-[9px] font-mono text-text-muted shadow-xs"

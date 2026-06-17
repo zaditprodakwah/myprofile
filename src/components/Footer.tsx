@@ -126,11 +126,11 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5">
               {[
-                { href: '/', label: 'Beranda' },
-                { href: '/#process', label: 'Metodologi Proses' },
+                { href: '/#hero', label: 'Overview' },
+                { href: '/#process', label: 'Metodologi' },
                 { href: '/#case-studies', label: 'Studi Kasus' },
-                { href: '/#services', label: 'Pilar Layanan' },
-                { href: '/#contact', label: 'Formulir Kemitraan' },
+                { href: '/#services', label: 'Spesialisasi' },
+                { href: '/#partnership', label: 'Mulai Kemitraan' },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link
