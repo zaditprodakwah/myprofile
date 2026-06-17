@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link2, Twitter, Facebook, Linkedin, MessageCircle, Send, Check } from 'lucide-react';
+import { Link2, MessageCircle, Send, Check, Hash, Users, Globe } from 'lucide-react';
 
 interface SocialShareProps {
   url: string;
@@ -35,19 +35,19 @@ export default function SocialShare({ url, title }: SocialShareProps) {
     },
     {
       name: 'X (Twitter)',
-      icon: Twitter,
+      icon: Hash,
       href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
       color: 'hover:text-[#000000] hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/10'
     },
     {
       name: 'LinkedIn',
-      icon: Linkedin,
+      icon: Users,
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
       color: 'hover:text-[#0A66C2] hover:bg-[#0A66C2]/10'
     },
     {
       name: 'Facebook',
-      icon: Facebook,
+      icon: Globe,
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
       color: 'hover:text-[#1877F2] hover:bg-[#1877F2]/10'
     }

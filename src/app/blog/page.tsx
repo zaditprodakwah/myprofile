@@ -68,7 +68,7 @@ export default async function BlogIndexPage() {
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center gap-2 text-xs font-mono text-text-muted">
                     <BookOpen className="w-3.5 h-3.5 text-teal-accent" />
-                    <span>{formatDate(art.published_at)}</span>
+                    <span>{formatDate(art.published_at || new Date().toISOString())}</span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" /> 4 Menit Baca
