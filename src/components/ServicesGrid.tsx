@@ -92,7 +92,7 @@ export default function ServicesGrid({ services }: ServicesGridProps) {
         
         {/* Header */}
         <div className="mb-16">
-          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// PILAR KEAHLIAN'}</span>
+          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Keahlian & Layanan Utama</span>
           <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2 leading-tight">
             Layanan & Solusi Terintegrasi
           </h2>

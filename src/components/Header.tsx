@@ -38,7 +38,7 @@ export default function Header() {
           </div>
           <div className="flex flex-col">
             <span className="font-heading-sans font-bold text-sm text-text-primary tracking-tight">Zadit Growth</span>
-            <span className="font-mono text-[9px] tracking-[0.2em] text-teal-accent uppercase">{'// ARCHITECT'}</span>
+            <span className="font-mono text-[9px] tracking-[0.2em] text-teal-accent uppercase">Mitra Pertumbuhan</span>
           </div>
         </Link>
 

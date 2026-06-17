@@ -189,7 +189,7 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
             </Link>
 
             <div className="space-y-4">
-              <span className="text-xs font-mono text-gold-accent tracking-widest uppercase">{'// WAWASAN PERTUMBUHAN'}</span>
+              <span className="text-xs font-mono text-gold-accent tracking-widest uppercase">Wawasan Pertumbuhan</span>
               <h1 className="text-3xl md:text-5xl font-heading-serif font-bold text-text-primary leading-tight">
                 {article.title}
               </h1>
@@ -207,7 +207,7 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
             {/* Dynamic FAQ Accordions */}
             {article.faq_items && article.faq_items.length > 0 && (
               <div className="pt-8 border-t border-brand-border mt-12 space-y-4">
-                <span className="text-xs font-mono text-gold-accent tracking-widest uppercase">{'// PERTANYAAN YANG SERING DIAJUKAN (FAQ)'}</span>
+                <span className="text-xs font-mono text-gold-accent tracking-widest uppercase">Pertanyaan Yang Sering Diajukan (FAQ)</span>
                 <div className="space-y-4">
                   {article.faq_items.map((faq, idx) => (
                     <details key={idx} className="bg-white border border-brand-border rounded-xl p-5 group transition-all duration-300">
@@ -230,11 +230,11 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
             <div className="bg-white border border-brand-border rounded-2xl p-6 space-y-6 shadow-sm">
               <h3 className="font-heading-sans font-bold text-text-primary text-lg">Butuh Implementasi Serupa?</h3>
               <p className="text-xs text-text-muted leading-relaxed">
-                Seluruh ekosistem blog otomatis (AGC) ramah search engine, arsitektur Next.js 16, dan sistem indexing instan ini bisa diintegrasikan langsung untuk bisnis Anda.
+                Seluruh ekosistem blog otomatis ramah pencarian, performa website cepat, dan sistem indeks konten instan ini bisa diintegrasikan langsung untuk bisnis Anda.
               </p>
               
               <a
-                href={`https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20dengan%20sistem%20AGC%20blog%20dan%20SEO%20teknikal%20seperti%20artikel%20${article.slug}.%20Mari%20jadwalkan%20diskusi!`}
+                href={`https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20dengan%20sistem%20blog%20otomatis%20dan%20optimasi%20pencarian%20seperti%20artikel%20${article.slug}.%20Mari%20jadwalkan%20diskusi!`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans font-bold uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-sm text-xs"
@@ -244,7 +244,7 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
             </div>
 
             <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-sm">
-              <h4 className="text-xs font-mono text-text-primary uppercase tracking-wider mb-4">{'// ARTIKEL LAIN'}</h4>
+              <h4 className="text-xs font-mono text-text-primary uppercase tracking-wider mb-4">ARTIKEL LAIN</h4>
               <ul className="space-y-3 text-xs">
                 <li>
                   <Link href="/blog/cara-optimasi-web-umkm-indonesia" className="text-text-muted hover:text-teal-accent flex items-center gap-1.5 transition-colors">

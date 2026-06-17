@@ -40,7 +40,7 @@ export default async function DirectoryIndexPage() {
 
           {/* Heading */}
           <div className="space-y-4">
-            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// BANK DATA REFERENSI REGIONAL'}</span>
+            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Direktori Bisnis & Layanan</span>
             <h1 className="text-3xl md:text-5xl font-heading-serif font-bold text-text-primary leading-tight">
               Indeks Direktori Kredibilitas Publik
             </h1>
@@ -73,7 +73,7 @@ export default async function DirectoryIndexPage() {
 
                 <div className="flex items-center justify-between pt-4 border-t border-brand-border mt-4">
                   <span className="text-[10px] font-mono text-text-muted tracking-wider uppercase flex items-center gap-1">
-                    <Navigation className="w-3 h-3 text-teal-accent" /> Coordinates: {city.latitude}, {city.longitude}
+                    <Navigation className="w-3 h-3 text-teal-accent" /> Koordinat: {city.latitude}, {city.longitude}
                   </span>
                   <span className="text-xs font-semibold text-teal-accent group-hover:underline flex items-center gap-1.5">
                     Eksplorasi Wilayah <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />

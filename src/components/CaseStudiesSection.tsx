@@ -91,7 +91,7 @@ export default function CaseStudiesSection({ caseStudies }: CaseStudiesSectionPr
         
         {/* Section Header */}
         <div className="mb-16">
-          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// STUDI KASUS'}</span>
+          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Studi Kasus Kemitraan</span>
           <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2">
             Bukti Nyata Hasil Terukur
           </h2>
@@ -125,11 +125,11 @@ export default function CaseStudiesSection({ caseStudies }: CaseStudiesSectionPr
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                     <div>
-                      <p className="text-xs font-mono text-text-muted uppercase tracking-wider">{'// TANTANGAN'}</p>
+                      <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Tantangan Utama</p>
                       <p className="text-sm text-text-muted mt-1 leading-relaxed">{cs.challenge}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-mono text-text-muted uppercase tracking-wider">{'// PENDEKATAN'}</p>
+                      <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Pendekatan & Implementasi</p>
                       <p className="text-sm text-text-muted mt-1 leading-relaxed">{cs.approach}</p>
                     </div>
                   </div>

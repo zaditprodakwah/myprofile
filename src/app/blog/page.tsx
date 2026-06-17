@@ -107,7 +107,7 @@ export default async function BlogIndexPage() {
 
           {/* Heading */}
           <div className="space-y-4">
-            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// WAWASAN & STRATEGI DIGITAL'}</span>
+            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Artikel & Wawasan Pertumbuhan</span>
             <h1 className="text-3xl md:text-5xl font-heading-serif font-bold text-text-primary leading-tight">
               Wawasan Pertumbuhan & SEO
             </h1>

@@ -119,11 +119,18 @@ export default function CityDirectoryPage() {
         if (data && data.length > 0) {
           const dbEntities = data.map((d: unknown) => {
             const item = d as Record<string, unknown>;
+            const rawType = String(item.entity_type || '').toLowerCase();
+            const translatedCategory = 
+              rawType === 'agency' ? 'Agensi / Kemitraan' : 
+              rawType === 'service' ? 'Layanan Publik / Swasta' : 
+              rawType === 'institution' ? 'Instansi / Lembaga' : 
+              'Bisnis Lokal';
+              
             return {
               id: String(item.id || ''),
               name: String(item.name || ''),
               slug: String(item.slug || ''),
-              category: String(item.entity_type || 'Bisnis'),
+              category: translatedCategory,
               tagline: String(item.tagline || item.description || ''),
               address: String((item.raw_metadata as Record<string, unknown> | null)?.address || 'Alamat terdaftar'),
               phone: String(item.contact_phone || ''),
@@ -215,7 +222,7 @@ export default function CityDirectoryPage() {
 
           {/* Heading */}
           <div className="space-y-4">
-            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// KREDIBILITAS PUBLIK REGIONAL'}</span>
+            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Kredibilitas Publik Regional</span>
             <h1 className="text-3xl md:text-5xl font-heading-serif font-bold text-text-primary">
               Direktori Bisnis & Layanan {getCityTitle(citySlug)}
             </h1>
@@ -316,11 +323,11 @@ export default function CityDirectoryPage() {
                       <div className="flex gap-2">
                         {ent.verified ? (
                           <span className="bg-teal-accent/10 border border-teal-accent/25 text-teal-accent font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 rounded flex items-center gap-1">
-                            <Check className="w-2.5 h-2.5" /> Verified
+                            <Check className="w-2.5 h-2.5" /> Terverifikasi
                           </span>
                         ) : (
                           <span className="bg-gold-accent/10 border border-gold-accent/25 text-gold-accent font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 rounded flex items-center gap-1">
-                            <Clock className="w-2.5 h-2.5" /> Unclaimed
+                            <Clock className="w-2.5 h-2.5" /> Belum Diklaim
                           </span>
                         )}
                       </div>
@@ -337,7 +344,7 @@ export default function CityDirectoryPage() {
                   </div>
 
                   <div className="flex justify-between items-center pt-6 mt-6 border-t border-brand-border">
-                    <span className="text-[10px] font-mono text-text-muted tracking-wider uppercase">TRUST SCORE: {ent.trustScore}/5.0</span>
+                    <span className="text-[10px] font-mono text-text-muted tracking-wider uppercase">SKOR KREDIBILITAS: {ent.trustScore}/5.0</span>
                     <span className="text-xs font-semibold text-teal-accent group-hover:underline flex items-center gap-1">
                       {ent.verified ? 'Lihat Profil' : 'Klaim Profil'} →
                     </span>
@@ -553,7 +560,7 @@ export default function CityDirectoryPage() {
 
                     {/* Affiliate Tools Section */}
                     <div className="pt-6 border-t border-brand-border space-y-4">
-                      <p className="text-xs font-mono text-text-muted uppercase tracking-wider">{'// REKOMENDASI ALAT PERTUMBUHAN'}</p>
+                      <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Rekomendasi Alat Pertumbuhan</p>
                       <div className="grid grid-cols-2 gap-3">
                         <a 
                           href="https://niagahoster.co.id" 

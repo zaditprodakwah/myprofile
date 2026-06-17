@@ -8,7 +8,7 @@ const navItems = [
   { id: 'process', label: 'Proses' },
   { id: 'case-studies', label: 'Studi Kasus' },
   { id: 'services', label: 'Layanan' },
-  { id: 'contact', label: 'Partnership' },
+  { id: 'contact', label: 'Kemitraan' },
 ];
 
 export default function SidebarNav() {

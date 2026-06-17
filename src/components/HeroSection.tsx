@@ -154,7 +154,7 @@ export default function HeroSection({
           <div className="inline-flex items-center gap-3 bg-white border border-brand-border rounded-full px-4 py-1.5 shadow-xs">
             <Globe className="w-3.5 h-3.5 text-teal-accent" />
             <span className="text-[10px] font-mono tracking-widest text-text-muted uppercase">
-              {'// EKOSISTEM DITARGETKAN KOTA: '}{geoData.city} ({geoData.country})
+              Wilayah Target Layanan: {geoData.city} ({geoData.country})
             </span>
           </div>
 
@@ -256,36 +256,36 @@ export default function HeroSection({
           {/* Liquid Glass Interactive Status Board (Advanced UX Hack) */}
           <div className="liquid-glass rounded-2xl p-6 space-y-4 border border-white/20">
             <div className="flex justify-between items-center pb-2 border-b border-slate-200/50">
-              <span className="text-[10px] font-mono text-text-primary font-bold uppercase tracking-widest">{'// MONITOR KREDIBILITAS'}</span>
+              <span className="text-[10px] font-mono text-text-primary font-bold uppercase tracking-widest">Status Koneksi Sistem</span>
               <span className="flex items-center gap-1.5 text-[9px] font-mono bg-teal-accent/10 text-teal-accent px-2 py-0.5 rounded-full">
                 <span className="w-1.5 h-1.5 rounded-full bg-teal-accent animate-pulse" />
-                ONLINE
+                AKTIF
               </span>
             </div>
             
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-text-muted font-mono">SUPABASE DATABASE</span>
+                <span className="text-text-muted font-mono">PENGEMBANGAN DATA</span>
                 <span className="font-mono text-teal-accent flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5" /> CONNECTED
+                  <Check className="w-3.5 h-3.5" /> TERHUBUNG
                 </span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-text-muted font-mono">LCP SPEED (PORTFOLIO)</span>
+                <span className="text-text-muted font-mono">PERFORMA LOADING WEB</span>
                 <span className="font-mono text-teal-accent flex items-center gap-1">
-                  <Zap className="w-3.5 h-3.5" /> {lcpScore ? `${lcpScore.toFixed(2)}s` : '0.34s'} (EXCELLENT)
+                  <Zap className="w-3.5 h-3.5" /> {lcpScore ? `${lcpScore.toFixed(2)}s` : '0.34s'} (SANGAT CEPAT)
                 </span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-text-muted font-mono">SECURITY PROTOCOL</span>
+                <span className="text-text-muted font-mono">PROTOKOL KEAMANAN</span>
                 <span className="font-mono text-teal-accent flex items-center gap-1">
-                  <Shield className="w-3.5 h-3.5" /> SSL & CORS ACTIVE
+                  <Shield className="w-3.5 h-3.5" /> TERVERIFIKASI AMAN
                 </span>
               </div>
             </div>
 
             <p className="text-[10px] font-sans text-text-muted italic leading-relaxed pt-2 border-t border-slate-200/50">
-              *Metrik di atas dideteksi secara nyata dari perangkat Anda dan status koneksi API kami.
+              *Metrik performa di atas diukur langsung secara real-time dari browser perangkat Anda.
             </p>
           </div>
 

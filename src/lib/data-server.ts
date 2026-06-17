@@ -10,55 +10,53 @@ const fallbackSiteContent: Record<string, string> = {
   process_subtitle: 'Proses kerja terukur yang dirancang untuk mengamankan kejelasan pesan, kecepatan web, dan konversi maksimal.',
   partnership_title: 'Mari Bangun Sistem Bersama',
   partnership_subtitle: 'Formulir diagnosis singkat kemitraan. Isi dalam 60 detik untuk mendapatkan rekomendasi awal langsung dari Zadit.'
-};
-
-const fallbackServices: Service[] = [
+};const fallbackServices: Service[] = [
   {
     id: 's1',
-    title: 'Ecosystem & Web Management',
-    description: 'Pembuatan & pengelolaan web performa tinggi menggunakan Next.js App Router dan database dinamis (Supabase). Solusi digital mandiri yang cepat, responsif, dan siap tumbuh.',
+    title: 'Pengembangan & Pengelolaan Website',
+    description: 'Pembuatan & pengelolaan web performa tinggi menggunakan sistem modern dan database dinamis terintegrasi. Solusi digital mandiri yang cepat, responsif, dan siap tumbuh.',
     icon_name: 'Globe',
-    tags: ['Next.js 16', 'TypeScript', 'Supabase', 'ISR Caching'],
+    tags: ['Kecepatan Tinggi', 'Mudah Dikelola', 'Keamanan Sistem', 'Bebas Hambatan'],
     display_order: 0,
     size: 'large',
     is_active: true
   },
   {
     id: 's2',
-    title: 'Analytics & Data Intelligence',
-    description: 'Tracking presisi perilaku pengguna, audit kebocoran konversi, visualisasi visual data analitik, dan A/B testing sistematis untuk keputusan pemasaran berbasis bukti.',
+    title: 'Analitik & Intelijen Data',
+    description: 'Pelacakan presisi perilaku pengunjung website, audit hambatan konversi, visualisasi data analitik, dan pengujian sistematis untuk keputusan pemasaran berbasis bukti.',
     icon_name: 'BarChart3',
-    tags: ['Google Analytics 4', 'Search Console', 'GTM', 'Heatmaps'],
+    tags: ['Analisis Pengunjung', 'Laporan Kinerja', 'Peta Navigasi', 'Data Keputusan'],
     display_order: 1,
     size: 'small',
     is_active: true
   },
   {
     id: 's3',
-    title: 'SEO & AEO/GEO Optimization',
-    description: 'Memastikan bisnis Anda ditemukan tidak hanya oleh pencarian konvensional (Google SERP), tetapi juga dioptimalkan untuk mesin AI generatif (Gemini, ChatGPT, Claude).',
+    title: 'Optimasi Mesin Pencari & AI Search',
+    description: 'Memastikan bisnis Anda ditemukan tidak hanya oleh pencarian konvensional (Google), tetapi juga siap tampil optimal di mesin AI generatif (seperti ChatGPT, Gemini, Claude).',
     icon_name: 'Search',
-    tags: ['Technical SEO', 'Entity Schema', 'GEO Optimization', 'pSEO'],
+    tags: ['Optimasi Google', 'Kesesuaian AI Search', 'Pencarian Lokal', 'Target Spesifik'],
     display_order: 2,
     size: 'small',
     is_active: true
   },
   {
     id: 's4',
-    title: 'Conversion Copywriting',
-    description: 'Kata-kata yang memicu tindakan. Penulisan naskah penjualan untuk landing page, materi kampanye, dan narasi brand yang didasarkan pada psikologi konsumen terukur.',
+    title: 'Copywriting Konversi & Penulisan Naskah',
+    description: 'Kata-kata yang memicu tindakan. Penulisan naskah penjualan untuk halaman penawaran, materi kampanye, dan narasi brand yang didasarkan pada psikologi konsumen terukur.',
     icon_name: 'PenTool',
-    tags: ['Direct Response Copy', 'Landing Page Wireframe', 'PAS Framework'],
+    tags: ['Naskah Penjualan', 'Struktur Halaman', 'Psikologi Konsumen'],
     display_order: 3,
     size: 'large',
     is_active: true
   },
   {
     id: 's5',
-    title: 'Executive Documentation',
-    description: 'Penyusunan dokumen bisnis tingkat tinggi yang memenangkan pendanaan dan kemitraan. Desain pitch deck investor profesional, proposal bisnis institusional, dan brief kolaborasi KOL strategis.',
+    title: 'Dokumentasi Eksekutif & Presentasi',
+    description: 'Penyusunan dokumen bisnis tingkat tinggi untuk memenangkan kemitraan. Desain pitch deck investor profesional, proposal bisnis institusional, dan ringkasan kerja sama strategis.',
     icon_name: 'FileText',
-    tags: ['Pitch Deck Layout', 'Executive Brief', 'KOL Brief Design', 'Math Data Viz'],
+    tags: ['Slide Investor', 'Proposal Bisnis', 'Brief Kolaborasi', 'Visualisasi Data'],
     display_order: 4,
     size: 'large',
     is_active: true
@@ -70,8 +68,8 @@ const fallbackCaseStudies: CaseStudy[] = [
     id: 'c1',
     sector_badge: 'Sektor Publik & Swasta',
     client_name: 'Aliansi Pengembangan Komunitas & Layanan Publik Regional',
-    challenge: 'Web lambat, tidak responsif di pelosok, dan ketergantungan pada media pihak ketiga.',
-    approach: 'Implementasi graf entitas dinamis (entity graph), optimasi sitemap dynamic, dan migrasi arsitektur Next.js ISR.',
+    challenge: 'Akses website lambat, tidak responsif di pelosok, dan ketergantungan pada media pihak ketiga.',
+    approach: 'Restrukturisasi konten digital secara dinamis, optimasi peta situs (sitemap), dan peningkatan performa loading halaman.',
     metrics: [
       { label: 'Keterbacaan Google Organik', value: '+148%', number: 148 },
       { label: 'Keterlibatan Publik', value: '3.4x', number: 3.4 }
@@ -79,7 +77,7 @@ const fallbackCaseStudies: CaseStudy[] = [
     testimonial_text: 'Arsitektur Zadit membuat masyarakat pelosok dapat mengakses layanan informasi dalam hitungan milidetik secara lancar.',
     testimonial_author: 'Dr. Ir. H. Hermawan',
     testimonial_role: 'Penasihat Kebijakan Publik',
-    tech_tags: ['SEO Teknikal', 'Entity Graph', 'Next.js ISR'],
+    tech_tags: ['Optimasi Kecepatan', 'Struktur Konten', 'Akses Cepat'],
     display_order: 0,
     is_active: true
   },
@@ -87,15 +85,15 @@ const fallbackCaseStudies: CaseStudy[] = [
     id: 'c2',
     sector_badge: 'Kemitraan Strategis Swasta',
     client_name: 'Agritech & Digital Marketing Venture',
-    challenge: 'Pitch deck investor kurang memiliki struktur data matematika terintegrasi dan copy kurang asertif.',
-    approach: 'Merombak total deck presentasi, menyusun narasi brand dengan PAS framework, dan menautkan data riset pasar riil.',
+    challenge: 'Slide presentasi untuk investor kurang memiliki struktur data yang kuat dan naskah penawaran kurang meyakinkan.',
+    approach: 'Merombak total struktur presentasi, menyusun narasi brand dengan fokus pada psikologi pasar, dan menyajikan riset pasar riil.',
     metrics: [
       { label: 'Pendanaan Awal Teramankan', value: 'US$1.2M', number: 1.2 }
     ],
-    testimonial_text: 'Zadit merancang struktur proposal dan deck kami sedemikian rupa sehingga investor langsung menangkap nilai unik produk dalam 3 menit pertama.',
+    testimonial_text: 'Zadit merancang struktur proposal dan presentasi kami sedemikian rupa sehingga mitra langsung menangkap nilai unik produk dalam waktu singkat.',
     testimonial_author: 'Fahri Ramadhan',
     testimonial_role: 'Co-Founder & Chief Product Officer',
-    tech_tags: ['Pitch Deck Design', 'Conversion Copy', 'Data Valuation'],
+    tech_tags: ['Desain Presentasi', 'Penulisan Konversi', 'Analisis Data'],
     display_order: 1,
     is_active: true
   }

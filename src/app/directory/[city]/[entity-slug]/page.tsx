@@ -124,7 +124,7 @@ export default function EntityDetailPage() {
                 </div>
                 <div className="space-y-1">
                   <span className="inline-block bg-teal-accent/10 border border-teal-accent/25 text-teal-accent font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 rounded">
-                    Verified profile
+                    Profil Terverifikasi
                   </span>
                   <h1 className="text-2xl md:text-3xl font-heading-sans font-bold text-text-primary">{entity.name}</h1>
                   <p className="text-xs font-mono text-gold-accent uppercase">{entity.category}</p>
@@ -133,7 +133,7 @@ export default function EntityDetailPage() {
 
               {/* Trust Score badge */}
               <div className="bg-offwhite border border-brand-border rounded-xl px-4 py-3 text-center md:self-start flex flex-col items-center">
-                <span className="text-[9px] font-mono text-text-muted uppercase tracking-wider">TRUST SCORE</span>
+                <span className="text-[9px] font-mono text-text-muted uppercase tracking-wider">SKOR KREDIBILITAS</span>
                 <div className="flex items-center gap-1.5 mt-1">
                   <Star className="w-4 h-4 text-gold-accent fill-gold-accent" />
                   <span className="font-heading-sans font-extrabold text-text-primary">{entity.trustScore}</span>
@@ -145,7 +145,7 @@ export default function EntityDetailPage() {
 
             {/* Description & About */}
             <div className="space-y-4">
-              <h3 className="text-xs font-mono text-text-muted uppercase tracking-wider">{'// TENTANG ENTITAS'}</h3>
+              <h3 className="text-xs font-mono text-text-muted uppercase tracking-wider">Tentang Entitas</h3>
               <p className="text-sm md:text-base text-text-primary leading-relaxed font-sans">
                 {entity.description}
               </p>

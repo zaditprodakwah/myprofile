@@ -25,7 +25,7 @@ const steps = [
   {
     no: '04',
     title: 'Rekayasa Web Performa Tinggi',
-    description: 'Implementasi teknis web Next.js dengan optimasi sub-second load time, LCP < 1.0s, dan A11y 100%.',
+    description: 'Pembuatan website super cepat, responsif mobile, terverifikasi aman, dan mudah diakses oleh semua calon pelanggan.',
     icon: Zap,
   },
   {
@@ -37,7 +37,7 @@ const steps = [
   {
     no: '06',
     title: 'Optimasi & Iterasi Berkelanjutan',
-    description: 'Review analitik secara berkala, A/B testing sistematis, dan pemeliharaan mesin konten AI.',
+    description: 'Pemantauan performa secara berkala, analisis efektivitas halaman, dan pemeliharaan konten secara konsisten.',
     icon: BarChart3,
   },
 ];
@@ -94,7 +94,7 @@ export default function ProcessSection() {
   return (
     <div ref={triggerRef} id="process" className="bg-offwhite py-24 border-b border-brand-border overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 mb-16 lg:mb-12">
-        <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// FRAMEWORK KERJA'}</span>
+        <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Framework Kerja</span>
         <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2">
           Metodologi Pertumbuhan Terpadu
         </h2>

@@ -12,10 +12,10 @@ const roles = [
 ];
 
 const needs = [
-  { id: 'web_ecosystem', label: 'Website / Ekosistem Web Informatif' },
-  { id: 'seo_aeo_marketing', label: 'SEO & Konten AEO/GEO Marketing' },
-  { id: 'executive_doc', label: 'Slide Presentasi & Dokumen Eksekutif' },
-  { id: 'analytics_audit', label: 'Analytics & Growth Audit Portal' },
+  { id: 'web_ecosystem', label: 'Website & Pemeliharaan Web' },
+  { id: 'seo_aeo_marketing', label: 'SEO & Optimasi Pencarian AI' },
+  { id: 'executive_doc', label: 'Slide Presentasi & Proposal Bisnis' },
+  { id: 'analytics_audit', label: 'Audit Analitik & Performa Website' },
 ];
 
 export default function PartnershipForm() {
@@ -74,8 +74,8 @@ export default function PartnershipForm() {
       if (res.ok) {
         setIsSuccess(true);
         // Prepare pre-filled WhatsApp link
-        const whatsappText = `Halo Zadit, saya ${formData.name}. Saya baru saja mengisi formulir kemitraan di portofolio Anda untuk kebutuhan ${formData.need.map(n => needs.find(x => x.id === n)?.label || n).join(', ')}. Mari jadwalkan sesi diskusi singkat!`;
-        const waLink = `https://wa.me/6281234567890?text=${encodeURIComponent(whatsappText)}`;
+        const whatsappText = `Halo Zadit, saya ${formData.name}. Saya tertarik untuk mendiskusikan kemitraan mengenai ${formData.need.map(n => needs.find(x => x.id === n)?.label || n).join(', ')}. Mari kita jadwalkan waktu untuk berdiskusi.`;
+        const waLink = `https://wa.me/6282316363177?text=${encodeURIComponent(whatsappText)}`;
         
         // Timeout to redirect to WhatsApp for quick follow up
         setTimeout(() => {
@@ -98,7 +98,7 @@ export default function PartnershipForm() {
         
         {/* Header */}
         <div className="text-center mb-12">
-          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// AJAK KEMITRAAN'}</span>
+          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Formulir Kemitraan</span>
           <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2">
             Mari Bangun Sistem Bersama
           </h2>

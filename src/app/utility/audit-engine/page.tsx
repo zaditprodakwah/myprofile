@@ -76,15 +76,15 @@ export default function AuditEnginePage() {
   // Run terminal logs simulation during API call
   const runTerminalLogs = (targetUrl: string, signal: { aborted: boolean }) => {
     const logs = [
-      `CONNECTING TO ZADIT DIAGNOSTIC NODE...`,
-      `RESOLVING DNS FOR HOSTNAME ${targetUrl}...`,
-      `DISPATCHING GOOGLE PAGESPEED INSIGHTS CORE (MOBILE)...`,
-      `PARSING ACCESSIBILITY STRUCTURE & DOM TREE (WCAG 2.1)...`,
-      `EVALUATING CORE WEB VITALS: LCP, FID/INP, AND CLS...`,
-      `MEASURING TOTAL BLOCKING TIME (TBT) AND RENDER PATHWAYS...`,
-      `MAPPING CONVERSION DRIFT RATIO BASED ON LOAD SPEEDS...`,
-      `SAVING ANALYTICS PAYLOAD TO SUPABASE CLOUD LOGS...`,
-      `GENERATING FINAL DIAGNOSTIC REPORT...`
+      `Menghubungkan ke sistem analisis performa...`,
+      `Membaca struktur alamat website ${targetUrl}...`,
+      `Mengirim permintaan audit ke Google PageSpeed Insights (Mobile)...`,
+      `Menganalisis kemudahan navigasi & aksesibilitas halaman...`,
+      `Mengukur kestabilan visual dan performa loading utama...`,
+      `Mendeteksi hambatan respon interaksi pada halaman...`,
+      `Menghitung potensi kehilangan calon pelanggan akibat loading lambat...`,
+      `Menyimpan ringkasan analisis untuk laporan optimasi...`,
+      `Menyusun laporan rekomendasi optimasi konversi...`
     ];
 
     let currentIndex = 0;
@@ -153,7 +153,7 @@ export default function AuditEnginePage() {
       const timestamp = new Date().toLocaleTimeString().split(' ')[0];
       setTerminalLogs((prev) => [
         ...prev, 
-        `[${timestamp}] AUDIT SELESAI DENGAN SUKSES. MENYUSUN TAMPILAN DIAGNOSTIK...`
+        `[${timestamp}] ANALISIS SELESAI. LAPORAN REKOMENDASI SIAP DITAMPILKAN...`
       ]);
 
       setTimeout(() => {
@@ -199,7 +199,7 @@ export default function AuditEnginePage() {
           
           {/* Header */}
           <div className="text-center space-y-4">
-            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">{'// EVALUASI EKOSISTEM RIIL'}</span>
+            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Analisis Performa Halaman</span>
             <h1 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary">
               Audit Aksesibilitas & Narasi Web
             </h1>
@@ -287,7 +287,7 @@ export default function AuditEnginePage() {
               <div className="flex items-center justify-between pb-3 border-b border-slate-700/60">
                 <div className="flex items-center gap-2">
                   <Monitor className="w-4 h-4 text-teal-accent" />
-                  <span className="text-[10px] font-mono text-text-inverse tracking-wider uppercase font-semibold">GROWTH CONSOLE ENGINE</span>
+                  <span className="text-[10px] font-mono text-text-inverse tracking-wider uppercase font-semibold">KONSOL ANALISIS PERFORMA</span>
                 </div>
                 <div className="flex gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
@@ -303,7 +303,7 @@ export default function AuditEnginePage() {
                   </div>
                 ))}
                 <div className="flex items-center gap-1.5 text-teal-accent animate-pulse font-bold mt-1">
-                  <span>&gt; RUNNING DEEP SCANNING METHOD...</span>
+                  <span>&gt; Memproses analisis mendalam...</span>
                 </div>
               </div>
 
@@ -335,22 +335,22 @@ export default function AuditEnginePage() {
 
               {/* Speed Metrics Table */}
               <div className="bg-offwhite rounded-xl p-5 space-y-3">
-                <h4 className="text-[10px] font-mono tracking-widest text-text-muted uppercase">{'// METRIK UTAMA CORE WEB VITALS'}</h4>
+                <h4 className="text-[10px] font-mono tracking-widest text-text-muted uppercase">Metrik Kecepatan Situs (Google PageSpeed)</h4>
                 <div className="grid grid-cols-2 gap-4 text-xs font-mono text-text-primary">
                   <div className="flex justify-between pb-1.5 border-b border-brand-border">
-                    <span className="text-text-muted">Largest Contentful Paint (LCP)</span>
+                    <span className="text-text-muted">Waktu Loading Utama (LCP)</span>
                     <span className="font-bold">{auditResult.metrics.lcp}</span>
                   </div>
                   <div className="flex justify-between pb-1.5 border-b border-brand-border">
-                    <span className="text-text-muted">First Contentful Paint (FCP)</span>
+                    <span className="text-text-muted">Respon Pertama Halaman (FCP)</span>
                     <span className="font-bold">{auditResult.metrics.fcp}</span>
                   </div>
                   <div className="flex justify-between pb-1.5 border-b border-brand-border">
-                    <span className="text-text-muted">Cumulative Layout Shift (CLS)</span>
+                    <span className="text-text-muted">Kestabilan Visual (CLS)</span>
                     <span className="font-bold">{auditResult.metrics.cls}</span>
                   </div>
                   <div className="flex justify-between pb-1.5 border-b border-brand-border">
-                    <span className="text-text-muted">Speed Index (Mobile)</span>
+                    <span className="text-text-muted">Kecepatan Render Mobile</span>
                     <span className="font-bold">{auditResult.metrics.speedIndex}</span>
                   </div>
                 </div>

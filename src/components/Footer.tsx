@@ -15,13 +15,13 @@ export default function Footer() {
             <span className="font-heading-sans font-bold text-sm text-text-inverse tracking-tight">Zadit Growth Portfolio</span>
           </div>
           <p className="text-xs text-text-inverse/70 leading-relaxed max-w-sm">
-            Eksplorasi rekayasa digital marketing terpadu yang memadukan optimasi SEO/AEO/GEO, copywriting direct-response, dan implementasi kode Next.js performa tinggi.
+            Membantu UMKM, perusahaan swasta, dan instansi pemerintah membangun ekosistem digital yang kredibel, berkinerja tinggi, dan teroptimasi untuk mesin pencari modern.
           </p>
         </div>
 
         {/* Links Column */}
         <div className="md:col-span-3 space-y-3">
-          <h4 className="text-xs font-mono tracking-widest text-text-inverse uppercase">{'// NAVIGASI'}</h4>
+          <h4 className="text-xs font-mono tracking-widest text-text-inverse uppercase">PETA SITUS</h4>
           <ul className="space-y-2">
             <li><Link href="/" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Home</Link></li>
             <li><Link href="/#process" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Metodologi Proses</Link></li>
@@ -32,12 +32,12 @@ export default function Footer() {
 
         {/* Utilities Column */}
         <div className="md:col-span-4 space-y-3">
-          <h4 className="text-xs font-mono tracking-widest text-text-inverse uppercase">{'// GROWTH UTILITIES'}</h4>
+          <h4 className="text-xs font-mono tracking-widest text-text-inverse uppercase">LAYANAN & ALAT</h4>
           <ul className="space-y-2">
-            <li><Link href="/directory" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Trust Bank Directory (pSEO)</Link></li>
-            <li><Link href="/utility/audit-engine" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Free Diagnostic Audit Engine</Link></li>
-            <li><Link href="/blog/mengapa-ai-search-mengubah-cara-kita-menulis-konten" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">AGC Blog & Wawasan</Link></li>
-            <li><Link href="/admin/dashboard" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Dashboard Admin Command Center</Link></li>
+            <li><Link href="/directory" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Direktori Bisnis Kredibel</Link></li>
+            <li><Link href="/utility/audit-engine" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Audit Kecepatan & Performa Website</Link></li>
+            <li><Link href="/blog" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Blog & Artikel Edukasi</Link></li>
+            <li><Link href="/admin/dashboard" className="text-xs text-text-inverse/60 hover:text-teal-accent transition-colors">Portal Manajemen Konten</Link></li>
           </ul>
         </div>
 
@@ -49,7 +49,7 @@ export default function Footer() {
           © {new Date().getFullYear()} Zadit.dev. All rights reserved.
         </p>
         <div className="flex gap-4 font-mono text-[10px] text-text-inverse/50">
-          <Link href="/llms.txt" className="hover:text-gold-accent transition-colors uppercase tracking-wider">{'// LLMS.TXT'}</Link>
+          <Link href="/llms.txt" className="hover:text-gold-accent transition-colors uppercase tracking-wider">DOKUMENTASI AI</Link>
           <Link href="#" className="hover:text-teal-accent transition-colors uppercase tracking-wider">PRIVACY POLICY</Link>
           <a href="https://kontak.link/muhzadit" target="_blank" rel="noopener noreferrer" className="hover:text-teal-accent transition-colors uppercase tracking-wider">KONTAK.LINK</a>
         </div>
