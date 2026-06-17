@@ -10,16 +10,15 @@ export async function POST(request: Request) {
       return new NextResponse('Missing required fields', { status: 400 });
     }
 
-    // Map partnership data into existing 'inquiries' schema
-    const { error } = await supabase.from('inquiries').insert({
-      full_name: name,
-      whatsapp: whatsapp,
-      email: email,
-      role: role,
-      segment: 'business', // Required by constraint
-      goal: need,
-      notes: projectDescription,
-      status: 'new'
+    // Map partnership data into utility_leads schema
+    const { error } = await supabase.from('utility_leads').insert({
+      lead_name: name,
+      contact_info: JSON.stringify({ whatsapp, email, role, need }),
+      target_site_url: 'N/A',
+      audit_category: `Partnership Inquiry: ${role}`,
+      accessibility_score: 100, // static placeholder
+      narrative_score: 100, // static placeholder
+      status: 'PENDING',
     });
 
     if (error) {
