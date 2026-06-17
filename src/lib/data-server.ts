@@ -5,58 +5,65 @@ import { Service, CaseStudy, City, Entity } from './types';
 // Safe fallbacks to keep site building and running even if DB tables do not exist yet
 const fallbackSiteContent: Record<string, string> = {
   hero_headline: 'Dari Kata ke Konversi. Dari Data ke Dominasi.',
-  hero_subheading: 'Saya membantu UMKM, instansi, dan lembaga publik merancang ekosistem digital yang bukan hanya tampil — tapi mengkonversi secara sistematis.',
+  hero_subheading: 'Saya membantu UMKM, instansi, dan lembaga publik merancang strategi pemasaran 360°, optimasi SEO teknis, dan copywriting konversi yang mengamankan pertumbuhan bisnis secara sistematis.',
   process_title: 'Metodologi Pertumbuhan Terpadu',
   process_subtitle: 'Proses kerja terukur yang dirancang untuk mengamankan kejelasan pesan, kecepatan web, dan konversi maksimal.',
   partnership_title: 'Mari Bangun Sistem Bersama',
   partnership_subtitle: 'Formulir diagnosis singkat kemitraan. Isi dalam 60 detik untuk mendapatkan rekomendasi awal langsung dari Zadit.'
-};const fallbackServices: Service[] = [
+};
+
+const fallbackServices: Service[] = [
   {
     id: 's1',
-    title: 'Pengembangan & Pengelolaan Website',
-    description: 'Pembuatan & pengelolaan web performa tinggi menggunakan sistem modern dan database dinamis terintegrasi. Solusi digital mandiri yang cepat, responsif, dan siap tumbuh.',
+    title: 'Branding & Digital Marketing Strategy',
+    subtitle: '360° Pemasaran',
+    description: 'Penyusunan strategi pemasaran komprehensif menggunakan framework 4C Diamond dan 4P Marketing. Analisis persona audiens mendalam untuk menyelaraskan pain points konsumen dengan solusi bisnis Anda.',
     icon_name: 'Globe',
-    tags: ['Kecepatan Tinggi', 'Mudah Dikelola', 'Keamanan Sistem', 'Bebas Hambatan'],
+    tags: ['360° Marketing', '4C Diamond', '4P Framework', 'Brand Strategy'],
     display_order: 0,
     size: 'large',
     is_active: true
   },
   {
     id: 's2',
-    title: 'Analitik & Intelijen Data',
-    description: 'Pelacakan presisi perilaku pengunjung website, audit hambatan konversi, visualisasi data analitik, dan pengujian sistematis untuk keputusan pemasaran berbasis bukti.',
-    icon_name: 'BarChart3',
-    tags: ['Analisis Pengunjung', 'Laporan Kinerja', 'Peta Navigasi', 'Data Keputusan'],
+    title: 'SEO & Content Marketing',
+    subtitle: 'Visibilitas AI & SERP',
+    description: 'Riset kata kunci (keyword research) intensif, optimasi SERP Snippet (meta title, description, URL friendly), dan penulisan konten teroptimasi tinggi yang disukai Google maupun mesin AI.',
+    icon_name: 'Search',
+    tags: ['On-Page SEO', 'Keyword Research', 'SERP Optimization', 'Content Strategy'],
     display_order: 1,
     size: 'small',
     is_active: true
   },
   {
     id: 's3',
-    title: 'Optimasi Mesin Pencari & AI Search',
-    description: 'Memastikan bisnis Anda ditemukan tidak hanya oleh pencarian konvensional (Google), tetapi juga siap tampil optimal di mesin AI generatif (seperti ChatGPT, Gemini, Claude).',
-    icon_name: 'Search',
-    tags: ['Optimasi Google', 'Kesesuaian AI Search', 'Pencarian Lokal', 'Target Spesifik'],
+    title: 'Penyusunan Kampanye & Media Planning',
+    subtitle: 'KOL & Media Mix',
+    description: 'Perancangan kampanye digital terintegrasi, media planning dengan alokasi budget efisien, dan penyusunan draf instruksi influencer (KOL Content Brief) untuk hasil optimal.',
+    icon_name: 'FileText',
+    tags: ['Media Planning', 'KOL Briefing', 'Funnel Execution', 'Creative Content'],
     display_order: 2,
     size: 'small',
     is_active: true
   },
   {
     id: 's4',
-    title: 'Copywriting Konversi & Penulisan Naskah',
-    description: 'Kata-kata yang memicu tindakan. Penulisan naskah penjualan untuk halaman penawaran, materi kampanye, dan narasi brand yang didasarkan pada psikologi konsumen terukur.',
-    icon_name: 'PenTool',
-    tags: ['Naskah Penjualan', 'Struktur Halaman', 'Psikologi Konsumen'],
+    title: 'Audit Performa & SEO Teknis',
+    subtitle: 'Kecepatan & Core Web Vitals',
+    description: 'Pengujian responsivitas mobile, audit tautan rusak (broken link check), optimasi Core Web Vitals (LCP, CLS, FID), dan peningkatan kecepatan loading situs web secara terukur.',
+    icon_name: 'BarChart3',
+    tags: ['PageSpeed Audit', 'Broken Link Check', 'Core Web Vitals', 'Mobile-Friendly'],
     display_order: 3,
     size: 'large',
     is_active: true
   },
   {
     id: 's5',
-    title: 'Dokumentasi Eksekutif & Presentasi',
-    description: 'Penyusunan dokumen bisnis tingkat tinggi untuk memenangkan kemitraan. Desain pitch deck investor profesional, proposal bisnis institusional, dan ringkasan kerja sama strategis.',
-    icon_name: 'FileText',
-    tags: ['Slide Investor', 'Proposal Bisnis', 'Brief Kolaborasi', 'Visualisasi Data'],
+    title: 'Administrasi & Manajemen Operasional',
+    subtitle: 'Efisiensi Kerja',
+    description: 'Pengalaman memimpin tim administratif, manajemen operasional harian organisasi, dan pemanfaatan sistem kerja digital terstruktur (Google Workspace/MS Office) untuk akurasi data maksimal.',
+    icon_name: 'PenTool',
+    tags: ['Team Leadership', 'Office Admin', 'Data Accuracy', 'Google Workspace'],
     display_order: 4,
     size: 'large',
     is_active: true
@@ -66,38 +73,57 @@ const fallbackSiteContent: Record<string, string> = {
 const fallbackCaseStudies: CaseStudy[] = [
   {
     id: 'c1',
-    sector_badge: 'Sektor Publik & Swasta',
-    client_name: 'Aliansi Pengembangan Komunitas & Layanan Publik Regional',
-    challenge: 'Akses website lambat, tidak responsif di pelosok, dan ketergantungan pada media pihak ketiga.',
-    approach: 'Restrukturisasi konten digital secara dinamis, optimasi peta situs (sitemap), dan peningkatan performa loading halaman.',
+    sector_badge: 'Audit & Optimasi SEO',
+    client_name: 'tirto.id',
+    challenge: 'Kecepatan muat lambat (mobile score 50/100, LCP 4.5s) dan isu broken links.',
+    approach: 'Technical audit komprehensif, kompresi gambar WebP, minifikasi CSS/JS, dan redireksi 301.',
     metrics: [
-      { label: 'Keterbacaan Google Organik', value: '+148%', number: 148 },
-      { label: 'Keterlibatan Publik', value: '3.4x', number: 3.4 }
+      { label: 'Kecepatan LCP Target', value: '< 2.5s', number: 2.5 },
+      { label: 'PageSpeed Mobile Target', value: '90+', number: 90 }
     ],
-    testimonial_text: 'Arsitektur Zadit membuat masyarakat pelosok dapat mengakses layanan informasi dalam hitungan milidetik secara lancar.',
-    testimonial_author: 'Dr. Ir. H. Hermawan',
-    testimonial_role: 'Penasihat Kebijakan Publik',
-    tech_tags: ['Optimasi Kecepatan', 'Struktur Konten', 'Akses Cepat'],
+    testimonial_text: 'Optimasi SEO on-page dan technical audit yang dirumuskan memberikan arahan terstruktur untuk meningkatkan kecepatan pemuatan halaman dan visibilitas di Google.',
+    testimonial_author: 'M. Khoiruzzadittaqwa',
+    testimonial_role: 'SEO Specialist Candidate',
+    tech_tags: ['Technical Audit', 'PageSpeed Insights', 'On-Page SEO'],
     display_order: 0,
     is_active: true
   },
   {
     id: 'c2',
-    sector_badge: 'Kemitraan Strategis Swasta',
-    client_name: 'Agritech & Digital Marketing Venture',
-    challenge: 'Slide presentasi untuk investor kurang memiliki struktur data yang kuat dan naskah penawaran kurang meyakinkan.',
-    approach: 'Merombak total struktur presentasi, menyusun narasi brand dengan fokus pada psikologi pasar, dan menyajikan riset pasar riil.',
+    sector_badge: 'Brand Campaign & Media Planning',
+    client_name: 'tiket.com',
+    challenge: 'Meningkatkan keterlibatan pengguna aktif, menarik pengguna baru, dan mengaktifkan kembali pengguna dormant.',
+    approach: 'Merancang kampanye "Level Up Rewards" & "Referral Bonanza", serta menyusun alokasi media mix.',
     metrics: [
-      { label: 'Pendanaan Awal Teramankan', value: 'US$1.2M', number: 1.2 }
+      { label: 'Alokasi Digital Marketing', value: '60%', number: 60 },
+      { label: 'Alokasi Sosial Media', value: '30%', number: 30 }
     ],
-    testimonial_text: 'Zadit merancang struktur proposal dan presentasi kami sedemikian rupa sehingga mitra langsung menangkap nilai unik produk dalam waktu singkat.',
-    testimonial_author: 'Fahri Ramadhan',
-    testimonial_role: 'Co-Founder & Chief Product Officer',
-    tech_tags: ['Desain Presentasi', 'Penulisan Konversi', 'Analisis Data'],
+    testimonial_text: 'Perencanaan strategi 360° digital marketing yang memetakan persona audiens Budi, Andi, dan Cici dengan pain points mereka secara presisi.',
+    testimonial_author: 'M. Khoiruzzadittaqwa',
+    testimonial_role: 'Digital Marketing Specialist',
+    tech_tags: ['Media Planning', 'Customer Persona', 'Campaign Brief'],
     display_order: 1,
+    is_active: true
+  },
+  {
+    id: 'c3',
+    sector_badge: 'Influencer & Community Marketing',
+    client_name: 'vidio.com',
+    challenge: 'Menyebarkan informasi hak siar Piala Dunia secara fleksibel dan terjangkau (Rp50.000).',
+    approach: 'Menyusun draf KOL Content Brief (TikTok/Instagram Reels) dengan alur Opening-Body-CTA yang persuasif.',
+    metrics: [
+      { label: 'Biaya Langganan Akses', value: 'Rp50k', number: 50 },
+      { label: 'Durasi Video KOL', value: '30-60s', number: 45 }
+    ],
+    testimonial_text: 'Brief KOL yang terstruktur dengan skenario opening "Bosan nonton di TV?" dan CTA persuasif untuk mendorong konversi langsung.',
+    testimonial_author: 'M. Khoiruzzadittaqwa',
+    testimonial_role: 'KOL Specialist Candidate',
+    tech_tags: ['KOL Briefing', 'TikTok Strategy', 'Content Flow'],
+    display_order: 2,
     is_active: true
   }
 ];
+
 
 const fallbackCities: City[] = [
   { id: 'ct1', name: 'Cirebon', slug: 'cirebon', latitude: -6.7216, longitude: 108.5560, target_niche: 'UMKM & Layanan Publik Regional' },

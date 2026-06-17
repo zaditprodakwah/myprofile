@@ -17,6 +17,13 @@ interface Article {
 // Fallback articles in case the DB is not seeded or articles table is empty
 const fallbackArticles: Article[] = [
   {
+    id: '4',
+    title: 'Rekomendasi Riset Libraries & Resources UI/UX Premium Next.js',
+    slug: 'rekomendasi-riset-libraries-resources-ui-ux-premium-nextjs',
+    meta_description: 'Kumpulan rekomendasi libraries gerakan (Motion), komponen interaktif (Aceternity UI, Magic UI, HeroUI), rendering 3D (React Three Fiber), dan optimasi performa.',
+    published_at: '2026-06-18T00:00:00.000Z'
+  },
+  {
     id: '1',
     title: 'Cara Optimasi Web UMKM Indonesia di Era Digital',
     slug: 'cara-optimasi-web-umkm-indonesia',
@@ -38,6 +45,7 @@ const fallbackArticles: Article[] = [
     published_at: '2026-06-15T15:00:00.000Z'
   }
 ];
+
 
 export default async function BlogIndexPage() {
   let articles: Article[] = [];

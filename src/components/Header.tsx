@@ -4,11 +4,29 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const NAV_LINKS = [
+  { href: '/#process', label: 'Proses' },
+  { href: '/#case-studies', label: 'Studi Kasus' },
+  { href: '/#services', label: 'Layanan' },
+  { href: '/directory', label: 'Direktori' },
+  { href: '/utility/audit-engine', label: 'Audit Gratis' },
+];
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [availability, setAvailability] = useState('AVAILABLE');
+  const [scrolled, setScrolled] = useState(false);
 
+  // Scroll detection for header compact mode
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Availability status from Supabase
   useEffect(() => {
     async function getAvailability() {
       try {
@@ -17,114 +35,120 @@ export default function Header() {
           .select('value')
           .eq('key', 'available_status')
           .single();
-        if (data && data.value) {
-          setAvailability(data.value);
-        }
-      } catch (err) {
-        console.warn('Could not fetch availability from Supabase', err);
-      }
+        if (data?.value) setAvailability(data.value);
+      } catch { /* noop */ }
     }
     getAvailability();
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-20 bg-alabaster/85 backdrop-blur-md border-b border-brand-border z-50 transition-all duration-300 header-shrink flex items-center">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? 'bg-alabaster/95 backdrop-blur-md border-b border-brand-border shadow-sm h-[58px]'
+          : 'bg-alabaster/80 backdrop-blur-sm border-b border-transparent h-20'
+      } flex items-center`}
+    >
       <div className="w-full max-w-6xl mx-auto px-6 flex justify-between items-center">
-        
+
         {/* Monogram Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="rounded-xl bg-brand-slate text-alabaster px-3.5 py-1.5 font-heading-sans font-extrabold text-xl transition-all group-hover:scale-105">
+        <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            className="rounded-xl bg-brand-slate text-alabaster px-3 py-1.5 font-heading-sans font-extrabold text-lg transition-all group-hover:bg-teal-accent shadow-sm"
+          >
             Z
-          </div>
+          </motion.div>
           <div className="flex flex-col">
-            <span className="font-heading-sans font-bold text-sm text-text-primary tracking-tight">Zadit Growth</span>
-            <span className="font-mono text-[9px] tracking-[0.2em] text-teal-accent uppercase">Mitra Pertumbuhan</span>
+            <span className="font-heading-sans font-bold text-sm text-text-primary tracking-tight">
+              Zadit Growth
+            </span>
+            <span className="font-mono text-[8px] tracking-[0.2em] text-teal-accent uppercase">
+              Mitra Pertumbuhan
+            </span>
           </div>
         </Link>
 
-        {/* Desktop Links */}
-        <nav className="hidden md:flex items-center gap-8">
-          <Link href="/#process" className="text-xs font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors">Proses</Link>
-          <Link href="/#case-studies" className="text-xs font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors">Studi Kasus</Link>
-          <Link href="/#services" className="text-xs font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors">Layanan</Link>
-          <Link href="/directory" className="text-xs font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors">Direktori</Link>
-          <Link href="/utility/audit-engine" className="text-xs font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors">Request Audit</Link>
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-7">
+          {NAV_LINKS.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="text-[10px] font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors relative hover-underline"
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Right CTA */}
-        <div className="hidden md:flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1 bg-teal-accent/5 border border-teal-accent/15 rounded-full">
-            <span className={`w-2 h-2 rounded-full ${availability === 'AVAILABLE' ? 'bg-teal-accent animate-pulse' : 'bg-gold-accent animate-ping'}`} />
-            <span className="font-mono text-[10px] tracking-wider text-text-primary uppercase font-semibold">
+        {/* Desktop Right CTA */}
+        <div className="hidden md:flex items-center gap-3">
+          {/* Live availability badge */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-accent/5 border border-teal-accent/15 rounded-full">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                availability === 'AVAILABLE'
+                  ? 'bg-teal-accent animate-pulse'
+                  : 'bg-gold-accent animate-ping'
+              }`}
+            />
+            <span className="font-mono text-[9px] tracking-wider text-text-primary uppercase font-semibold">
               {availability === 'AVAILABLE' ? 'Tersedia' : 'Sibuk'}
             </span>
           </div>
-          <Link 
-            href="/#contact" 
-            className="bg-teal-accent hover:bg-brand-slate text-text-inverse text-xs font-heading-sans font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all"
+
+          <Link
+            href="/#contact"
+            className="bg-teal-accent hover:bg-brand-slate text-text-inverse text-[10px] font-heading-sans font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all duration-300 shadow-sm shadow-teal-accent/20"
           >
             Konsultasi
           </Link>
         </div>
 
         {/* Mobile menu trigger */}
-        <button 
-          onClick={() => setIsOpen(!isOpen)} 
+        <motion.button
+          onClick={() => setIsOpen(!isOpen)}
+          whileTap={{ scale: 0.94 }}
           className="md:hidden text-text-primary hover:text-teal-accent transition-colors"
-          aria-label="Toggle menu"
+          aria-label="Toggle navigation menu"
         >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </motion.button>
       </div>
 
       {/* Mobile Drawer */}
-      {isOpen && (
-        <div className="absolute top-20 left-0 right-0 bg-white border-b border-brand-border py-6 px-6 md:hidden flex flex-col gap-4 shadow-xl">
-          <Link 
-            href="/#process" 
-            onClick={() => setIsOpen(false)} 
-            className="text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-2 transition-colors border-b border-brand-border"
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-full left-0 right-0 bg-white/98 backdrop-blur-md border-b border-brand-border py-5 px-6 md:hidden flex flex-col gap-1 shadow-xl"
           >
-            Proses
-          </Link>
-          <Link 
-            href="/#case-studies" 
-            onClick={() => setIsOpen(false)} 
-            className="text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-2 transition-colors border-b border-brand-border"
-          >
-            Studi Kasus
-          </Link>
-          <Link 
-            href="/#services" 
-            onClick={() => setIsOpen(false)} 
-            className="text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-2 transition-colors border-b border-brand-border"
-          >
-            Layanan
-          </Link>
-          <Link 
-            href="/directory" 
-            onClick={() => setIsOpen(false)} 
-            className="text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-2 transition-colors border-b border-brand-border"
-          >
-            Direktori Lokal
-          </Link>
-          <Link 
-            href="/utility/audit-engine" 
-            onClick={() => setIsOpen(false)} 
-            className="text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-2 transition-colors border-b border-brand-border"
-          >
-            Request Audit
-          </Link>
-          <Link 
-            href="/#contact" 
-            onClick={() => setIsOpen(false)} 
-            className="bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans text-xs font-bold uppercase tracking-wider text-center py-3.5 rounded-xl transition-all"
-          >
-            Konsultasi Kemitraan
-          </Link>
-        </div>
-      )}
+            {NAV_LINKS.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setIsOpen(false)}
+                className="text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-3 transition-colors border-b border-brand-border/50 flex items-center justify-between"
+              >
+                {label}
+                <span className="text-text-muted/40">→</span>
+              </Link>
+            ))}
+            <Link
+              href="/#contact"
+              onClick={() => setIsOpen(false)}
+              className="mt-4 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans text-xs font-bold uppercase tracking-wider text-center py-3.5 rounded-xl transition-all"
+            >
+              Konsultasi Kemitraan
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

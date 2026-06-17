@@ -36,7 +36,86 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
       .eq('slug', slug)
       .single();
 
-    if (data) {
+    if (slug === 'rekomendasi-riset-libraries-resources-ui-ux-premium-nextjs') {
+      article = {
+        title: 'Rekomendasi Riset Libraries & Resources UI/UX Premium Next.js',
+        slug: 'rekomendasi-riset-libraries-resources-ui-ux-premium-nextjs',
+        original_url: '',
+        content: `
+          <p><strong>Rekomendasi riset libraries, repo, dan resources terbaik</strong> untuk membangun UI/UX frontend & Design System di proyek React/Next.js/TypeScript yang mewah, premium, unik, 3D/animatif, interaktif, responsif, high-performance (khususnya mobile), dan luxurious di desktop.</p>
+
+          <h2>1. Core Animation & Motion Library (Wajib)</h2>
+          <p><strong>Motion (sebelumnya Framer Motion)</strong> adalah standar de facto untuk animasi smooth, gesture, scroll-driven, layout animations, dan micro-interactions. Ringan, performa tinggi, dan sangat kompatibel dengan Next.js (termasuk dukungan React 19). Gunakan untuk membuat feel "premium" dengan parallax, hover effects, dan transitions mewah.</p>
+          <ul>
+            <li><strong>Docs:</strong> <a href="https://motion.dev" target="_blank" rel="noopener noreferrer">motion.dev</a></li>
+            <li><strong>Contoh Premium:</strong> Banyak situs pemenang Awwwards menggunakan library ini sebagai fondasi interaksinya.</li>
+          </ul>
+
+          <h2>2. Animated & Premium Component Libraries (Copy-Paste Style)</h2>
+          <p>Untuk mempercepat visualisasi prototipe tanpa membuang waktu mendesain dari nol, kombinasi library berikut sangat disarankan:</p>
+          <ul>
+            <li><strong>Aceternity UI</strong> (<a href="https://ui.aceternity.com" target="_blank" rel="noopener noreferrer">ui.aceternity.com</a>): 200+ komponen cantik dengan Tailwind + Framer Motion. Sangat unik, animatif, cocok untuk landing pages mewah/SaaS. Banyak efek glow, 3D-like cards, parallax, dan interactive elements. Dipercaya oleh ribuan developer.</li>
+            <li><strong>Magic UI</strong> (<a href="https://magicui.design" target="_blank" rel="noopener noreferrer">magicui.design</a>): 150++ animated components & effects (React, TS, Tailwind, Motion). Companion sempurna untuk <strong>shadcn/ui</strong>. Fokus pada landing pages premium dengan particle effects, text animations, dll. Open-source dan sangat populer.</li>
+            <li><strong>HeroUI (sebelumnya NextUI)</strong> (<a href="https://heroui.com" target="_blank" rel="noopener noreferrer">heroui.com</a>): Beautiful by default, dibangun di atas React Aria + Tailwind. Animasi sangat smooth, mendukung dark mode, dan memiliki aksesibilitas tinggi secara default.</li>
+          </ul>
+          <p><strong>shadcn/ui + extensions (basis terbaik untuk custom premium):</strong></p>
+          <ul>
+            <li>Mulai dengan <strong>shadcn/ui</strong> (unstyled primitives dari Radix + Tailwind, full control & TypeScript native).</li>
+            <li>Tambahkan Aceternity/Magic UI, atau paid blocks seperti Shadcnblocks.com, Shadcn Studio, dll. Banyak repo GitHub dengan shadcn-fintech, sci-fi themes, dan animated bento grids.</li>
+          </ul>
+
+          <h2>3. 3D & Immersive Experiences</h2>
+          <ul>
+            <li><strong>React Three Fiber (R3F) + @react-three/drei:</strong> Renderer Three.js untuk React. Declarative, mudah diintegrasikan dengan state React. Sangat cocok untuk model 3D, interactive scenes, shaders, product viewers, atau background mewah.
+              <ul>
+                <li>Kombinasikan dengan Framer Motion untuk hybrid 2D/3D.</li>
+                <li>Contoh & Tutorial: <a href="https://docs.pmnd.rs/react-three-fiber/getting-started/introduction" target="_blank" rel="noopener noreferrer">docs.pmnd.rs</a>, saluran YouTube Wawa Sensei, atau Anderson Mancini untuk landing page 3D.</li>
+                <li>Performa mobile: Optimasi dengan suspense, LOD (Level of Detail), dan matikan efek berat di layar kecil.</li>
+              </ul>
+            </li>
+            <li><strong>Lamina & drei helpers:</strong> Untuk advanced materials & effects shading.</li>
+          </ul>
+
+          <h2>4. Design System & Tailwind-First Premium</h2>
+          <ul>
+            <li><strong>Tailwind CSS + shadcn/ui:</strong> Sebagai fondasi paling fleksibel untuk luxury custom look.</li>
+            <li><strong>Untitled UI, AlignUI, Tailwind Plus (Tailwind UI):</strong> Koleksi components profesional, responsive, dan customizable.</li>
+            <li><strong>Radix UI + React Aria:</strong> Primitives headless untuk build design system sendiri dengan aksesibilitas & interaktivitas premium.</li>
+          </ul>
+
+          <h2>5. Resources & Repos Lainnya</h2>
+          <ul>
+            <li><strong>Awwwards + Motion websites:</strong> Cari inspirasi situs dengan Framer Motion/R3F untuk mempelajari luxury feel.</li>
+            <li><strong>GitHub Awesome lists:</strong> <code>brillout/awesome-react-components</code> dan <code>birobirobiro/awesome-shadcn-ui</code>.</li>
+            <li><strong>Figma kits:</strong> Cocokkan Figma design dengan shadcn (shadcn Studio, dll.) untuk workflow design-to-code yang smooth.</li>
+            <li><strong>Performance Tips:</strong>
+              <ul>
+                <li>Gunakan Next.js App Router + Server Components.</li>
+                <li>Lazy load 3D/animasi berat menggunakan dynamic imports.</li>
+                <li>Optimalkan gambar menggunakan komponen Next Image dan lakukan bundle analysis secara berkala.</li>
+                <li>Lakukan pengujian intensif di mobile: R3F bisa sangat berat, prioritaskan fallback atau reduced effects.</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h2>Kesimpulan: Stack Rekomendasi Utama untuk "Mewah & Unik"</h2>
+          <ol>
+            <li>Next.js App Router + TypeScript</li>
+            <li>Tailwind CSS v4</li>
+            <li>shadcn/ui + Aceternity/Magic UI</li>
+            <li>Motion untuk animasi</li>
+            <li>React Three Fiber untuk 3D elements secara selektif</li>
+            <li>Custom Design Tokens + Dark Mode</li>
+          </ol>
+        `,
+        semantic_keywords: 'ui/ux, nextjs, react, framer motion, react three fiber, design system, premium',
+        faq_items: [
+          { question: 'Apa library animasi terbaik untuk Next.js?', answer: 'Motion (sebelumnya Framer Motion) adalah standar utama untuk animasi smooth dan gesture di Next.js.' },
+          { question: 'Bagaimana cara menambahkan interaksi 3D premium di website?', answer: 'Gunakan React Three Fiber (R3F) yang dikombinasikan dengan Framer Motion untuk perpaduan elemen 2D dan 3D yang interaktif.' },
+          { question: 'Apakah React Three Fiber berat di HP/mobile?', answer: 'Bisa cukup berat. Solusinya adalah menggunakan lazy load, level of detail (LOD) yang dinamis, atau menyembunyikan efek 3D berat pada layar kecil.' }
+        ]
+      };
+    } else if (data) {
       article = {
         title: data.title,
         slug: data.slug,
@@ -48,6 +127,7 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
     } else {
       // 2. AGC Trigger: Generate article dynamically using Multi-LLM Routing
       const title = getTitleFromSlug(slug);
+
       const systemInstruction = `Tulis artikel SEO komprehensif dalam Bahasa Indonesia. 
       Panjang 700-1000 kata. 
       Gunakan struktur Definition-Lead pada 200 kata pertama (contoh: "X adalah Y yang berfungsi untuk Z..."). 

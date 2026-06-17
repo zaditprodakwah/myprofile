@@ -2,191 +2,274 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { CaseStudy } from '@/lib/types';
+import { motion, useInView } from 'framer-motion';
+import { Quote, ExternalLink, TrendingUp } from 'lucide-react';
 
 interface CaseStudiesSectionProps {
   caseStudies: CaseStudy[];
 }
 
-export default function CaseStudiesSection({ caseStudies }: CaseStudiesSectionProps) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+// Client logo mapping — real brand signals for EEAT
+const CLIENT_META: Record<string, { color: string; domain: string }> = {
+  'tirto.id': { color: '#e63946', domain: 'tirto.id' },
+  'tiket.com': { color: '#0057b7', domain: 'tiket.com' },
+  'vidio.com': { color: '#7209b7', domain: 'vidio.com' },
+};
+
+// Single case study card
+function CaseStudyCard({
+  cs,
+  index,
+  inView,
+}: {
+  cs: CaseStudy;
+  index: number;
+  inView: boolean;
+}) {
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const cardRef = useRef<HTMLDivElement>(null);
+  const cardInView = useInView(cardRef, { once: true, amount: 0.15 });
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!inView || !caseStudies) return;
-
-    caseStudies.forEach((cs) => {
-      if (!cs.metrics) return;
-      cs.metrics.forEach((m, idx) => {
-        const target = m.number || 0;
-        const duration = 1200; // 1.2s
-        const start = performance.now();
-        const key = `${cs.id}-${idx}`;
-
-        const run = (now: number) => {
-          const elapsed = now - start;
-          const progress = Math.min(elapsed / duration, 1);
-          const ease = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-          
-          setCounts((prev) => ({
-            ...prev,
-            [key]: Math.round(ease * target),
-          }));
-
-          if (progress < 1) {
-            requestAnimationFrame(run);
-          }
-        };
-
-        requestAnimationFrame(run);
-      });
-    });
-  }, [inView, caseStudies]);
-
-  // Handle CSS 3D Tilt Effect
+  // Tilt effect
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
     const { left, top, width, height } = card.getBoundingClientRect();
     const x = (e.clientX - left) / width - 0.5;
     const y = (e.clientY - top) / height - 0.5;
-
-    card.style.transform = `
-      perspective(1000px)
-      rotateY(${x * 6}deg)
-      rotateX(${-y * 6}deg)
-      translateZ(4px)
-    `;
-    card.style.boxShadow = `
-      ${x * -15}px ${y * -15}px 30px rgba(13, 148, 136, 0.04),
-      0 10px 25px -5px rgba(0, 0, 0, 0.05)
-    `;
+    card.style.transform = `perspective(1200px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg) translateZ(6px)`;
+    card.style.boxShadow = `${x * -20}px ${y * -20}px 40px rgba(13,148,136,0.05), 0 20px 40px -10px rgba(15,23,42,0.06)`;
   };
-
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateZ(0px)';
-    card.style.boxShadow = 'none';
+    e.currentTarget.style.transform = 'perspective(1200px) rotateY(0deg) rotateX(0deg) translateZ(0)';
+    e.currentTarget.style.boxShadow = '';
   };
+
+  // Counter animation on view
+  useEffect(() => {
+    if (!cardInView || !cs.metrics) return;
+    cs.metrics.forEach((m, idx) => {
+      const target = m.number || 0;
+      if (!target) return;
+      const duration = 1300;
+      const start = performance.now();
+      const key = `${cs.id}-${idx}`;
+      const run = (now: number) => {
+        const p = Math.min((now - start) / duration, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        setCounts(prev => ({ ...prev, [key]: Math.round(e * target) }));
+        if (p < 1) requestAnimationFrame(run);
+      };
+      requestAnimationFrame(run);
+    });
+  }, [cardInView, cs]);
+
+  const clientKey = cs.client_name?.toLowerCase() ?? '';
+  const meta = Object.entries(CLIENT_META).find(([k]) => clientKey.includes(k));
+  const brandColor = meta?.[1].color ?? '#0d9488';
+  const brandDomain = meta?.[1].domain;
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="bg-white border border-brand-border rounded-2xl p-8 lg:p-10 transition-all duration-300 transform-style-3d cursor-default shadow-sm relative overflow-hidden group"
+    >
+      {/* Left accent bar — brand color */}
+      <div
+        className="absolute left-0 top-6 bottom-6 w-1 rounded-r-full opacity-70"
+        style={{ background: brandColor }}
+      />
+
+      {/* Subtle hover gradient background */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse 60% 50% at 0% 50%, ${brandColor}08 0%, transparent 70%)`
+        }}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
+
+        {/* LEFT: Text & content */}
+        <div className="lg:col-span-8 space-y-5">
+
+          {/* Header row: badge + domain link */}
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <span
+              className="inline-block font-mono text-[10px] tracking-wider uppercase px-3 py-1.5 rounded-full border font-semibold"
+              style={{ color: brandColor, borderColor: `${brandColor}40`, background: `${brandColor}0d` }}
+            >
+              {cs.sector_badge}
+            </span>
+            {brandDomain && (
+              <a
+                href={`https://${brandDomain}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-[10px] font-mono text-text-muted hover:text-teal-accent transition-colors"
+              >
+                {brandDomain}
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            )}
+          </div>
+
+          <div>
+            <p className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1">Klien / Proyek</p>
+            <h3 className="text-2xl md:text-[1.7rem] font-heading-sans font-bold text-text-primary leading-tight">
+              {cs.client_name}
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-gold-accent" />
+                Tantangan Utama
+              </p>
+              <p className="text-sm text-text-muted leading-relaxed">{cs.challenge}</p>
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-teal-accent" />
+                Pendekatan & Implementasi
+              </p>
+              <p className="text-sm text-text-muted leading-relaxed">{cs.approach}</p>
+            </div>
+          </div>
+
+          {/* Testimonial quote block */}
+          {cs.testimonial_text && (
+            <div className="bg-offwhite border border-brand-border rounded-xl p-5 mt-2 relative">
+              <Quote className="absolute top-4 right-4 w-5 h-5 text-teal-accent/20" />
+              <p className="text-sm md:text-base font-heading-serif text-text-primary italic leading-relaxed pr-8">
+                &ldquo;{cs.testimonial_text}&rdquo;
+              </p>
+              <div className="mt-3 font-sans text-xs flex items-center gap-2 pt-3 border-t border-brand-border/50">
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0"
+                  style={{ background: brandColor }}
+                >
+                  {cs.testimonial_author?.charAt(0) ?? 'Z'}
+                </div>
+                <div>
+                  <p className="font-bold text-text-primary">{cs.testimonial_author}</p>
+                  <p className="text-text-muted">{cs.testimonial_role}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT: Metrics */}
+        <div className="lg:col-span-4 flex flex-col gap-3 self-stretch">
+          {cs.metrics?.map((m, idx) => {
+            const key = `${cs.id}-${idx}`;
+            const rawVal = m.value || '';
+            const prefix = rawVal.match(/^[^\d]+/)?.[0] || '';
+            const suffix = rawVal.match(/[^\d]+$/)?.[0] || '';
+
+            return (
+              <div
+                key={idx}
+                className="bg-offwhite border border-brand-border rounded-xl p-5 flex flex-col items-center justify-center text-center flex-1 min-h-[120px] relative overflow-hidden group/metric transition-all duration-300 hover:border-teal-accent/30"
+              >
+                <TrendingUp className="absolute top-3 right-3 w-3.5 h-3.5 text-teal-accent/20 group-hover/metric:text-teal-accent/40 transition-colors" />
+                <p className="text-[9px] font-mono text-text-muted uppercase tracking-widest mb-2">
+                  Hasil Terukur
+                </p>
+                <p className="text-4xl font-heading-sans font-extrabold text-gold-accent metric-counter glow-gold leading-none">
+                  {prefix}
+                  {counts[key] !== undefined ? counts[key] : (m.number || 0)}
+                  {suffix}
+                </p>
+                <p className="text-[9px] text-text-muted uppercase font-mono tracking-wider mt-2 leading-normal">
+                  {m.label}
+                </p>
+              </div>
+            );
+          })}
+
+          {/* Tech tags */}
+          <div className="flex flex-wrap gap-1.5 mt-2 justify-center">
+            {cs.tech_tags?.map((tag) => (
+              <span
+                key={tag}
+                className="text-[9px] font-mono text-text-muted border border-brand-border bg-white px-2.5 py-1 rounded-md"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function CaseStudiesSection({ caseStudies }: CaseStudiesSectionProps) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef, { once: true, amount: 0.1 });
 
   return (
     <section ref={sectionRef} id="case-studies" className="bg-alabaster py-24 border-b border-brand-border relative">
-      <div className="max-w-6xl mx-auto px-6">
-        
-        {/* Section Header */}
-        <div className="mb-16">
-          <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">Studi Kasus Kemitraan</span>
-          <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2">
-            Bukti Nyata Hasil Terukur
-          </h2>
-          <p className="text-text-muted mt-4 max-w-xl">
-            Bagaimana arsitektur pertumbuhan terintegrasi membantu menyederhanakan data kompleks dan melipatgandakan dampak konversi.
-          </p>
-        </div>
+      {/* Atmospheric background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 50% 60% at 10% 80%, rgba(217,119,6,0.025) 0%, transparent 70%)'
+        }}
+      />
 
-        {/* Case Studies Stack/Grid */}
-        <div className="space-y-12">
-          {caseStudies && caseStudies.map((cs) => (
-            <div
-              key={cs.id}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              className="bg-white border border-brand-border rounded-2xl p-8 lg:p-12 transition-all duration-300 transform-style-3d cursor-default shadow-sm"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                
-                {/* Text & Content Info (Left) */}
-                <div className="lg:col-span-8 space-y-6">
-                  
-                  {/* Category Badge */}
-                  <span className="inline-block bg-gold-accent/10 border border-gold-accent/25 text-gold-accent font-mono text-[10px] tracking-wider uppercase px-3 py-1 rounded-full">
-                    {cs.sector_badge}
-                  </span>
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
 
-                  <h3 className="text-2xl md:text-3xl font-heading-sans font-bold text-text-primary leading-tight">
-                    {cs.client_name}
-                  </h3>
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="mb-14 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
+        >
+          <div>
+            <span className="text-xs font-mono tracking-widest text-gold-accent uppercase">
+              Studi Kasus Kemitraan
+            </span>
+            <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary mt-2">
+              Bukti Nyata{' '}
+              <span className="gradient-text-gold">Hasil Terukur</span>
+            </h2>
+            <p className="text-text-muted mt-3 max-w-xl text-sm leading-relaxed">
+              Bagaimana arsitektur pertumbuhan terintegrasi membantu menyederhanakan data
+              kompleks dan melipatgandakan dampak konversi.
+            </p>
+          </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                    <div>
-                      <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Tantangan Utama</p>
-                      <p className="text-sm text-text-muted mt-1 leading-relaxed">{cs.challenge}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Pendekatan & Implementasi</p>
-                      <p className="text-sm text-text-muted mt-1 leading-relaxed">{cs.approach}</p>
-                    </div>
-                  </div>
-
-                  {/* Testimonial Quote */}
-                  {cs.testimonial_text && (
-                    <div className="bg-offwhite border-l-4 border-teal-accent rounded-r-xl p-5 mt-4">
-                      <p className="text-sm md:text-base font-heading-serif text-text-primary italic leading-relaxed">
-                        &ldquo;{cs.testimonial_text}&rdquo;
-                      </p>
-                      <div className="mt-3 font-sans text-xs">
-                        <p className="font-bold text-text-primary">{cs.testimonial_author}</p>
-                        <p className="text-text-muted">{cs.testimonial_role}</p>
-                      </div>
-                    </div>
-                  )}
-
+          {/* Authority signal */}
+          <div className="flex-shrink-0 flex flex-col items-end gap-2">
+            <p className="text-[10px] font-mono text-text-muted uppercase tracking-widest">Portofolio Riil</p>
+            <div className="flex items-center gap-2">
+              {['tirto.id', 'tiket.com', 'vidio.com'].map((domain) => (
+                <div
+                  key={domain}
+                  className="bg-white border border-brand-border rounded-lg px-2.5 py-1.5 text-[9px] font-mono text-text-muted shadow-xs"
+                >
+                  {domain}
                 </div>
-
-                {/* Big Metric Box (Right) */}
-                <div className="lg:col-span-4 flex flex-col gap-4 self-stretch justify-between">
-                  {cs.metrics && cs.metrics.map((m, idx) => {
-                    const key = `${cs.id}-${idx}`;
-                    // Extract non-digit prefixes/suffixes from value
-                    const rawVal = m.value || '';
-                    const prefix = rawVal.match(/^[^\d]+/)?.[0] || '';
-                    const suffix = rawVal.match(/[^\d]+$/)?.[0] || '';
-                    
-                    return (
-                      <div key={idx} className="bg-offwhite border border-brand-border rounded-xl p-6 flex flex-col items-center justify-center text-center flex-1 min-h-[120px]">
-                        <p className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1">Hasil Terukur</p>
-                        <p className="text-4xl font-heading-sans font-extrabold text-gold-accent">
-                          {prefix}
-                          {counts[key] !== undefined ? counts[key] : (m.number || 0)}
-                          {suffix}
-                        </p>
-                        <p className="text-[10px] text-text-muted uppercase font-mono tracking-wider mt-2 leading-normal">
-                          {m.label}
-                        </p>
-                      </div>
-                    );
-                  })}
-
-                  <div className="flex flex-wrap gap-2 mt-4 justify-center">
-                    {cs.tech_tags && cs.tech_tags.map((tag) => (
-                      <span key={tag} className="text-[10px] font-mono text-text-muted border border-brand-border bg-white px-2.5 py-0.5 rounded-md">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-              </div>
+              ))}
             </div>
+          </div>
+        </motion.div>
+
+        {/* Cards stack */}
+        <div className="space-y-8">
+          {caseStudies?.map((cs, i) => (
+            <CaseStudyCard key={cs.id} cs={cs} index={i} inView={inView} />
           ))}
         </div>
-
       </div>
     </section>
   );

@@ -26,142 +26,333 @@
   --foreground: #0f172a;
 }
 
-/* Custom Scrollbar for high-end feel */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-::-webkit-scrollbar-thumb {
-  background: #0d9488;
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #14b8a6;
-}
+/* =========================================
+   CUSTOM SCROLLBAR — High-End Feel
+   ========================================= */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #0d9488, #d97706); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #14b8a6; }
 
-/* Custom Scroll Progress Bar */
+/* =========================================
+   SCROLL PROGRESS BAR
+   ========================================= */
 .scroll-progress {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(to right, #0d9488, #d97706);
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(to right, #0d9488, #d97706, #0d9488);
+  background-size: 200%;
   transform-origin: 0% 50%;
   z-index: 100;
+  animation: progress-shimmer 3s linear infinite;
 }
 
-/* Liquid Glass Refraction Effects (Taste-Skill Specs) */
+@keyframes progress-shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* =========================================
+   LIQUID GLASS — Glassmorphism System
+   ========================================= */
 .liquid-glass {
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.35),
-    0 10px 30px -10px rgba(15, 23, 42, 0.05);
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 0 rgba(0,0,0,0.02),
+    0 12px 32px -8px rgba(15, 23, 42, 0.06);
 }
 
 .dark-liquid-glass {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-    0 20px 40px -15px rgba(0, 0, 0, 0.25);
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+    0 24px 48px -16px rgba(0, 0, 0, 0.3);
 }
 
-/* Custom starting-style animations for Dialog and Popover */
+/* =========================================
+   SHIMMER EFFECT — Premium Loading & Hover
+   ========================================= */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 2.5s ease-in-out infinite;
+}
+@keyframes shimmer-sweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* =========================================
+   TEAL GLOW BORDER — Authority Signal
+   ========================================= */
+.glow-border-teal {
+  box-shadow:
+    0 0 0 1px rgba(13, 148, 136, 0.2),
+    0 0 20px rgba(13, 148, 136, 0.08),
+    0 8px 24px -8px rgba(13, 148, 136, 0.12);
+}
+.glow-border-teal:hover {
+  box-shadow:
+    0 0 0 1px rgba(13, 148, 136, 0.4),
+    0 0 30px rgba(13, 148, 136, 0.15),
+    0 12px 32px -8px rgba(13, 148, 136, 0.2);
+}
+
+/* =========================================
+   GOLD GLOW — Premium Signal
+   ========================================= */
+.glow-gold {
+  text-shadow: 0 0 20px rgba(217, 119, 6, 0.35);
+}
+
+/* =========================================
+   3D TILT UTILITY
+   ========================================= */
+.perspective-1000 { perspective: 1000px; }
+.transform-style-3d { transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; }
+
+/* =========================================
+   NATIVE SCROLL-DRIVEN ANIMATIONS
+   ========================================= */
+@supports (animation-timeline: scroll()) {
+  .header-shrink {
+    animation: shrink-nav linear both;
+    animation-timeline: scroll();
+    animation-range: 0px 80px;
+  }
+  @keyframes shrink-nav {
+    to {
+      height: 58px;
+      background-color: rgba(248, 250, 252, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom-width: 1px;
+      border-color: #cbd5e1;
+    }
+  }
+
+  /* Fade-up reveal for sections using scroll-driven animation */
+  .reveal-on-scroll {
+    animation: reveal-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 25%;
+  }
+  @keyframes reveal-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Horizontal progress for process steps */
+  .step-progress-fill {
+    animation: fill-width linear both;
+    animation-timeline: scroll();
+    transform-origin: left center;
+  }
+  @keyframes fill-width {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+}
+
+/* =========================================
+   SLIDE PANEL — Popover/Dialog utility
+   ========================================= */
 @starting-style {
   .slide-panel-open {
     transform: translateX(100%);
     opacity: 0;
   }
 }
-
 .slide-panel {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
 }
 
-/* Custom utilities for 3D perspective */
-.perspective-1000 {
-  perspective: 1000px;
-}
-
-.transform-style-3d {
-  transform-style: preserve-3d;
-}
-
-.backface-hidden {
-  backface-visibility: hidden;
-}
-
-/* Pulse animation for available state */
+/* =========================================
+   PULSE BADGE — Availability Indicator
+   ========================================= */
 @keyframes pulse-ring {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.4);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 8px rgba(13, 148, 136, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0);
-  }
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.5); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 8px rgba(13, 148, 136, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 148, 136, 0); }
+}
+.pulse-badge { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* =========================================
+   MARQUEE TICKER — Trust Logos / Tags
+   ========================================= */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 28s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+
+/* =========================================
+   GRADIENT TEXT UTILITY
+   ========================================= */
+.gradient-text-teal {
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #0d9488 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.pulse-badge {
-  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.gradient-text-gold {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 40%, #f59e0b 70%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Native Scroll-Driven Animations fallback wrapper */
-@supports (animation-timeline: scroll()) {
-  .header-shrink {
-    animation: shrink-nav linear both;
-    animation-timeline: scroll();
-    animation-range: 0px 100px;
-  }
-
-  @keyframes shrink-nav {
-    to {
-      height: 60px;
-      background-color: rgba(248, 250, 252, 0.95);
-      backdrop-filter: blur(8px);
-      border-bottom-width: 1px;
-      border-color: #cbd5e1;
-    }
-  }
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-/* Custom Lenis scroll styles */
-html.lenis, html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
+/* =========================================
+   NOISE TEXTURE OVERLAY — Editorial Depth
+   ========================================= */
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
 }
 
+/* =========================================
+   UNDERLINE ANIMATION — Link Hover
+   ========================================= */
+.hover-underline {
+  position: relative;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 0; height: 1.5px;
+  background: #0d9488;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-underline:hover::after { width: 100%; }
 
+/* =========================================
+   CARD HOVER LIFT — Premium Feel
+   ========================================= */
+.card-hover-lift {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.card-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(13, 148, 136, 0.12), 0 4px 16px -4px rgba(15,23,42,0.06);
+}
+
+/* =========================================
+   LENIS SMOOTH SCROLL
+   ========================================= */
+html { scroll-behavior: smooth; }
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-scrolling iframe { pointer-events: none; }
+
+/* =========================================
+   SECTION DIVIDER — Atmospheric 
+   ========================================= */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+  border: none;
+  margin: 0;
+}
+
+/* =========================================
+   FOCUS RING — Accessibility + Premium
+   ========================================= */
+*:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* =========================================
+   NUMBER COUNTER — Big Metrics Display
+   ========================================= */
+.metric-counter {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.02em;
+}
+
+/* =========================================
+   BENTO GRID — Hover Spotlight Utility
+   ========================================= */
+.bento-card {
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.bento-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(350px circle at var(--x, 50%) var(--y, 50%), rgba(13,148,136,0.06), transparent 80%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.bento-card:hover::before { opacity: 1; }
+
+/* =========================================
+   ANIMATED GRID BACKGROUND
+   ========================================= */
+.grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(203,213,225,0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(203,213,225,0.18) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* =========================================
+   TRUST BADGE — EEAT Signal 
+   ========================================= */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(13,148,136,0.06) 0%, rgba(13,148,136,0.02) 100%);
+  border: 1px solid rgba(13, 148, 136, 0.2);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-family: var(--font-jetbrains-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0d9488;
+  font-weight: 600;
+}
