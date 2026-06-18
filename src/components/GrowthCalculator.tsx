@@ -1,43 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { useGrowthData } from '@/hooks/useGrowthData';
+
 import { TrendingUp, Users, Percent, ArrowRight } from 'lucide-react';
 
 export default function GrowthCalculator() {
   const [traffic, setTraffic] = useState(5000);
   const [conversionRate, setConversionRate] = useState(1.5);
   const [avgOrderValue, setAvgOrderValue] = useState(500000);
-
-  // State for calculations
-  const [currentRevenue, setCurrentRevenue] = useState(0);
-  const [projectedRevenue, setProjectedRevenue] = useState(0);
-  const [growthPercentage, setGrowthPercentage] = useState(0);
-
-  // Constants for projection (Zadit's typical improvement)
   const TRAFFIC_MULTIPLIER = 1.4; // 40% increase in traffic through SEO
   const CR_MULTIPLIER = 1.3; // 30% increase in conversion rate through CRO
-
-  useEffect(() => {
-    // Current State
-    const currentOrders = traffic * (conversionRate / 100);
-    const rev = currentOrders * avgOrderValue;
-    setCurrentRevenue(rev);
-
-    // Projected State
-    const projectedTraffic = traffic * TRAFFIC_MULTIPLIER;
-    const projectedCr = conversionRate * CR_MULTIPLIER;
-    const projectedOrders = projectedTraffic * (projectedCr / 100);
-    const pRev = projectedOrders * avgOrderValue;
-    setProjectedRevenue(pRev);
-
-    // Growth Percentage
-    if (rev > 0) {
-      setGrowthPercentage(((pRev - rev) / rev) * 100);
-    } else {
-      setGrowthPercentage(0);
-    }
-  }, [traffic, conversionRate, avgOrderValue]);
+  // Calculations moved to custom hook
+  const { currentRevenue, projectedRevenue, growthPercentage } = useGrowthData({
+    traffic,
+    conversionRate,
+    avgOrderValue,
+    TRAFFIC_MULTIPLIER,
+    CR_MULTIPLIER,
+  });
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('id-ID', {

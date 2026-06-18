@@ -4,23 +4,24 @@ import React, { useState, useEffect } from 'react';
 import { Heart, Bookmark, Volume2, Eye } from 'lucide-react';
 
 export default function ArticleInteractiveWidgets({ articleId }: { articleId?: string }) {
-  const [likes, setLikes] = useState(0);
-  const [views, setViews] = useState(0);
+  const [likes, setLikes] = useState(() => {
+    const storedLikes = localStorage.getItem(`likes_${articleId}`);
+    return storedLikes ? parseInt(storedLikes) : Math.floor(Math.random() * 50) + 10;
+  });
+  const [views, setViews] = useState(() => {
+    const storedViews = localStorage.getItem(`views_${articleId}`);
+    return (storedViews ? parseInt(storedViews) : Math.floor(Math.random() * 500) + 100) + 1;
+  });
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Sync views to localStorage on change
   useEffect(() => {
-    // Simulate fetching views and likes from API or LocalStorage
-    const storedLikes = localStorage.getItem(`likes_${articleId}`);
-    const storedViews = localStorage.getItem(`views_${articleId}`);
-    
-    setLikes(storedLikes ? parseInt(storedLikes) : Math.floor(Math.random() * 50) + 10);
-    
-    const newViews = (storedViews ? parseInt(storedViews) : Math.floor(Math.random() * 500) + 100) + 1;
-    setViews(newViews);
-    localStorage.setItem(`views_${articleId}`, newViews.toString());
-  }, [articleId]);
+    if (articleId) {
+      localStorage.setItem(`views_${articleId}`, views.toString());
+    }
+  }, [articleId, views]);
 
   const handleLike = () => {
     if (!isLiked) {

@@ -58,7 +58,10 @@ export default function AdminDashboardPage() {
     site_title: '',
     analytics_id: '',
     rss_feeds: '[]',
-    link_hijacks: '[]'
+    link_hijacks: '[]',
+    sovereign_emergency_lock: 'false',
+    sovereign_macro_fallback: '{}',
+    sovereign_fiscal_fallback: '{}'
   });
 
   // Dynamic Forms State
@@ -617,7 +620,7 @@ export default function AdminDashboardPage() {
       for (const k of keys) {
         let cleanVal: string = sysConfigs[k];
         let valToSave: any = cleanVal;
-        if (k === 'available_status' || k === 'whatsapp_number' || k === 'site_title' || k === 'analytics_id') {
+        if (k === 'available_status' || k === 'whatsapp_number' || k === 'site_title' || k === 'analytics_id' || k === 'sovereign_emergency_lock') {
           // Keep as string value inside json
           valToSave = cleanVal.trim();
         } else {
@@ -685,7 +688,7 @@ export default function AdminDashboardPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-alabaster pt-28 pb-24 px-6 min-h-screen">
+      <main className={`flex-1 bg-alabaster pt-28 pb-24 px-6 min-h-screen ${sysConfigs.sovereign_emergency_lock === 'true' ? 'border-[4px] border-red-500/40 animate-pulse' : ''}`}>
         <div className="max-w-6xl mx-auto space-y-8">
           
           {/* Header */}
@@ -2115,6 +2118,48 @@ export default function AdminDashboardPage() {
                           onChange={(e) => setSysConfigs({ ...sysConfigs, link_hijacks: e.target.value })}
                           placeholder='[{"keyword":"Hosting","url":"https://...","is_dofollow":false}]'
                           className="w-full bg-offwhite border border-brand-border rounded-xl p-4 font-mono text-xs text-text-primary focus:ring-2 focus:ring-teal-accent focus:border-transparent outline-none leading-relaxed"
+                        />
+                      </div>
+                      
+                      <div className="col-span-1 md:col-span-2 pt-6 pb-2 border-t border-brand-border">
+                        <h4 className="text-lg font-bold font-heading-serif">Sovereign Open Data Integration</h4>
+                        <p className="text-xs text-text-muted mt-1">Konfigurasi API Publik Pemerintah dan Proteksi Darurat (Sovereign Emergency Lock).</p>
+                      </div>
+
+                      <div className="col-span-1 md:col-span-2 flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-100">
+                        <div>
+                          <label className="block text-sm font-bold text-red-900 mb-1">Sovereign Emergency Lock</label>
+                          <p className="text-xs text-red-700">Aktifkan untuk memaksa sistem menggunakan Local Cache Fallback saat server BPS/Kemenkeu/Bappenas *downtime* (Mencegah UI render macet).</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={sysConfigs.sovereign_emergency_lock === 'true'}
+                            onChange={(e) => setSysConfigs({ ...sysConfigs, sovereign_emergency_lock: e.target.checked ? 'true' : 'false' })}
+                          />
+                          <div className="w-11 h-6 bg-red-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                        </label>
+                      </div>
+
+                      <div className="col-span-1">
+                        <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Macro Economics Fallback (JSON)</label>
+                        <textarea
+                          rows={4}
+                          value={sysConfigs.sovereign_macro_fallback}
+                          onChange={(e) => setSysConfigs({ ...sysConfigs, sovereign_macro_fallback: e.target.value })}
+                          className="w-full bg-offwhite border border-brand-border rounded-xl p-4 font-mono text-xs text-text-primary focus:ring-2 focus:ring-teal-accent focus:border-transparent outline-none leading-relaxed"
+                          placeholder='{"gdpGrowth":"5.01%","inflationRate":"2.56%"}'
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Fiscal Data Fallback (JSON)</label>
+                        <textarea
+                          rows={4}
+                          value={sysConfigs.sovereign_fiscal_fallback}
+                          onChange={(e) => setSysConfigs({ ...sysConfigs, sovereign_fiscal_fallback: e.target.value })}
+                          className="w-full bg-offwhite border border-brand-border rounded-xl p-4 font-mono text-xs text-text-primary focus:ring-2 focus:ring-teal-accent focus:border-transparent outline-none leading-relaxed"
+                          placeholder='{"department":"Kemenkeu","allocationAmount":"Rp 1.000 T"}'
                         />
                       </div>
                     </div>

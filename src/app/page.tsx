@@ -12,6 +12,8 @@ import ActivityFeed from "@/components/ActivityFeed";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats } from "@/lib/data-server";
 
+import SovereignTrustBentoBlock from "@/components/sovereign/SovereignTrustBentoBlock";
+
 export const revalidate = 3600; // Revalidate page hourly (ISR)
 
 export default async function Home() {
@@ -34,6 +36,11 @@ export default async function Home() {
           liveStats={liveStats}
         />
         <section className="bg-white border-b border-brand-border/40 py-12">
+          <div className="max-w-6xl mx-auto px-6">
+            <SovereignTrustBentoBlock />
+          </div>
+        </section>
+        <section className="bg-offwhite border-b border-brand-border/40 py-12">
           <div className="max-w-4xl mx-auto px-6">
             <ActivityFeed />
           </div>

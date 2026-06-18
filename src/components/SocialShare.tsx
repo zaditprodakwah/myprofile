@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link2, MessageCircle, Send, Check, Hash, Users, Globe } from 'lucide-react';
+import { useMounted } from '@/hooks/useMounted';
 
 interface SocialShareProps {
   url: string;
@@ -11,11 +12,7 @@ interface SocialShareProps {
 
 export default function SocialShare({ url, title }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
@@ -63,7 +60,7 @@ export default function SocialShare({ url, title }: SocialShareProps) {
     }
   };
 
-  if (!isMounted) return null;
+  if (!mounted) return null;
 
   return (
     <div className="flex flex-col gap-3">
