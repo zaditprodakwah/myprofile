@@ -113,16 +113,20 @@ export default function AuditEnginePage() {
     runTerminalLogs(formData.url, signal);
 
     try {
-      // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 6000));
+      // Call the actual audit-speed API
+      const res = await fetch('/api/audit-speed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: formData.url })
+      });
 
-      const simulatedAuditData = {
-        scores: {
-          accessibility: 78,
-          performance: 62, // Using performance for narrative score mapping
-        }
-      };
-      setAuditResult(simulatedAuditData);
+      const auditData = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(auditData.error || 'Terjadi kesalahan saat memproses audit.');
+      }
+
+      setAuditResult(auditData);
 
       // Save lead to Supabase Database
       const { error } = await supabase.from('utility_leads').insert({
@@ -130,8 +134,8 @@ export default function AuditEnginePage() {
         contact_info: { whatsapp: formData.whatsapp, email: formData.email },
         target_site_url: formData.url,
         audit_category: 'Real Growth & Performance Audit',
-        accessibility_score: 78,
-        narrative_score: 62,
+        accessibility_score: auditData.scores.accessibility || 0,
+        narrative_score: auditData.scores.performance || 0,
         status: 'PENDING',
       });
 

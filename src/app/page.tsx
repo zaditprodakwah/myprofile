@@ -17,12 +17,14 @@ import SovereignTrustBentoBlock from "@/components/sovereign/SovereignTrustBento
 export const revalidate = 3600; // Revalidate page hourly (ISR)
 
 export default async function Home() {
-  const content = await getSiteContent();
-  const services = await getServices();
-  const caseStudies = await getCaseStudies();
-  const config = await getSystemConfig();
-  const latestArticles = await getLatestArticles(3);
-  const liveStats = await getLiveStats();
+  const [content, services, caseStudies, config, latestArticles, liveStats] = await Promise.all([
+    getSiteContent(),
+    getServices(),
+    getCaseStudies(),
+    getSystemConfig(),
+    getLatestArticles(3),
+    getLiveStats()
+  ]);
 
   return (
     <>

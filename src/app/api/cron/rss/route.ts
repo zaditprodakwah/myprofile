@@ -22,8 +22,13 @@ export async function GET(request: Request) {
     }
 
     // Prepare internal payload for AGC route
-    const adminKey = process.env.ADMIN_SECRET_KEY || 'zadit_growth_secret_2026';
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const adminKey = process.env.ADMIN_SECRET_KEY;
+    if (!adminKey) {
+      console.error('ADMIN_SECRET_KEY env not set. Cron aborted.');
+      return new NextResponse('Configuration Error', { status: 500 });
+    }
+    const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000');
+    const baseUrl = vercelUrl;
 
     let totalProcessed = 0;
     

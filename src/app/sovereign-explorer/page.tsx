@@ -7,12 +7,22 @@ import Footer from '@/components/Footer';
 import { Database, TrendingUp, Activity, FileJson, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type ExplorerDataset = 'BPS_MACRO' | 'FRED_INTEREST' | 'POLYGON_MARKETS' | 'DATARAKYAT';
+export type ExplorerDataset = 'BPS_MACRO' | 'FRED_INTEREST' | 'POLYGON_MARKETS' | 'DATARAKYAT';
+
+// Helper to safely read a string field from unknown data
+function safeStr(obj: unknown, key: string): string {
+  if (obj && typeof obj === 'object' && key in obj) {
+    return String((obj as Record<string, unknown>)[key] ?? 'N/A');
+  }
+  return 'N/A';
+}
 
 export default function SovereignExplorerPage() {
   const [activeDataset, setActiveDataset] = useState<ExplorerDataset>('BPS_MACRO');
-  const { data, isLoading } = useDataset(activeDataset);
+  const { data, isLoading } = useDataset<Record<string, unknown> | Record<string, unknown>[]>(activeDataset);
 
+  const dataAsArray = Array.isArray(data) ? data : null;
+  const dataAsObj = (!Array.isArray(data) && data !== null) ? data : null;
 
   return (
     <>
@@ -98,9 +108,10 @@ export default function SovereignExplorerPage() {
 
               <div className="flex-1 p-6 relative">
                 {/* Zero CLS Skeletons Overlay */}
-                <AnimatePresence>
-                  {isLoading && (
+                <AnimatePresence mode="wait">
+                  {isLoading ? (
                     <motion.div 
+                      key="loading"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -109,7 +120,7 @@ export default function SovereignExplorerPage() {
                       <div className="animate-pulse bg-white/5 rounded-xl h-24 w-full"></div>
                       <div className="animate-pulse bg-white/5 rounded-xl flex-1 w-full"></div>
                     </motion.div>
-                  )}
+                  ) : null}
                 </AnimatePresence>
 
                 {/* Data Display Canvas */}
@@ -119,35 +130,35 @@ export default function SovereignExplorerPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="h-full flex flex-col gap-6"
                   >
-                    {/* Visualizer Block (Mocked UI for arbitrary JSON) */}
+                    {/* Visualizer Block */}
                     <div className="bg-white/5 border border-white/10 rounded-xl p-6 h-48 flex items-center justify-center relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
                       
-                      {activeDataset === 'BPS_MACRO' && (
+                      {activeDataset === 'BPS_MACRO' && dataAsObj && (
                          <div className="text-center z-10">
-                           <div className="text-4xl font-black text-blue-400 mb-2">{data.gdpGrowth || 'N/A'}</div>
+                           <div className="text-4xl font-black text-blue-400 mb-2">{safeStr(dataAsObj, 'gdpGrowth')}</div>
                            <div className="text-sm text-slate-400 uppercase tracking-widest">National GDP Growth</div>
                          </div>
                       )}
-                      {activeDataset === 'FRED_INTEREST' && (
+                      {activeDataset === 'FRED_INTEREST' && dataAsObj && (
                          <div className="text-center z-10">
-                           <div className="text-4xl font-black text-emerald-400 mb-2">{data.value || 'N/A'}%</div>
-                           <div className="text-sm text-slate-400 uppercase tracking-widest">{data.indexName}</div>
+                           <div className="text-4xl font-black text-emerald-400 mb-2">{safeStr(dataAsObj, 'value')}%</div>
+                           <div className="text-sm text-slate-400 uppercase tracking-widest">{safeStr(dataAsObj, 'indexName')}</div>
                          </div>
                       )}
                       {activeDataset === 'POLYGON_MARKETS' && (
                          <div className="text-center z-10 w-full px-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-                           {Array.isArray(data) ? data.slice(0, 3).map((m, i) => (
+                           {dataAsArray ? dataAsArray.slice(0, 3).map((m, i) => (
                              <div key={i}>
-                               <div className="text-2xl font-bold text-amber-400">{m.symbol}</div>
-                               <div className="text-lg text-white">${m.price}</div>
+                               <div className="text-2xl font-bold text-amber-400">{safeStr(m, 'symbol')}</div>
+                               <div className="text-lg text-white">${safeStr(m, 'price')}</div>
                              </div>
                            )) : <div>Format error</div>}
                          </div>
                       )}
-                      {activeDataset === 'DATARAKYAT' && (
+                      {activeDataset === 'DATARAKYAT' && dataAsObj && (
                          <div className="text-center z-10">
-                           <div className="text-4xl font-black text-indigo-400 mb-2">{data.civicProjects || 'N/A'}</div>
+                           <div className="text-4xl font-black text-indigo-400 mb-2">{safeStr(dataAsObj, 'civicProjects')}</div>
                            <div className="text-sm text-slate-400 uppercase tracking-widest">Active Civic Projects</div>
                          </div>
                       )}

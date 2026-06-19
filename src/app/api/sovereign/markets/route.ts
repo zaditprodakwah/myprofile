@@ -64,14 +64,24 @@ export async function GET() {
           isFresh = false;
         }
 
-        // Add a mock FMP v4 to demonstrate the pipeline refactor
-        payload.push({
-          symbol: 'USD/IDR',
-          price: 15500,
-          change: 12.5,
-          source: 'FMP v4 (Refactored)',
-          impact: 'Nilai tukar langsung mendikte daya beli dan inflasi makro.'
-        });
+        // Fetch real USD/IDR from ExchangeRate-API
+        try {
+          const fxRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+          if (fxRes.ok) {
+            const fxData = await fxRes.json();
+            if (fxData.rates && fxData.rates.IDR) {
+              payload.push({
+                symbol: 'USD/IDR',
+                price: fxData.rates.IDR,
+                change: 0, // Need historical for real change
+                source: 'ExchangeRate-API',
+                impact: 'Nilai tukar langsung mendikte daya beli dan inflasi makro.'
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to fetch exchange rate');
+        }
 
       } catch (err) {
         clearTimeout(timeoutId);

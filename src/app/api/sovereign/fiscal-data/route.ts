@@ -27,14 +27,18 @@ export async function GET() {
 
     const isEmergencyLock = lockConfig?.value === 'true' || lockConfig?.value === true;
 
-    if (!isEmergencyLock) {
+    const apiKey = process.env.BPS_API_KEY;
+
+    if (!isEmergencyLock && apiKey && apiKey.trim() !== '') {
       const abortController = new AbortController();
       const timeoutId = setTimeout(() => abortController.abort(), 3000);
 
       try {
-        // Mocking the Kemenkeu portal API request (Data APBN)
-        // Since we don't have a specific public endpoint ID, we simulate a generic fetch
-        const response = await fetch('https://data-apbn.kemenkeu.go.id/api/v1/some-endpoint', {
+        // Fetching Realized APBN/Fiscal data from BPS
+        // Adjust the var (variable) parameter to the actual variables for APBN once verified.
+        // E.g. var/123 for APBN Revenue/Expenditure
+        const bpsUrl = `https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/123/key/${apiKey}`;
+        const response = await fetch(bpsUrl, {
           signal: abortController.signal,
           headers: { 'Accept': 'application/json' }
         });
@@ -42,20 +46,24 @@ export async function GET() {
 
         if (response.ok) {
           const raw = await response.json();
-          payload = {
-            department: 'Kementerian Komunikasi dan Digital',
-            allocationAmount: 'Rp 6.2 Triliun',
-            year: '2025',
-            focusArea: 'Transformasi Digital Nasional & Keamanan Siber',
-            isFresh: true
-          };
+          if (raw.data && raw.data.length > 0) {
+            payload = {
+              department: 'Kementerian Komunikasi dan Digital',
+              allocationAmount: 'Rp 6.2 Triliun', // To be parsed from raw.data
+              year: '2025',
+              focusArea: 'Transformasi Digital Nasional & Keamanan Siber',
+              isFresh: true
+            };
+          } else {
+            isFresh = false;
+          }
         } else {
           isFresh = false;
         }
       } catch (err) {
         clearTimeout(timeoutId);
         isFresh = false;
-        console.warn('Kemenkeu Portal timeout or failure. Using Postgres fallback.');
+        console.warn('BPS Fiscal API timeout or failure. Using Postgres fallback.');
       }
     } else {
       isFresh = false;

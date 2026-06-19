@@ -2,40 +2,75 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GitBranch, Activity, GitCommit, CheckCircle2, CloudLightning } from 'lucide-react';
+import { GitBranch, Activity, GitCommit, GitPullRequest, GitMerge, Star, Code, CloudLightning } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Mock data to simulate live ecosystem activity
-const ACTIVITIES = [
-  { id: 1, type: 'commit', repo: 'zadit/nextjs-core', message: 'feat: optimize LCP for mobile view', time: 'Just now', icon: GitCommit, color: 'text-teal-accent' },
-  { id: 2, type: 'deploy', repo: 'Production Vercel', message: 'Successful deployment to edge network', time: '2 mins ago', icon: CloudLightning, color: 'text-blue-500' },
-  { id: 3, type: 'audit', repo: 'Lighthouse CI', message: 'Performance score reached 100/100', time: '15 mins ago', icon: CheckCircle2, color: 'text-green-500' },
-  { id: 4, type: 'commit', repo: 'zadit/supabase-schema', message: 'fix: RLS policies for leads table', time: '1 hour ago', icon: GitCommit, color: 'text-teal-accent' },
-  { id: 5, type: 'deploy', repo: 'Staging Environment', message: 'Branch merged & built successfully', time: '3 hours ago', icon: CloudLightning, color: 'text-blue-500' }
-];
-
 export default function ActivityFeed() {
-  const [activeItems, setActiveItems] = useState(ACTIVITIES.slice(0, 3));
+  const [activeItems, setActiveItems] = useState<any[]>([]);
   const [isLive, setIsLive] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate a live feed rotating items
   useEffect(() => {
-    if (!isLive) return;
-    
-    const interval = setInterval(() => {
-      setActiveItems(prev => {
-        // Rotate: take the last 2, and add a new "random" one from the pool at the top
-        const pool = ACTIVITIES.filter(a => !prev.find(p => p.id === a.id));
-        if (pool.length === 0) return prev; // All shown
+    async function fetchGitHubEvents() {
+      try {
+        const res = await fetch('https://api.github.com/users/zaditprodakwah/events/public', {
+          // GitHub API version header
+          headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
         
-        const randomItem = pool[Math.floor(Math.random() * pool.length)];
-        const newArr = [randomItem, ...prev.slice(0, 2)];
-        return newArr;
-      });
-    }, 8000); // rotate every 8 seconds
+        // Map GitHub events to our UI format
+        const mapped = data.slice(0, 5).map((ev: any) => {
+          let icon = GitCommit;
+          let color = 'text-teal-accent';
+          let message = 'Repository activity';
 
-    return () => clearInterval(interval);
-  }, [isLive]);
+          if (ev.type === 'PushEvent') {
+            icon = GitCommit;
+            color = 'text-blue-500';
+            message = ev.payload.commits?.[0]?.message || 'Pushed commits';
+          } else if (ev.type === 'PullRequestEvent') {
+            icon = GitPullRequest;
+            color = 'text-emerald-500';
+            message = `${ev.payload.action} pull request`;
+          } else if (ev.type === 'WatchEvent') {
+            icon = Star;
+            color = 'text-amber-500';
+            message = 'Starred a repository';
+          } else if (ev.type === 'CreateEvent') {
+            icon = Code;
+            color = 'text-violet-500';
+            message = `Created ${ev.payload.ref_type || 'repository'}`;
+          }
+
+          // simple relative time
+          const date = new Date(ev.created_at);
+          const now = new Date();
+          const diffMins = Math.floor((now.getTime() - date.getTime()) / 60000);
+          let timeStr = diffMins < 60 ? `${diffMins} mins ago` : `${Math.floor(diffMins/60)} hrs ago`;
+          if (diffMins === 0) timeStr = 'Just now';
+
+          return {
+            id: ev.id,
+            repo: ev.repo.name,
+            message,
+            time: timeStr,
+            icon,
+            color
+          };
+        });
+
+        setActiveItems(mapped);
+      } catch (err) {
+        console.error('GitHub fetch error', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchGitHubEvents();
+  }, []);
 
   return (
     <div className="bg-white border border-brand-border/60 rounded-2xl p-6 shadow-sm relative overflow-hidden">
@@ -49,50 +84,56 @@ export default function ActivityFeed() {
         </div>
         <div className="flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
-            {isLive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-accent opacity-75"></span>}
+            {isLive && !isLoading && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-accent opacity-75"></span>}
             <span className={cn("relative inline-flex rounded-full h-2.5 w-2.5", isLive ? "bg-teal-accent" : "bg-text-muted")}></span>
           </span>
           <span className="text-[10px] font-mono text-text-muted uppercase">
-            {isLive ? 'System Active' : 'Paused'}
+            {isLoading ? 'Fetching...' : isLive ? 'System Active' : 'Paused'}
           </span>
         </div>
       </div>
 
       {/* Feed List */}
       <div className="space-y-4 relative min-h-[180px]">
-        <AnimatePresence>
-          {activeItems.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="flex items-start gap-3 p-3 rounded-xl hover:bg-offwhite transition-colors group"
-                layout
-              >
-                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-offwhite border border-brand-border", item.color)}>
-                  <Icon className="w-4 h-4" />
-                </div>
-                <div className="flex-grow min-w-0">
-                  <p className="text-xs font-heading-sans font-semibold text-text-primary truncate">
-                    {item.repo}
-                  </p>
-                  <p className="text-[11px] text-text-muted mt-0.5 line-clamp-1">
-                    {item.message}
-                  </p>
-                </div>
-                <div className="flex-shrink-0 text-right">
-                  <p className="text-[10px] font-mono text-text-muted/60">
-                    {item.time}
-                  </p>
-                </div>
-              </motion.div>
-            )
-          })}
-        </AnimatePresence>
+        {isLoading && activeItems.length === 0 ? (
+          <div className="flex items-center justify-center h-[180px]">
+            <span className="text-xs text-text-muted font-mono animate-pulse">Syncing GitHub data...</span>
+          </div>
+        ) : (
+          <AnimatePresence>
+            {activeItems.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-offwhite transition-colors group"
+                  layout
+                >
+                  <div className={cn("w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-offwhite border border-brand-border", item.color)}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <p className="text-xs font-heading-sans font-semibold text-text-primary truncate">
+                      {item.repo}
+                    </p>
+                    <p className="text-[11px] text-text-muted mt-0.5 line-clamp-1">
+                      {item.message}
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0 text-right">
+                    <p className="text-[10px] font-mono text-text-muted/60">
+                      {item.time}
+                    </p>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </AnimatePresence>
+        )}
         
         {/* Fader at bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />

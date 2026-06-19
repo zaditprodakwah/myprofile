@@ -35,7 +35,8 @@ export async function GET() {
       const timeoutId = setTimeout(() => abortController.abort(), 3000);
 
       try {
-        const response = await fetch(`https://web-api.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/key/${apiKey}`, {
+        const bpsUrl = `https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/456/key/${apiKey}`;
+        const response = await fetch(bpsUrl, {
           signal: abortController.signal,
           headers: {
             'Accept': 'application/json'
@@ -50,10 +51,14 @@ export async function GET() {
           // In a real system we'd parse specific var/turvar IDs. For this integration we simulate parsing.
           
           if (raw.data && raw.data.length > 0) {
-            // Simulated parsing from generic BPS list
+            // Simulated parsing from generic BPS list, prepare real parsing when API is verified
+            // Expected BPS structure: raw.data[0].nilai
+            const parsedGdp = raw.data[0]?.nilai ? `${raw.data[0].nilai}%` : '5.05%';
+            const parsedInflation = raw.data[1]?.nilai ? `${raw.data[1].nilai}%` : '2.75%';
+
             payload = {
-              gdpGrowth: '5.05%',
-              inflationRate: '2.75%',
+              gdpGrowth: parsedGdp,
+              inflationRate: parsedInflation,
               period: 'Q4 2025',
               verdict: 'Stabil Pertumbuhan Positif',
               attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS)',

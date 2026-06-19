@@ -2,10 +2,14 @@
   "crons": [
     {
       "path": "/api/cron/rss",
-      "schedule": "0 0 * * *"
+      "schedule": "0 */6 * * *"
     },
     {
       "path": "/api/cron/worker-db",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/worker-ui",
       "schedule": "0 0 * * *"
     }
   ]

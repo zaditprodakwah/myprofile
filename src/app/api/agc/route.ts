@@ -7,8 +7,8 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const { secret, feedUrl = 'https://news.google.com/rss/search?q=seo+growth+marketing+indonesia&hl=id&gl=ID&ceid=ID:id' } = body;
 
-    const adminKey = process.env.ADMIN_SECRET_KEY || 'zadit_growth_secret_2026';
-    if (secret !== adminKey) {
+    const adminKey = process.env.ADMIN_SECRET_KEY;
+    if (!adminKey || secret !== adminKey) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 

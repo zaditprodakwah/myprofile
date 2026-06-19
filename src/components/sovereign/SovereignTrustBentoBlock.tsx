@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Shield, TrendingUp, Landmark, Activity, Database, Leaf, Globe, Radio, AlertTriangle, FileJson } from 'lucide-react';
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -12,7 +12,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
 };
@@ -34,25 +34,20 @@ export default function SovereignTrustBentoBlock() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [cyber, macro, fiscal, dr, markets, fred, sentiment, esg] = await Promise.all([
-          fetch('/api/sovereign/cyber-security').then(res => res.json()),
-          fetch('/api/sovereign/macro-economics').then(res => res.json()),
-          fetch('/api/sovereign/fiscal-data').then(res => res.json()),
-          fetch('/api/sovereign/datarakyat').then(res => res.json()),
-          fetch('/api/sovereign/markets').then(res => res.json()),
-          fetch('/api/sovereign/fred').then(res => res.json()),
-          fetch('/api/sovereign/sentiment').then(res => res.json()),
-          fetch('/api/sovereign/esg').then(res => res.json())
-        ]);
+        const res = await fetch('/api/sovereign/aggregate');
+        const json = await res.json();
 
-        if (cyber.success) setCyberData(cyber.data);
-        if (macro.success) setMacroData(macro.data);
-        if (fiscal.success) setFiscalData(fiscal.data);
-        if (dr.success) setDrData(dr.data);
-        if (markets.success) setMarketData(markets.data);
-        if (fred.success) setFredData(fred.data);
-        if (sentiment.success) setSentimentData(sentiment.data);
-        if (esg.success) setEsgData(esg.data);
+        if (json.success && json.data) {
+          const d = json.data;
+          if (d.cyber) setCyberData(d.cyber);
+          if (d.macro) setMacroData(d.macro);
+          if (d.fiscal) setFiscalData(d.fiscal);
+          if (d.dr) setDrData(d.dr);
+          if (d.markets) setMarketData(d.markets);
+          if (d.fred) setFredData(d.fred);
+          if (d.sentiment) setSentimentData(d.sentiment);
+          if (d.esg) setEsgData(d.esg);
+        }
       } catch (err) {
         console.error('Failed to fetch sovereign data:', err);
       } finally {

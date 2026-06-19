@@ -101,15 +101,23 @@ export default function AdminDashboardPage() {
     setTimeout(() => setActionMessage({ text: '', type: 'success' }), 4000);
   }, []);
 
-  // Guard Auth Check
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  // Guard Auth Check — verifikasi via API server-side, bukan env publik
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const keyToCheck = process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY || 'zadit_growth_secret_2026';
-    if (secretKey === keyToCheck) {
-      setIsAuthenticated(true);
-      setAuthError('');
-    } else {
-      setAuthError('Kunci rahasia tidak cocok. Silakan periksa kembali.');
+    try {
+      const res = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: secretKey }),
+      });
+      if (res.ok) {
+        setIsAuthenticated(true);
+        setAuthError('');
+      } else {
+        setAuthError('Kunci rahasia tidak cocok. Silakan periksa kembali.');
+      }
+    } catch {
+      setAuthError('Koneksi ke server gagal.');
     }
   };
 

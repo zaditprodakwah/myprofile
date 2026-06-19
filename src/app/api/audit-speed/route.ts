@@ -13,15 +13,14 @@ export async function POST(request: Request) {
       targetUrl = `https://${targetUrl}`;
     }
 
-    const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Kunci API Google Cloud tidak terkonfigurasi di server.' }, { status: 500 });
-    }
+    // Optional: Use a specific Google Cloud API key if available, otherwise fallback to keyless (rate-limited)
+    const apiKey = process.env.GOOGLE_CLOUD_API_KEY || '';
+    const keyParam = apiKey ? `&key=${apiKey}` : '';
 
     // PageSpeed Insights API request url
     const psiUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
       targetUrl
-    )}&key=${apiKey}&category=performance&category=accessibility&category=seo&strategy=mobile`;
+    )}${keyParam}&category=performance&category=accessibility&category=seo&strategy=mobile`;
 
     const res = await fetch(psiUrl, {
       method: 'GET',

@@ -25,65 +25,6 @@ interface Entity {
   google_maps_url?: string;
 }
 
-const mockEntities: Entity[] = [
-  {
-    id: '1',
-    name: 'Agensi Logistik Sejahtera',
-    slug: 'agensi-logistik-sejahtera',
-    category: 'Logistik',
-    tagline: 'Solusi pengiriman kargo dan pergudangan regional cepat.',
-    address: 'Jl. Gatot Subroto No. 45, Jakarta Selatan',
-    phone: '0812-3456-7890',
-    email: 'info@logistiksejahtera.com',
-    website: 'https://logistiksejahtera.com',
-    trustScore: 4.8,
-    verified: true,
-    city: 'jakarta-selatan',
-  },
-  {
-    id: '2',
-    name: 'Klinik Medika Utama',
-    slug: 'klinik-medika-utama',
-    category: 'Kesehatan',
-    tagline: 'Layanan kesehatan keluarga ramah dan terintegrasi.',
-    address: 'Jl. Ahmad Yani No. 12, Cirebon',
-    phone: '',
-    email: '',
-    website: '',
-    trustScore: 4.2,
-    verified: false,
-    city: 'cirebon',
-  },
-  {
-    id: '3',
-    name: 'Kantor Hukum Hendra & Rekan',
-    slug: 'kantor-hukum-hendra-rekan',
-    category: 'Layanan Hukum',
-    tagline: 'Perwakilan hukum bisnis dan korporat terpercaya.',
-    address: 'Jl. Sudirman Kav 21, Jakarta Selatan',
-    phone: '',
-    email: '',
-    website: '',
-    trustScore: 4.5,
-    verified: false,
-    city: 'jakarta-selatan',
-  },
-  {
-    id: '4',
-    name: 'Cirebon Agritech Hub',
-    slug: 'cirebon-agritech-hub',
-    category: 'Teknologi',
-    tagline: 'Inkubator inovasi pertanian modern Jawa Barat.',
-    address: 'Jl. Tuparev No. 88, Cirebon',
-    phone: '0877-6543-2109',
-    email: 'contact@cirebonagritech.org',
-    website: 'https://cirebonagritech.org',
-    trustScore: 4.9,
-    verified: true,
-    city: 'cirebon',
-  }
-];
-
 export default function CityDirectoryPage() {
   const params = useParams();
   const rawCity = params.city as string;
@@ -114,8 +55,6 @@ export default function CityDirectoryPage() {
           .select('*')
           .eq('city_slug', citySlug);
 
-        const localMock = mockEntities.filter(e => e.city === citySlug);
-
         if (data && data.length > 0) {
           const dbEntities = data.map((d: unknown) => {
             const item = d as Record<string, unknown>;
@@ -142,13 +81,13 @@ export default function CityDirectoryPage() {
               google_maps_url: item.google_maps_url ? String(item.google_maps_url) : undefined
             };
           });
-          setEntities([...dbEntities, ...localMock]);
+          setEntities(dbEntities);
         } else {
-          setEntities(localMock);
+          setEntities([]);
         }
       } catch (err) {
-        console.error('Error loading Supabase entities, using mock data.', err);
-        setEntities(mockEntities.filter(e => e.city === citySlug));
+        console.error('Error loading Supabase entities.', err);
+        setEntities([]);
       } finally {
         setLoading(false);
       }

@@ -22,47 +22,8 @@ interface Entity {
   history: { date: string; change: string }[];
 }
 
-const mockEntities: Entity[] = [
-  {
-    id: '1',
-    name: 'Agensi Logistik Sejahtera',
-    slug: 'agensi-logistik-sejahtera',
-    category: 'Logistik',
-    tagline: 'Solusi pengiriman kargo dan pergudangan regional cepat.',
-    description: 'Agensi Logistik Sejahtera adalah penyedia layanan pengiriman barang domestik terkemuka yang melayani wilayah metropolitan Jakarta Selatan. Berfokus pada keandalan sistem pengiriman dan pergudangan, kami mengoptimalkan rantai pasok bisnis Anda dari hulu ke hilir.',
-    address: 'Jl. Gatot Subroto No. 45, Jakarta Selatan',
-    phone: '0812-3456-7890',
-    email: 'info@logistiksejahtera.com',
-    website: 'https://logistiksejahtera.com',
-    trustScore: 4.8,
-    verified: true,
-    city: 'jakarta-selatan',
-    history: [
-      { date: '12 Juni 2026', change: 'Verifikasi profil berhasil diperbarui.' },
-      { date: '10 Mei 2026', change: 'Sinkronisasi koordinat Google Maps teraktifkan.' },
-      { date: '21 April 2026', change: 'Pembaruan data kontak telepon dan email resmi.' }
-    ]
-  },
-  {
-    id: '4',
-    name: 'Cirebon Agritech Hub',
-    slug: 'cirebon-agritech-hub',
-    category: 'Teknologi',
-    tagline: 'Inkubator inovasi pertanian modern Jawa Barat.',
-    description: 'Cirebon Agritech Hub merupakan pusat inovasi teknologi pertanian di wilayah Cirebon dan sekitarnya. Kami memfasilitasi riset agritech, pendampingan petani lokal, serta penyediaan teknologi presisi untuk mendukung ketahanan pangan di Jawa Barat.',
-    address: 'Jl. Tuparev No. 88, Cirebon',
-    phone: '0877-6543-2109',
-    email: 'contact@cirebonagritech.org',
-    website: 'https://cirebonagritech.org',
-    trustScore: 4.9,
-    verified: true,
-    city: 'cirebon',
-    history: [
-      { date: '15 Juni 2026', change: 'Pembaruan halaman profil verified diaktifkan.' },
-      { date: '01 Juni 2026', change: 'Integrasi sistem analitik data agritech.' }
-    ]
-  }
-];
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function EntityDetailPage() {
   const params = useParams();
@@ -71,9 +32,66 @@ export default function EntityDetailPage() {
   const city = params.city as string;
   const slug = params.entity_slug as string;
 
-  const entity = mockEntities.find(
-    (e) => e.city === city.toLowerCase() && e.slug === slug.toLowerCase()
-  );
+  const [entity, setEntity] = useState<Entity | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadEntity() {
+      try {
+        const { data, error } = await supabase
+          .from('entities')
+          .select('*')
+          .eq('city_slug', city.toLowerCase())
+          .eq('slug', slug.toLowerCase())
+          .single();
+
+        if (error) throw error;
+        if (data) {
+            const rawType = String(data.entity_type || '').toLowerCase();
+            const translatedCategory = 
+              rawType === 'agency' ? 'Agensi / Kemitraan' : 
+              rawType === 'service' ? 'Layanan Publik / Swasta' : 
+              rawType === 'institution' ? 'Instansi / Lembaga' : 
+              'Bisnis Lokal';
+
+            setEntity({
+              id: String(data.id),
+              name: String(data.name),
+              slug: String(data.slug),
+              category: translatedCategory,
+              tagline: String(data.tagline || data.description || ''),
+              description: String(data.description || data.tagline || ''),
+              address: String((data.raw_metadata as any)?.address || 'Alamat terdaftar'),
+              phone: String(data.contact_phone || ''),
+              email: String(data.contact_email || ''),
+              website: String(data.website_url || ''),
+              trustScore: Number(data.trust_score || 4.0),
+              verified: data.verification_status === 'VERIFIED',
+              city: city.toLowerCase(),
+              history: []
+            });
+        }
+      } catch (err) {
+        console.error('Entity fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadEntity();
+  }, [city, slug]);
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="flex-1 bg-alabaster pt-32 pb-24 px-6 flex flex-col items-center justify-center text-center">
+          <RefreshCw className="w-8 h-8 text-teal-accent mb-4 animate-spin" />
+          <h1 className="text-xl font-heading-serif text-text-primary">Memuat Data...</h1>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   if (!entity) {
     return (
