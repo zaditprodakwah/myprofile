@@ -195,22 +195,6 @@ export default function HeroSection({
             ═══════════════════════════════════ */}
         <div className="lg:col-span-7 space-y-7 text-left">
 
-          {/* Geo-badge + Rotating role tag */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-wrap items-center gap-3"
-          >
-            <span className="trust-badge !normal-case">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-accent animate-pulse" />
-              Selamat datang, mari berkolaborasi! ✨
-            </span>
-            <span className="trust-badge uppercase font-bold tracking-widest text-gold-accent">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold-accent pulse-badge" />
-               {/* INTEGRASI ARSITEKTUR DIGITAL & NARASI BISNIS */}
-            </span>
-          </motion.div>
 
           {/* Role Rotating & Floating Avatar (Mobile) */}
           <motion.div
