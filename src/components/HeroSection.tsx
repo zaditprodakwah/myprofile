@@ -112,7 +112,6 @@ export default function HeroSection({
 }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [stats, setStats] = useState({ years: 0, projects: 0, clients: 0 });
-  const [geoData, setGeoData] = useState({ city: '', country: 'ID' });
   const [lcpScore, setLcpScore] = useState<number | null>(null);
 
   // Parallax depth on scroll
@@ -135,13 +134,7 @@ export default function HeroSection({
     return () => clearTimeout(tid);
   }, []);
 
-  // Geotargeting
-  useEffect(() => {
-    fetch('https://ipapi.co/json/')
-      .then(r => r.json())
-      .then(d => { if (d.city) setGeoData({ city: d.city, country: d.country_code }); })
-      .catch(() => {});
-  }, []);
+
 
   // LCP performance observer
   useEffect(() => {
@@ -211,7 +204,7 @@ export default function HeroSection({
           >
             <span className="trust-badge !normal-case">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-accent animate-pulse" />
-              {geoData.city ? `Halo rekan bisnis di ${geoData.city}! 👋` : 'Selamat datang, mari berkolaborasi! ✨'}
+              Selamat datang, mari berkolaborasi! ✨
             </span>
             <span className="trust-badge uppercase font-bold tracking-widest text-gold-accent">
               <span className="w-1.5 h-1.5 rounded-full bg-gold-accent pulse-badge" />
