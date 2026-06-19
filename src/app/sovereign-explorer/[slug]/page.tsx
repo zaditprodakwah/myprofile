@@ -5,7 +5,10 @@ import { getSiteContent } from "@/lib/data-server";
 import { Calendar, User, Tag, ArrowLeft, ArrowUpRight, BookOpen, CheckSquare, BarChart3, Globe } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { generateArticleSchema } from "@/lib/seo";
+import { generateArticleSchema, generateBreadcrumbSchema } from "@/lib/seo";
+
+
+import { Metadata } from "next";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,7 +16,54 @@ interface Props {
 
 export const revalidate = 3600; // Cache ISR hourly
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const item = await getReferenceItemBySlug(slug);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
+  
+  if (!item) {
+    return {
+      title: 'Referensi Tidak Ditemukan | Zadit Growth',
+    };
+  }
+
+  const title = `${item.title} | Bank Referensi Zadit Growth`;
+  const description = item.summary || `Dokumen referensi dan panduan teknis mengenai ${item.title} di Bank Referensi Zadit Growth.`;
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(item.title)}&type=reference&subtitle=${encodeURIComponent(description.substring(0, 110))}`;
+
+  return {
+    title,
+    description,
+    keywords: item.tags?.join(', ') || 'reference, growth, architecture',
+    alternates: {
+      canonical: `/sovereign-explorer/${slug}`
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/sovereign-explorer/${slug}`,
+      type: 'article',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        }
+      ]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+      creator: '@muhzadit'
+    }
+  };
+}
+
 export default async function ReferenceDetailPage({ params }: Props) {
+
   const { slug } = await params;
   const item = await getReferenceItemBySlug(slug);
 
@@ -56,28 +106,25 @@ export default async function ReferenceDetailPage({ params }: Props) {
   };
 
   // Generate dynamic JSON-LD Schema
+  const articleObj = generateArticleSchema(item);
+  const breadcrumbObj = generateBreadcrumbSchema([
+    { name: "Beranda", path: "/" },
+    { name: "Bank Referensi", path: "/sovereign-explorer" },
+    { name: item.title, path: `/sovereign-explorer/${item.slug}` }
+  ]);
+
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "TechArticle",
-    "headline": item.title,
-    "description": item.summary,
-    "inLanguage": "id",
-    "author": {
-      "@type": "Person",
-      "name": "Muhammad Khoiruzzadittaqwa",
-      "jobTitle": "Full-Stack Growth Architect"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Zadit Growth Engine",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://muhzadit.vercel.app/icon.png"
+    "@graph": [
+      {
+        ...articleObj,
+        "@context": undefined
+      },
+      {
+        ...breadcrumbObj,
+        "@context": undefined
       }
-    },
-    "datePublished": item.created_at || new Date().toISOString(),
-    "dateModified": item.updated_at || new Date().toISOString(),
-    "mainEntityOfPage": `https://muhzadit.vercel.app/sovereign-explorer/${item.slug}`
+    ]
   };
 
   return (

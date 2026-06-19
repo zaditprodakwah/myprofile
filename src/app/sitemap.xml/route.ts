@@ -3,89 +3,162 @@ import { supabase } from '@/lib/supabase';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
 
+interface SitemapEntry {
+  loc: string;
+  lastmod: string;
+  changefreq: string;
+  priority: string;
+  imageUrl?: string;
+  imageTitle?: string;
+}
+
 export async function GET() {
-  const staticPages = [
-    '',
-    '/utility/audit-engine',
-    '/directory',
-    '/blog'
+  const entries: SitemapEntry[] = [
+    {
+      loc: `${SITE_URL}`,
+      lastmod: new Date().toISOString().split('T')[0],
+      changefreq: 'daily',
+      priority: '1.0',
+      imageUrl: `${SITE_URL}/api/og?type=home`,
+      imageTitle: 'Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect'
+    },
+    {
+      loc: `${SITE_URL}/utility/audit-engine`,
+      lastmod: new Date().toISOString().split('T')[0],
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Audit Kecepatan Website')}&type=home&subtitle=${encodeURIComponent('Audit SEO dan performa web gratis')}`,
+      imageTitle: 'Audit Kecepatan Website Gratis'
+    },
+    {
+      loc: `${SITE_URL}/directory`,
+      lastmod: new Date().toISOString().split('T')[0],
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Direktori Wilayah')}&type=directory`,
+      imageTitle: 'Direktori Bisnis & Layanan Lokal'
+    },
+    {
+      loc: `${SITE_URL}/blog`,
+      lastmod: new Date().toISOString().split('T')[0],
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Zadit Growth Blog')}&type=blog`,
+      imageTitle: 'Zadit Growth Blog'
+    },
+    {
+      loc: `${SITE_URL}/sovereign-explorer`,
+      lastmod: new Date().toISOString().split('T')[0],
+      changefreq: 'weekly',
+      priority: '0.9',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Bank Referensi')}&type=reference`,
+      imageTitle: 'Bank Data Referensi & Playbook Pertumbuhan'
+    }
   ];
 
-  let dynamicPages: string[] = [];
-
   try {
-    // Fetch articles
+    // 1. Fetch articles
     const { data: articles } = await supabase
       .from('articles')
-      .select('slug, published_at')
+      .select('title, slug, published_at, updated_at')
       .eq('is_published', true);
 
     if (articles) {
       articles.forEach(art => {
-        dynamicPages.push(`/blog/${art.slug}`);
+        const lastmodDate = art.updated_at || art.published_at || new Date().toISOString();
+        entries.push({
+          loc: `${SITE_URL}/blog/${art.slug}`,
+          lastmod: lastmodDate.split('T')[0],
+          changefreq: 'weekly',
+          priority: '0.8',
+          imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(art.title)}&type=blog`,
+          imageTitle: art.title
+        });
       });
     }
 
-    // Fetch cities
+    // 2. Fetch cities
     const { data: cities } = await supabase
       .from('cities')
-      .select('slug');
+      .select('name, slug, created_at');
 
     if (cities) {
       cities.forEach(city => {
-        dynamicPages.push(`/directory/${city.slug}`);
+        const lastmodDate = city.created_at || new Date().toISOString();
+        entries.push({
+          loc: `${SITE_URL}/directory/${city.slug}`,
+          lastmod: lastmodDate.split('T')[0],
+          changefreq: 'weekly',
+          priority: '0.8',
+          imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(`Konsultan Digital & Web di ${city.name}`)}&type=directory`,
+          imageTitle: `Konsultan Digital Marketing & Web Development di ${city.name}`
+        });
       });
     }
 
-    // Fetch entities
+    // 3. Fetch entities
     const { data: entities } = await supabase
       .from('entities')
-      .select('city_slug, slug');
+      .select('name, city_slug, slug, created_at');
 
     if (entities) {
       entities.forEach(ent => {
-        dynamicPages.push(`/directory/${ent.city_slug}/${ent.slug}`);
+        const lastmodDate = ent.created_at || new Date().toISOString();
+        entries.push({
+          loc: `${SITE_URL}/directory/${ent.city_slug}/${ent.slug}`,
+          lastmod: lastmodDate.split('T')[0],
+          changefreq: 'weekly',
+          priority: '0.8',
+          imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(ent.name)}&type=directory`,
+          imageTitle: ent.name
+        });
       });
     }
 
-    // Fetch reference items
+    // 4. Fetch reference items
     const { data: references } = await supabase
       .from('reference_items')
-      .select('slug')
+      .select('title, slug, updated_at, created_at')
       .eq('is_active', true);
 
     if (references) {
       references.forEach(ref => {
-        dynamicPages.push(`/sovereign-explorer/${ref.slug}`);
+        const lastmodDate = ref.updated_at || ref.created_at || new Date().toISOString();
+        entries.push({
+          loc: `${SITE_URL}/sovereign-explorer/${ref.slug}`,
+          lastmod: lastmodDate.split('T')[0],
+          changefreq: 'weekly',
+          priority: '0.9',
+          imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(ref.title)}&type=reference`,
+          imageTitle: ref.title
+        });
       });
     }
 
   } catch (err) {
     console.error('Failed to fetch dynamic paths for sitemap', err);
-    // Fallbacks just in case
-    dynamicPages = [
-      '/directory/cirebon',
-      '/directory/jakarta-selatan',
-      '/blog/cara-optimasi-web-umkm-indonesia',
-      '/blog/mengapa-ai-search-mengubah-cara-kita-menulis-konten',
-      '/blog/panduan-seo-teknikal-nextjs',
-      '/sovereign-explorer/b2b-growth-playbook-landing-page-conversion',
-      '/sovereign-explorer/checklist-technical-seo-nextjs-speed'
-    ];
   }
 
-  const allPages = [...staticPages, ...dynamicPages];
-
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${allPages
-    .map((page) => {
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  ${entries
+    .map((entry) => {
+      let imgNode = '';
+      if (entry.imageUrl) {
+        imgNode = `
+    <image:image>
+      <image:loc>${entry.imageUrl.replace(/&/g, '&amp;')}</image:loc>
+      <image:title>${entry.imageTitle ? entry.imageTitle.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''}</image:title>
+    </image:image>`;
+      }
+
       return `
   <url>
-    <loc>${SITE_URL}${page}</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>${page === '' ? 'daily' : 'weekly'}</changefreq>
-    <priority>${page === '' ? '1.0' : page.startsWith('/blog/') || page.startsWith('/directory/') ? '0.8' : '0.9'}</priority>
+    <loc>${entry.loc}</loc>
+    <lastmod>${entry.lastmod}</lastmod>
+    <changefreq>${entry.changefreq}</changefreq>
+    <priority>${entry.priority}</priority>${imgNode}
   </url>`;
     })
     .join('')}

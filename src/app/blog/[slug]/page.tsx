@@ -6,6 +6,8 @@ import { ChevronRight, ArrowLeft, Send, Clock, Zap, Home, ExternalLink } from 'l
 import Link from 'next/link';
 import SocialShare from '@/components/SocialShare';
 import ArticleInteractiveWidgets from '@/components/ArticleInteractiveWidgets';
+import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/seo';
+
 
 interface Article {
   id?: string;
@@ -34,13 +36,15 @@ export async function generateMetadata(
   
   const { data } = await supabase
     .from('articles')
-    .select('title, meta_description, semantic_keywords, slug')
+    .select('title, meta_description, semantic_keywords, slug, published_at')
     .eq('slug', slug)
     .maybeSingle();
 
   const title = data?.title ? `${data.title} | Zadit Growth Blog` : `${getTitleFromSlug(slug)} | Zadit Growth Blog`;
   const description = data?.meta_description || `Artikel komprehensif mengenai ${getTitleFromSlug(slug)} untuk pertumbuhan ekosistem bisnis digital modern.`;
   const keywords = Array.isArray(data?.semantic_keywords) ? data?.semantic_keywords.join(', ') : (data?.semantic_keywords || 'growth marketing, seo, digital business');
+  const ogTitle = data?.title || getTitleFromSlug(slug);
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(ogTitle)}&type=blog&subtitle=${encodeURIComponent(description.substring(0, 110))}`;
 
   return {
     title,
@@ -53,10 +57,28 @@ export async function generateMetadata(
       title,
       description,
       url: `${siteUrl}/blog/${slug}`,
-      type: 'article'
+      type: 'article',
+      publishedTime: data?.published_at || new Date().toISOString(),
+      authors: ['Muhammad Khoiruzzadittaqwa'],
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        }
+      ]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+      creator: '@muhzadit'
     }
   };
 }
+
 
 // Dynamic server-side SEO/AEO AGC Article page
 export default async function BlogArticlePage({ params }: { params: { slug: string } }) {
@@ -203,22 +225,23 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
     }
   }));
 
+  const articleObj = generateArticleSchema(article);
+  const breadcrumbObj = generateBreadcrumbSchema([
+    { name: "Beranda", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: article.title, path: `/blog/${article.slug}` }
+  ]);
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Article",
-        "headline": article.title,
-        "author": {
-          "@type": "Person",
-          "name": "Muhammad Khoiruzzadittaqwa",
-          "jobTitle": "Full-Stack Growth Architect"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Zadit Growth Engine"
-        },
-        "datePublished": article.published_at || new Date().toISOString()
+        ...articleObj,
+        "@context": undefined
+      },
+      {
+        ...breadcrumbObj,
+        "@context": undefined
       },
       ...(faqList.length > 0 ? [{
         "@type": "FAQPage",
@@ -226,6 +249,7 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
       }] : [])
     ]
   };
+
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
   const fullUrl = `${siteUrl}/blog/${article.slug}`;

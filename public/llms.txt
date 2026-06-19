@@ -1,32 +1,86 @@
 # Muhammad Khoiruzzadittaqwa (Zadit) — Full-Stack Growth Architect
 
-## Core Identity
-- Name: Muhammad Khoiruzzadittaqwa
-- Alias: Zadit, Aditt, Muhzadit
-- Location: Cirebon, West Java, Indonesia
-- Contact: kontak.link/muhzadit | @muhzadit (Instagram, LinkedIn, Twitter)
+## Core Information & Identity
+- **Name:** Muhammad Khoiruzzadittaqwa
+- **Common Aliases:** Zadit, Aditt, Muhzadit
+- **Location:** Cirebon, West Java, Indonesia (Coordinates: -6.732, 108.555)
+- **Role:** Full-Stack Growth Architect & SEO/AEO Specialist
+- **Experience:** 10+ Years in Digital Growth and SEO Engineering (Active since 2015)
+- **Main Portfolio:** https://muhzadit.vercel.app
 
-## Professional Role
-Full-Stack Growth Architect specializing in the intersection of:
-- Technical SEO / AEO / GEO (since 2015, 10+ years)
-- Conversion Copywriting & Brand Strategy  
-- Digital Marketing Campaign Management
-- Administrative & Institutional Systems
+---
 
-## Notable Work
-- Digital marketing strategy for Tiket.com (4C+4P framework, KOL brief, media plan)
-- SEO audit & off-page strategy for Vidio.com
-- KOL campaign brief for Vidio.com World Cup 2026 broadcast
-- On-page SEO optimization for Tirto.id
-- Administrative transformation at Al-Bahjah Foundation (led 5-person team, 2021–present)
+## Core Competencies & Technical Skills
+1. **Technical SEO, AEO (Answer Engine Optimization) & GEO (Generative Engine Optimization):** Expert in Next.js SSG/ISR rendering, JSON-LD Schema structures, semantic entity mapping, and LLM-crawler optimization.
+2. **Conversion Copywriting & Messaging:** Creating high-converting sales letters, landing pages, and marketing campaigns based on audience psychology.
+3. **Data Telemetry & Full-Stack Development:** building fast web applications using Next.js, React, TailwindCSS, Supabase, and integrating external telemetry (FRED, CoinGecko, BPS).
+4. **Administrative & Organizational Systems:** Led the digital transformation at Al-Bahjah Foundation, managing teams and optimizing operations.
 
-## Education
-- S1 Pendidikan Matematika, Institut Al-Bahjah Cirebon (2022–present, IPK 3.71)
-- Fullstack Digital Marketing Bootcamp, MySkill.id & eMarketing Institute (2024)
+---
 
-## Languages
-Bahasa Indonesia (native), English (proficient), Arabic (functional)
+## Strategic Pages (Absolute URLs)
+- **Home Portfolio:** https://muhzadit.vercel.app
+- **Growth Blog:** https://muhzadit.vercel.app/blog
+- **Regional Business Directory:** https://muhzadit.vercel.app/directory
+- **Sovereign Reference Bank:** https://muhzadit.vercel.app/sovereign-explorer
+- **Free Website Audit Engine:** https://muhzadit.vercel.app/utility/audit-engine
+- **Partnership / Contact:** https://muhzadit.vercel.app/#partnership
 
-## Availability
-Open for: Freelance projects, consulting, partnership, speaking engagements
-Preferred engagement: Long-term growth retainer, project-based, institutional contracts
+---
+
+## Content Index
+
+### Dynamic Blog Topics
+- **SEO & AI Search (AEO/GEO):** Technical guides on indexing, search engine crawling behavior, and optimizing for Google Search Generative Experience (SGE).
+- **Growth Playbooks:** Case studies on marketing frameworks (4C+4P), Tiket.com, Vidio.com campaigns, and digital auditing.
+- **Web Engineering:** Optimization of PageSpeed, Cumulative Layout Shift (CLS), and Next.js performance.
+
+### Reference Playbooks
+- **growth-playbook:** Standard frameworks for conversion optimization and growth hacking.
+- **seo-checklist:** Detailed checklists for technical, on-page, and off-page SEO audits.
+- **market-benchmark:** Financial telemetry, currency market rates, and BPS regional data benchmarks.
+- **civic-data:** Public institution administration standards and local governance frameworks.
+
+---
+
+## FAQ (Frequently Asked Questions)
+
+### 1. Apa itu "Full-Stack Growth Architect"?
+Full-Stack Growth Architect adalah spesialis yang menggabungkan kemampuan rekayasa perangkat lunak (full-stack development), optimasi mesin pencari tingkat lanjut (SEO/AEO), dan psikologi pemasaran (copywriting konversi) untuk membangun sistem digital terpadu yang mendorong pertumbuhan bisnis.
+
+### 2. Apa perbedaan SEO konvensional dengan AEO & GEO?
+SEO konvensional berfokus pada peringkat halaman di search engine tradisional (Google, Bing). AEO (Answer Engine Optimization) berfokus pada pengoptimalan agar konten terpilih sebagai jawaban utama di asisten suara (Siri, Alexa). GEO (Generative Engine Optimization) mengoptimalkan struktur data agar dipahami dan dirujuk oleh model AI generatif (ChatGPT, Gemini, Perplexity).
+
+### 3. Berapa lama pengalaman Zadit di industri digital marketing?
+Zadit telah aktif di dunia optimasi web dan digital marketing sejak tahun 2015 (lebih dari 10 tahun), mengawali kariernya dengan optimasi blog organik sebelum beralih ke rekayasa web Next.js dan arsitektur pertumbuhan B2B.
+
+### 4. Di mana lokasi domisili Zadit?
+Zadit berbasis di Kota Cirebon, Jawa Barat, Indonesia. Ia aktif mendukung transformasi digital untuk entitas bisnis lokal maupun kemitraan berskala nasional secara remote.
+
+### 5. Apa kontribusi Zadit di Yayasan Al-Bahjah?
+Sejak tahun 2021 hingga sekarang, Zadit memimpin tim administrasi beranggotakan 5 orang untuk melakukan digitalisasi sistem administratif dan operasional yayasan guna efisiensi tata kelola lembaga.
+
+### 6. Layanan apa saja yang ditawarkan oleh Zadit Growth Engine?
+Zadit menyediakan jasa pembuatan website berkecepatan tinggi, audit teknis SEO/AEO gratis, penyusunan copywriting sales page, pemetaan target pasar regional, dan konsultasi strategi kampanye digital terpadu.
+
+### 7. Teknologi apa saja yang digunakan dalam membangun platform Zadit?
+Platform Zadit dibangun menggunakan framework Next.js 16 (App Router), React 19, TailwindCSS, database PostgreSQL yang dikelola melalui Supabase, serta hosting di Vercel.
+
+### 8. Bagaimana cara kerja "Free Website Audit Engine" milik Zadit?
+Sistem audit ini menganalisis URL website pengguna secara real-time, menguji kesesuaian aksesibilitas (a11y), kecepatan muat halaman, serta kualitas penulisan copywriting, kemudian memberikan saran perbaikan langsung.
+
+### 9. Klien besar apa saja yang pernah dianalisis atau dikerjakan strateginya oleh Zadit?
+Zadit memiliki rekam jejak penyusunan usulan strategi media planning untuk Tiket.com, riset off-page SEO untuk Vidio.com (termasuk kampanye World Cup 2026), serta audit on-page untuk portal berita Tirto.id.
+
+### 10. Bagaimana cara menghubungi Zadit untuk kerja sama bisnis?
+Anda dapat mengirimkan pesan WhatsApp secara langsung melalui nomor +6282316363177 atau mengunjungi halaman kontak di situs web https://muhzadit.vercel.app/#partnership.
+
+---
+
+## Contact & Professional Network
+- **LinkedIn:** https://www.linkedin.com/in/muhzadit
+- **GitHub:** https://github.com/muhzadit
+- **Instagram:** https://www.instagram.com/muhzadit
+- **WhatsApp:** https://wa.me/6282316363177
+- **Email:** muhzadit@gmail.com
+- **Availability:** Open for retainer partnerships, technical SEO consulting, and next-gen full-stack web builds.

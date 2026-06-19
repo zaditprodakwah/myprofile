@@ -11,6 +11,11 @@
     {
       "path": "/api/cron/rss",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/seo-refresh",
+      "schedule": "0 3 * * *"
     }
   ]
 }
+

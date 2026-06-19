@@ -2,11 +2,7 @@
 -- Drop the redundant "Allow public inserts" policy on utility_leads
 DROP POLICY IF EXISTS "Allow public inserts" ON public.utility_leads;
 
--- 2. Fix: Public Can Execute SECURITY DEFINER Function (rls_auto_enable)
--- Revoke execution from anon and authenticated roles so it's only executable by superuser/service_role
-REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM public;
-REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM anon;
-REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM authenticated;
+
 
 -- 3. Fix: Unindexed foreign keys
 -- Create indexes for foreign keys to improve join performance

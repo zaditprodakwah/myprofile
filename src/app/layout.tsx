@@ -31,6 +31,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
+    languages: {
+      'id-ID': '/',
+      'en-US': '/',
+      'x-default': '/'
+    }
   },
   robots: {
     index: true,
@@ -50,7 +55,7 @@ export const metadata: Metadata = {
     siteName: "Zadit Growth Portfolio",
     images: [
       {
-        url: "/og-profile.jpg",
+        url: `${SITE_URL}/api/og?type=home`,
         width: 1200,
         height: 630,
         alt: "Muhammad Khoiruzzadittaqwa - Full-Stack Growth Architect",
@@ -64,7 +69,7 @@ export const metadata: Metadata = {
     title: "Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect",
     description: "Portofolio & Growth Engine Muhammad Khoiruzzadittaqwa (Zadit) - Full-Stack Growth Architect.",
     creator: "@muhzadit",
-    images: ["/og-profile.jpg"],
+    images: [`${SITE_URL}/api/og?type=home`],
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
@@ -81,7 +86,7 @@ const personSchema = {
     "jobTitle": "Full-Stack Growth Architect",
     "description": "Spesialis SEO teknikal, copywriting konversi, dan strategi digital marketing dengan pengalaman 10+ tahun sejak 2015.",
     "url": SITE_URL,
-    "image": `${SITE_URL}/og-profile.jpg`,
+    "image": `${SITE_URL}/api/og?type=home`,
     "knowsAbout": [
       "SEO Teknikal", "AEO", "GEO", "Copywriting",
       "Digital Marketing", "Brand Strategy", "Content Marketing",
@@ -98,6 +103,8 @@ const personSchema = {
     "sameAs": [
       "https://github.com/muhzadit",
       "https://www.linkedin.com/in/muhzadit",
+      "https://www.instagram.com/muhzadit",
+      "https://wa.me/6282316363177",
       "https://kontak.link/muhzadit",
       "https://id.wikipedia.org/wiki/Pemasaran_digital"
     ],
@@ -106,6 +113,21 @@ const personSchema = {
       "name": "Al-Bahjah Foundation",
       "url": "https://albahjah.or.id"
     }
+  }
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Zadit Growth Portfolio",
+  "url": SITE_URL,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": `${SITE_URL}/blog?q={search_term_string}`
+    },
+    "query-input": "required name=search_term_string"
   }
 };
 
@@ -124,6 +146,10 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         <SmoothScroll>
           {children}
         </SmoothScroll>
@@ -131,5 +157,6 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 

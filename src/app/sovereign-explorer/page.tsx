@@ -5,24 +5,76 @@ import Link from 'next/link';
 import { getReferenceItems } from '@/lib/data-server';
 import { Database, BookOpen, CheckSquare, BarChart3, Globe, Search, ArrowRight, ShieldAlert } from 'lucide-react';
 import ReferenceExplorerClient from './ReferenceExplorerClient';
+import { Metadata } from 'next';
+import { generateBreadcrumbSchema } from "@/lib/seo";
 
 export const revalidate = 3600; // ISR cache 1 hour
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
+  const title = "Bank Data Referensi & Playbook Pertumbuhan | Zadit Growth";
+  const description = "Gudang wawasan bisnis terintegrasi yang berisi playbook pertumbuhan B2B, checklist SEO teknis Next.js, dan telemetri indikator ekonomi makro terpercaya.";
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent("Bank Referensi")}&type=reference&subtitle=${encodeURIComponent("Playbook Pertumbuhan B2B, SEO Checklist & Indikator Ekonomi")}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: '/sovereign-explorer'
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/sovereign-explorer`,
+      type: 'website',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+      creator: '@muhzadit'
+    }
+  };
+}
 
 export default async function SovereignExplorerPage() {
   const referenceItems = await getReferenceItems();
 
+  const breadcrumbObj = generateBreadcrumbSchema([
+    { name: "Beranda", path: "/" },
+    { name: "Bank Data Referensi", path: "/sovereign-explorer" }
+  ]);
+
   const explorerSchema = {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "Bank Data Referensi & Playbook Pertumbuhan | Zadit Growth Engine",
-    "description": "Gudang wawasan bisnis terintegrasi yang berisi playbook pertumbuhan B2B, checklist SEO teknis Next.js, dan telemetri indikator ekonomi makro terpercaya.",
-    "url": "https://muhzadit.vercel.app/sovereign-explorer",
-    "publisher": {
-      "@type": "Person",
-      "name": "Muhammad Khoiruzzadittaqwa",
-      "jobTitle": "Full-Stack Growth Architect"
-    }
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "name": "Bank Data Referensi & Playbook Pertumbuhan | Zadit Growth Engine",
+        "description": "Gudang wawasan bisnis terintegrasi yang berisi playbook pertumbuhan B2B, checklist SEO teknis Next.js, dan telemetri indikator ekonomi makro terpercaya.",
+        "url": "https://muhzadit.vercel.app/sovereign-explorer",
+        "publisher": {
+          "@type": "Person",
+          "name": "Muhammad Khoiruzzadittaqwa",
+          "jobTitle": "Full-Stack Growth Architect"
+        }
+      },
+      {
+        ...breadcrumbObj,
+        "@context": undefined
+      }
+    ]
   };
+
 
   return (
     <>

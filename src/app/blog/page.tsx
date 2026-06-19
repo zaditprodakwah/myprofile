@@ -3,22 +3,74 @@ import Footer from "@/components/Footer";
 import { Clock, ArrowRight, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { getArticles } from "@/lib/data-server";
+import { Metadata } from "next";
+import { generateBreadcrumbSchema } from "@/lib/seo";
 
 export const revalidate = 3600; // ISR cache 1 hour
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
+  const title = "Zadit Growth Blog | Wawasan SEO & Digital Marketing";
+  const description = "Temukan artikel, panduan teknis, riset E-E-A-T, dan strategi growth marketing gratis dari Muhammad Khoiruzzadittaqwa.";
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent("Zadit Growth Blog")}&type=blog&subtitle=${encodeURIComponent("Wawasan SEO, Pertumbuhan Bisnis & Rekayasa Web")}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: '/blog'
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/blog`,
+      type: 'website',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+      creator: '@muhzadit'
+    }
+  };
+}
 
 export default async function BlogIndexPage() {
   const articles = await getArticles();
 
+  const breadcrumbObj = generateBreadcrumbSchema([
+    { name: "Beranda", path: "/" },
+    { name: "Blog", path: "/blog" }
+  ]);
+
   const blogSchema = {
     "@context": "https://schema.org",
-    "@type": "Blog",
-    "name": "Zadit Growth Blog",
-    "description": "Wawasan taktis tentang SEO teknikal, rekayasa web Next.js, dan optimasi konversi digital.",
-    "publisher": {
-      "@type": "Person",
-      "name": "Muhammad Khoiruzzadittaqwa"
-    }
+    "@graph": [
+      {
+        "@type": "Blog",
+        "name": "Zadit Growth Blog",
+        "description": "Wawasan taktis tentang SEO teknikal, rekayasa web Next.js, dan optimasi konversi digital.",
+        "publisher": {
+          "@type": "Person",
+          "name": "Muhammad Khoiruzzadittaqwa"
+        }
+      },
+      {
+        ...breadcrumbObj,
+        "@context": undefined
+      }
+    ]
   };
+
 
   const formatDate = (isoString: string) => {
     try {
