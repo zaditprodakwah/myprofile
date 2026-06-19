@@ -107,6 +107,7 @@ export default function HeroSection({
   headline = "Code doesn't scale without story. Story doesn't convert without data. Data doesn't persuade without execution.",
   subheading = "Saya membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
   whatsappNumber = "6282316363177",
+  availabilityStatus = "AVAILABLE",
   liveStats,
 }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
