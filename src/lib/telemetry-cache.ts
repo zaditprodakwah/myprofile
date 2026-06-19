@@ -1,4 +1,9 @@
+import { createClient } from '@supabase/supabase-js';
 import { supabase } from './supabase';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 /**
  * Retrieves a cached telemetry value from the Supabase table `external_telemetry_cache`.
@@ -36,7 +41,7 @@ export async function getTelemetryCache(key: string, maxAgeHours: number = 6): P
  */
 export async function setTelemetryCache(key: string, value: any, source: string): Promise<void> {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('external_telemetry_cache')
       .upsert({
         key,
