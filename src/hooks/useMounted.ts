@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Hook that returns true after the component has mounted on the client.
- * Useful to avoid hydration mismatches for client‑only UI.
+ * Returns true after the component has mounted on the client.
+ * Useful for avoiding SSR hydration mismatches.
  */
 export function useMounted() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  setMounted(true);
   }, []);
   return mounted;
 }

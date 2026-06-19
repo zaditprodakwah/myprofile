@@ -25,9 +25,9 @@ function reducer<T>(state: State<T>, action: Action<T>): State<T> {
   }
 }
 
-const cache = new Map<ExplorerDataset, any>();
+const cache = new Map<ExplorerDataset, unknown>();
 
-export function useDataset<T = any>(dataset: ExplorerDataset) {
+export function useDataset<T = unknown>(dataset: ExplorerDataset) {
   const [state, dispatch] = useReducer(reducer<T>, {
     data: null,
     isLoading: false,
@@ -66,7 +66,7 @@ export function useDataset<T = any>(dataset: ExplorerDataset) {
       } else {
         dispatch({ type: 'FAIL', error: 'Failed to fetch data' });
       }
-    } catch (err) {
+    } catch (_err) {
       dispatch({ type: 'FAIL', error: 'Network Error' });
     }
   };

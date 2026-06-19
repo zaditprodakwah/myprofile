@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useGrowthData } from '@/hooks/useGrowthData';
 
+import { motion } from 'framer-motion';
 import { TrendingUp, Users, Percent, ArrowRight } from 'lucide-react';
 
 export default function GrowthCalculator() {

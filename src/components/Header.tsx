@@ -65,7 +65,7 @@ export default function Header() {
               Zadit Growth
             </span>
             <span className="font-mono text-[8px] tracking-[0.2em] text-teal-accent uppercase">
-              // Growth Architect
+              {/* Growth Architect */}
             </span>
           </div>
         </Link>

@@ -5,14 +5,9 @@ import { useState, useEffect } from 'react';
 
 // Wrapper to prevent hydration mismatch and handle SSR safely
 export function useReducedMotion() {
-  const [shouldReduceMotion, setShouldReduceMotion] = useState(true); // Default true for safety/SSR
   const framerReducedMotion = useFramerReducedMotion();
-
-  useEffect(() => {
-    // Only update to actual preference once mounted
-    setShouldReduceMotion(framerReducedMotion === true);
-  }, [framerReducedMotion]);
-
+  // If framer indicates reduced motion, respect it, otherwise default to false (no reduction)
+  const shouldReduceMotion = framerReducedMotion === true;
   return shouldReduceMotion;
 }
 

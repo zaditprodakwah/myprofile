@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Check, Shield, Zap, Globe, TrendingUp, Award, Users, ChevronDown } from 'lucide-react';
+// Added import for Next.js Image component
+import Image from 'next/image';
+import { Award, TrendingUp, Users, Shield, Globe, ChevronDown, Zap, Check } from 'lucide-react';
 
 interface HeroSectionProps {
   headline?: string;
@@ -207,7 +209,7 @@ export default function HeroSection({
             </span>
             <span className="trust-badge uppercase font-bold tracking-widest text-gold-accent">
               <span className="w-1.5 h-1.5 rounded-full bg-gold-accent pulse-badge" />
-              // INTEGRASI ARSITEKTUR DIGITAL & NARASI BISNIS
+               {/* INTEGRASI ARSITEKTUR DIGITAL & NARASI BISNIS */}
             </span>
           </motion.div>
 
@@ -310,12 +312,14 @@ export default function HeroSection({
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             className="bg-white border border-brand-border p-3 rounded-2xl shadow-lg relative overflow-hidden group glow-border-teal"
           >
-            <img
-              src="/zadit-foto.png"
-              alt="Muhammad Khoiruzzadittaqwa — Digital Marketing & Branding Strategist"
-              className="w-full h-72 object-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
-              loading="eager"
-            />
+          <Image
+            src="/zadit-foto.png"
+            alt="Muhammad Khoiruzzadittaqwa — Digital Marketing & Branding Strategist"
+            className="w-full h-72 object-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+            loading="eager"
+            width={640}
+            height={360}
+          />
             {/* Gradient overlay bottom */}
             <div className="absolute inset-x-3 bottom-3 h-20 bg-gradient-to-t from-brand-slate/40 to-transparent rounded-xl pointer-events-none" />
             {/* Role chip */}
