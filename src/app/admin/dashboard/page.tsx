@@ -618,7 +618,7 @@ export default function AdminDashboardPage() {
       // Loop values and save to Supabase system_configs
       const keys = Object.keys(sysConfigs) as Array<keyof typeof sysConfigs>;
       for (const k of keys) {
-        let cleanVal: string = sysConfigs[k];
+        const cleanVal: string = sysConfigs[k];
         let valToSave: any = cleanVal;
         if (k === 'available_status' || k === 'whatsapp_number' || k === 'site_title' || k === 'analytics_id' || k === 'sovereign_emergency_lock') {
           // Keep as string value inside json

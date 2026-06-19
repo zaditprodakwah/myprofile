@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 
       // 3. Extract description/content (snippet curation)
       const descMatch = itemXml.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/i) || itemXml.match(/<description>([\s\S]*?)<\/description>/i);
-      let description = descMatch ? descMatch[1].trim() : '';
+      const description = descMatch ? descMatch[1].trim() : '';
       
       const contentMatch = itemXml.match(/<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/i) || itemXml.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/i);
       const fullContent = contentMatch ? contentMatch[1].trim() : description;
