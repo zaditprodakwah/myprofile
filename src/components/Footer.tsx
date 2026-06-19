@@ -131,6 +131,7 @@ export default function Footer() {
                 { href: '/#case-studies', label: 'Studi Kasus' },
                 { href: '/#services', label: 'Spesialisasi' },
                 { href: '/#partnership', label: 'Mulai Kemitraan' },
+                { href: '/admin/dashboard', label: 'Admin Dashboard (Private)' },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link
@@ -151,6 +152,7 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5">
               {[
+                { href: '/sovereign-explorer', label: 'Sovereign Data Explorer' },
                 { href: '/directory', label: 'Direktori Bisnis Kredibel' },
                 { href: '/utility/audit-engine', label: 'Audit Kecepatan Website' },
                 { href: '/blog', label: 'Blog & Artikel Edukasi' },

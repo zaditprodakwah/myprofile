@@ -8,10 +8,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
-  { href: '/#process', label: 'Metodologi' },
-  { href: '/#services', label: 'Spesialisasi' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/directory', label: 'Direktori' },
+  { href: '/directory', label: 'Direktori B2B' },
+  { href: '/sovereign-explorer', label: 'Sovereign Data' },
+  { href: '/utility/audit-engine', label: 'Audit SEO' },
+  { href: '/blog', label: 'Blog & Insight' },
+  { href: '/admin/dashboard', label: 'Admin Panel' },
 ];
 
 export default function Header() {
