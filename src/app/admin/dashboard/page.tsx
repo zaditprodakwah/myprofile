@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { 
   Shield, Database, Cpu, Search, Settings, Check, RefreshCw, 
   Save, Send, Plus, Trash2, Edit2, X, 
-  Briefcase, MapPin, User, CheckCircle2, Upload
+  Briefcase, MapPin, User, CheckCircle2, Upload, Globe
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Service, CaseStudy, City, Entity, Article, UtilityLead, DirectoryLead, ContactLead, SiteContent } from '@/lib/types';
