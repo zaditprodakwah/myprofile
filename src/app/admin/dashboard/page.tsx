@@ -18,7 +18,7 @@ export default function AdminDashboardPage() {
   const [secretKey, setSecretKey] = useState('');
   const [authError, setAuthError] = useState('');
 
-  const [activeTab, setActiveTab] = useState<'leads' | 'content' | 'portfolio' | 'directory' | 'blog' | 'seo' | 'config'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'content' | 'portfolio' | 'directory' | 'blog' | 'seo' | 'config' | 'scraper'>('leads');
   const [isLoading, setIsLoading] = useState(false);
   const [actionMessage, setActionMessage] = useState({ text: '', type: 'success' });
 
@@ -49,6 +49,25 @@ export default function AdminDashboardPage() {
   const [rssFeedUrl, setRssFeedUrl] = useState('https://news.google.com/rss/search?q=seo+growth+marketing+indonesia&hl=id&gl=ID&ceid=ID:id');
   const [isScraping, setIsScraping] = useState(false);
   const [scrapeResult, setScrapeResult] = useState('');
+
+  // Scraper Tab State
+  const [scraperTab, setScraperTab] = useState<'gmaps' | 'rss'>('gmaps');
+  const [gmapsQuery, setGmapsQuery] = useState('');
+  const [gmapsScrapeResult, setGmapsScrapeResult] = useState('');
+  
+  // Bulk Actions
+  const [selectedEntityIds, setSelectedEntityIds] = useState<string[]>([]);
+  
+  // Helper: Export Data
+  const handleExportData = (data: any[], filename: string) => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}.json`;
+    link.click();
+    triggerMessage(`Sukses export ${data.length} baris data ke ${filename}.json`);
+  };
 
   // System Configs state
   const [sysConfigs, setSysConfigs] = useState({
@@ -789,6 +808,15 @@ export default function AdminDashboardPage() {
               )}
             >
               <Settings className="w-4 h-4" /> Pengaturan Global
+            </button>
+            <button
+              onClick={() => setActiveTab('scraper')}
+              className={cn(
+                "flex items-center gap-2 px-5 py-3 border-b-2 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap",
+                activeTab === 'scraper' ? "border-teal-accent text-teal-accent font-semibold" : "border-transparent text-text-muted hover:text-text-primary"
+              )}
+            >
+              <Cpu className="w-4 h-4" /> Scraper Engine
             </button>
           </div>
 
@@ -1730,6 +1758,30 @@ export default function AdminDashboardPage() {
                           >
                             Jalankan Bulk Ingest
                           </button>
+                          <button
+                            onClick={() => handleExportData(entities, 'directory-entities')}
+                            className="bg-gold-accent hover:bg-brand-slate text-text-primary font-mono text-[10px] uppercase font-bold py-2 px-4 rounded-xl cursor-pointer ml-2"
+                          >
+                            Export Semua ke JSON
+                          </button>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <button
+                            onClick={async () => {
+                              if (!selectedEntityIds.length) return triggerMessage('Pilih entitas dulu', 'error');
+                              const newStatus = prompt('Masukkan status baru (unverified/claimed/verified):');
+                              if (newStatus && ['unverified', 'claimed', 'verified'].includes(newStatus)) {
+                                await supabase.from('entities').update({ verification_status: newStatus }).in('id', selectedEntityIds);
+                                triggerMessage('Status massal diperbarui');
+                                setSelectedEntityIds([]);
+                                fetchDirectory();
+                              }
+                            }}
+                            className="text-[10px] uppercase bg-brand-slate text-white px-3 py-1.5 rounded-lg"
+                          >
+                            Update Status (Bulk)
+                          </button>
                         </div>
 
                         <div className="overflow-x-auto border border-brand-border rounded-xl">
@@ -1748,10 +1800,18 @@ export default function AdminDashboardPage() {
                                 <tr><td colSpan={5} className="p-4 text-center">Belum ada profil bisnis terdaftar.</td></tr>
                               ) : (
                                 entities.map((ent) => (
-                                  <tr key={ent.id} className="hover:bg-offwhite/50">
-                                    <td className="p-4">
-                                      <div className="font-semibold text-text-primary">{ent.name}</div>
-                                      <div className="text-[10px] text-text-muted/70 truncate max-w-xs">{ent.tagline}</div>
+                                  <tr key={ent.id} className="hover:bg-offwhite transition-colors">
+                                    <td className="p-4 font-semibold text-text-primary flex items-center gap-2">
+                                      <input 
+                                        type="checkbox" 
+                                        checked={selectedEntityIds.includes(ent.id)}
+                                        onChange={(e) => {
+                                          if (e.target.checked) setSelectedEntityIds([...selectedEntityIds, ent.id]);
+                                          else setSelectedEntityIds(selectedEntityIds.filter(id => id !== ent.id));
+                                        }}
+                                        className="w-3 h-3"
+                                      />
+                                      <a href={`/directory/${ent.city_slug}/${ent.slug}`} target="_blank" className="hover:underline">{ent.name}</a>
                                     </td>
                                     <td className="p-4">
                                       <span className="bg-teal-accent/5 border px-1.5 py-0.2 rounded text-[9px] font-mono uppercase text-teal-accent">{ent.entity_type}</span>
@@ -2181,6 +2241,114 @@ export default function AdminDashboardPage() {
                       </button>
                     </div>
                   </form>
+                )}
+
+                {/* 8. SCRAPER ENGINE TAB */}
+                {activeTab === 'scraper' && (
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-heading-serif font-bold text-text-primary">Scraper & Data Ingestion Engine</h3>
+                      <p className="text-xs text-text-muted leading-relaxed">Kelola operasi pengambilan data otomatis dari sumber eksternal (Google Maps, RSS, dll) untuk masuk ke dalam database Sovereign / Directory.</p>
+                    </div>
+
+                    <div className="flex border-b border-brand-border">
+                      <button
+                        onClick={() => setScraperTab('gmaps')}
+                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider", scraperTab === 'gmaps' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
+                      >
+                        Google Maps / Places API
+                      </button>
+                      <button
+                        onClick={() => setScraperTab('rss')}
+                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider", scraperTab === 'rss' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
+                      >
+                        RSS Feed Scraper
+                      </button>
+                    </div>
+
+                    {scraperTab === 'gmaps' && (
+                      <div className="space-y-6 max-w-3xl">
+                        <div className="p-6 bg-offwhite border border-brand-border rounded-2xl space-y-4">
+                          <h4 className="text-sm font-bold font-heading-serif flex items-center gap-2"><Cpu className="w-4 h-4 text-gold-accent"/> Outscraper Cloud Integration</h4>
+                          <p className="text-[10px] text-text-muted leading-relaxed font-mono">Tarik ribuan data prospek (B2B/B2C) via Outscraper. Data akan di-ingest via Webhook (/api/webhook).</p>
+                          <div className="flex flex-col gap-2">
+                            <input
+                              type="text"
+                              value={gmapsQuery}
+                              onChange={(e) => setGmapsQuery(e.target.value)}
+                              placeholder="Query, contoh: 'Klinik di Jakarta Selatan'"
+                              className="bg-white border border-brand-border rounded-xl px-4 py-3 text-xs"
+                            />
+                            <button
+                              onClick={async () => {
+                                setGmapsScrapeResult('Memulai proses scrape...');
+                                try {
+                                  const res = await fetch('/api/scraper/outscraper', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ query: gmapsQuery, webhookUrl: 'https://muhzadit.vercel.app/app/webhook' })
+                                  });
+                                  const data = await res.json();
+                                  setGmapsScrapeResult(JSON.stringify(data, null, 2));
+                                } catch (err: any) {
+                                  setGmapsScrapeResult(err.message);
+                                }
+                              }}
+                              className="bg-teal-accent hover:bg-brand-slate text-text-inverse font-mono text-[10px] uppercase font-bold py-3 rounded-xl w-32"
+                            >
+                              Jalankan
+                            </button>
+                          </div>
+                          {gmapsScrapeResult && (
+                            <pre className="p-4 bg-black text-green-400 font-mono text-[10px] rounded-xl overflow-x-auto whitespace-pre-wrap mt-2 border border-brand-border/20">
+                              {gmapsScrapeResult}
+                            </pre>
+                          )}
+                        </div>
+
+                        <div className="p-6 bg-offwhite border border-brand-border rounded-2xl space-y-4">
+                          <h4 className="text-sm font-bold font-heading-serif flex items-center gap-2"><MapPin className="w-4 h-4 text-teal-accent"/> Google Places API (Manual Add)</h4>
+                          <p className="text-[10px] text-text-muted leading-relaxed font-mono">Gunakan UI Autocomplete dari Google Extended Component Library untuk mencari dan menambahkan entitas spesifik.</p>
+                          
+                          {/* We dynamically inject the Google Maps Web Component library if not present */}
+                          <div dangerouslySetInnerHTML={{
+                            __html: `
+                              <gmpx-api-loader key="${process.env.NEXT_PUBLIC_GOOGLE_CLOUD_API_KEY || 'AIzaSyCJStQB-jajVZUekgl_qmRHuN0vc6EISwk'}" solution-channel="GMP_GE_mapsandplacesautocomplete_v2"></gmpx-api-loader>
+                              <div style="height: 300px; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; position: relative;">
+                                <gmp-map center="-6.200000, 106.816666" zoom="12" map-id="DEMO_MAP_ID">
+                                  <div slot="control-block-start-inline-start" style="padding: 10px; width: 100%; max-width: 300px;">
+                                    <gmpx-place-picker placeholder="Cari entitas bisnis..." style="width: 100%;"></gmpx-place-picker>
+                                  </div>
+                                  <gmp-advanced-marker></gmp-advanced-marker>
+                                </gmp-map>
+                              </div>
+                            `
+                          }} />
+                        </div>
+                      </div>
+                    )}
+
+                    {scraperTab === 'rss' && (
+                      <div className="space-y-4">
+                        <div className="bg-offwhite border border-brand-border rounded-2xl p-6 space-y-3 max-w-2xl">
+                          <span className="text-xs font-mono text-gold-accent uppercase tracking-widest flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> TRIGGER RSS SCRAPER MANUAL</span>
+                          <p className="text-xs text-text-muted">Aksi ini akan menjalankan `worker-db` dan `rss` cron jobs secara berurutan.</p>
+                          <button
+                            onClick={handleTriggerScraper}
+                            disabled={isScraping}
+                            className="bg-brand-slate hover:bg-black text-text-inverse font-mono text-[10px] uppercase font-bold py-3 px-6 rounded-xl cursor-pointer"
+                          >
+                            {isScraping ? 'Memproses...' : 'Mulai AGC RSS'}
+                          </button>
+                          {scrapeResult && (
+                            <pre className="p-4 bg-black text-green-400 font-mono text-[10px] rounded-xl overflow-x-auto whitespace-pre-wrap mt-2">
+                              {scrapeResult}
+                            </pre>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </>
             )}
