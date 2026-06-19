@@ -96,7 +96,8 @@ export default function AdminDashboardPage() {
     link_hijacks: '[]',
     sovereign_emergency_lock: 'false',
     sovereign_macro_fallback: '{}',
-    sovereign_fiscal_fallback: '{}'
+    sovereign_fiscal_fallback: '{}',
+    pricing_packages: '[]'
   });
 
   // Dynamic Forms State
@@ -2493,6 +2494,18 @@ export default function AdminDashboardPage() {
                           value={sysConfigs.link_hijacks}
                           onChange={(e) => setSysConfigs({ ...sysConfigs, link_hijacks: e.target.value })}
                           placeholder='[{"keyword":"Hosting","url":"https://...","is_dofollow":false}]'
+                          className="w-full bg-offwhite border border-brand-border rounded-xl p-4 font-mono text-xs text-text-primary focus:ring-2 focus:ring-teal-accent focus:border-transparent outline-none leading-relaxed"
+                        />
+                      </div>
+
+                      <div className="col-span-1 md:col-span-2">
+                        <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Pricing Tiers / Rate Card Packages (JSON Array)</label>
+                        <textarea
+                          rows={8}
+                          required
+                          value={sysConfigs.pricing_packages}
+                          onChange={(e) => setSysConfigs({ ...sysConfigs, pricing_packages: e.target.value })}
+                          placeholder='[{"id":"starter","name":"Starter Plan","price":"Rp 3.500.000","period":"/ proy","badge":"UMKM","description":"...","suitable_for":"...","objective":"...","deliverables":["..."],"timeline":"7 Hari Kerja","revisions":"2x","support":"WhatsApp","cta":"Mulai","cta_url":"https://..."}]'
                           className="w-full bg-offwhite border border-brand-border rounded-xl p-4 font-mono text-xs text-text-primary focus:ring-2 focus:ring-teal-accent focus:border-transparent outline-none leading-relaxed"
                         />
                       </div>

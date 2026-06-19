@@ -8,6 +8,7 @@ import PartnershipForm from "@/components/PartnershipForm";
 import SidebarNav from "@/components/SidebarNav";
 import Footer from "@/components/Footer";
 import GrowthCalculator from "@/components/GrowthCalculator";
+import RateCardSection from "@/components/RateCardSection";
 
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats } from "@/lib/data-server";
@@ -43,6 +44,12 @@ export default async function Home() {
         <CaseStudiesSection caseStudies={caseStudies} />
         <TestimonialsCarousel caseStudies={caseStudies} />
         <ServicesGrid services={services} />
+        
+        <RateCardSection 
+          packagesJson={config.pricing_packages as string} 
+          whatsappNumber={config.whatsapp_number as string} 
+        />
+
         <LatestInsights articles={latestArticles} />
         <GrowthCalculator />
         <PartnershipForm />

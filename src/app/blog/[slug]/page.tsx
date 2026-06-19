@@ -96,125 +96,69 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
       .eq('slug', slug)
       .single();
 
-    if (data) {
-      article = {
-        id: data.id,
-        title: data.title,
-        slug: data.slug,
-        original_url: data.original_url || '',
-        content: data.content,
-        semantic_keywords: Array.isArray(data.semantic_keywords) ? data.semantic_keywords.join(', ') : data.semantic_keywords || '',
-        faq_items: Array.isArray(data.faq_items) ? data.faq_items : [],
-        published_at: data.published_at
-      };
+      if (data) {
+        article = {
+          id: data.id,
+          title: data.title,
+          slug: data.slug,
+          original_url: data.original_url || '',
+          content: data.content,
+          semantic_keywords: Array.isArray(data.semantic_keywords) ? data.semantic_keywords.join(', ') : data.semantic_keywords || '',
+          faq_items: Array.isArray(data.faq_items) ? data.faq_items : [],
+          published_at: data.published_at
+        };
 
-      // Fetch related posts based on semantic keywords or just latest posts if no keywords match
-      const kws = Array.isArray(data.semantic_keywords) ? data.semantic_keywords : [];
-      let query = supabase.from('articles').select('id, title, slug').neq('id', data.id).limit(4);
-      
-      if (kws.length > 0) {
-        query = query.contains('semantic_keywords', [kws[0]]);
-      }
-      
-      const { data: relatedData } = await query;
-      if (relatedData && relatedData.length > 0) {
-        relatedPosts = relatedData;
+        // Fetch related posts based on semantic keywords or just latest posts if no keywords match
+        const kws = Array.isArray(data.semantic_keywords) ? data.semantic_keywords : [];
+        let query = supabase.from('articles').select('id, title, slug').neq('id', data.id).limit(4);
+        
+        if (kws.length > 0) {
+          query = query.contains('semantic_keywords', [kws[0]]);
+        }
+        
+        const { data: relatedData } = await query;
+        if (relatedData && relatedData.length > 0) {
+          relatedPosts = relatedData;
+        } else {
+          // Fallback to latest
+          const { data: latestData } = await supabase.from('articles').select('id, title, slug').neq('id', data.id).order('published_at', { ascending: false }).limit(4);
+          relatedPosts = latestData || [];
+        }
+
       } else {
-        // Fallback to latest
-        const { data: latestData } = await supabase.from('articles').select('id, title, slug').neq('id', data.id).order('published_at', { ascending: false }).limit(4);
-        relatedPosts = latestData || [];
+        // Article not found in DB.
+        // Instead of generating via LLM on-the-fly (which causes Vercel 504 timeouts),
+        // we display a fallback or 404-like state. AGC should be done asynchronously via cron/admin.
+        const title = getTitleFromSlug(slug);
+        article = {
+          title: `Artikel ${title} Tidak Ditemukan`,
+          slug,
+          original_url: '',
+          content: `
+            <p>Maaf, artikel tentang <strong>${title}</strong> belum dipublikasikan atau sedang dalam proses penyusunan oleh sistem <em>Auto-Generated Content</em> kami.</p>
+            <h2>Mencari Informasi Lain?</h2>
+            <p>Silakan kembali ke halaman blog untuk melihat artikel-artikel terbaru yang sudah tayang, atau hubungi admin untuk request topik ini.</p>
+          `,
+          semantic_keywords: 'not found, 404',
+          faq_items: []
+        };
       }
-
-    } else {
-      // 2. AGC Trigger: Generate article dynamically using Multi-LLM Routing
+    } catch (err) {
+      console.error('Database error fetching article:', err);
+      // Hardcoded fallback article in case APIs are offline
       const title = getTitleFromSlug(slug);
-
-      const systemInstruction = `Tulis artikel SEO komprehensif dalam Bahasa Indonesia. 
-      Panjang 700-1000 kata. 
-      Gunakan struktur Definition-Lead pada 200 kata pertama (contoh: "X adalah Y yang berfungsi untuk Z..."). 
-      Bagi artikel menjadi 3-4 subjudul H2.
-      Tambahkan bagian FAQ di akhir dengan 3 pertanyaan People Also Ask (PAA) dan jawabannya.
-      Gunakan format HTML yang bersih (menggunakan <p>, <h2>, <ul>, <ol>).`;
-
-      const generatedText = await routeLLM(
-        'content',
-        `Topik artikel: ${title}. Keyword target: ${title.toLowerCase()}, growth marketing, strategi seo, konversi digital.`,
-        systemInstruction
-      );
-
-      // Generate FAQ array dynamically using AI
-      const faqPrompt = `Buat 3 FAQ (Pertanyaan dan Jawaban) format JSON array berdasarkan artikel berikut. Format output HANYA array JSON [{question: "...", answer: "..."}]. Artikel: ${generatedText.substring(0, 1000)}`;
-      const rawFaq = await routeLLM('seo', faqPrompt, 'Kembalikan format JSON array saja.');
-      
-      let faqItems = [];
-      try {
-        const cleanJson = rawFaq.match(/\[\s*\{[\s\S]*\}\s*\]/)?.[0] || '[]';
-        faqItems = JSON.parse(cleanJson);
-      } catch {
-        faqItems = [
-          { question: `Apa fokus utama dari ${title}?`, answer: `Artikel ini membahas bagaimana ${title} memengaruhi peningkatan optimasi web dan digital marketing.` }
-        ];
-      }
-
-      // Save generated article to Supabase for future requests
-      const newArticle = {
-        title,
-        slug,
-        content: generatedText,
-        meta_title: `${title} | Zadit Growth Blog`,
-        meta_description: `${title}. Panduan terlengkap mengenai optimasi ekosistem digital untuk pertumbuhan bisnis Anda secara berkelanjutan.`,
-        semantic_keywords: [title.toLowerCase(), 'seo', 'growth'],
-        faq_items: faqItems,
-        is_published: true,
-        published_at: new Date().toISOString()
-      };
-
-      const { data: insertedData, error: insertError } = await supabase
-        .from('articles')
-        .insert(newArticle)
-        .select('id')
-        .single();
-
-      if (insertError) {
-        console.warn('Could not save AGC article to Supabase database', insertError);
-      }
-
       article = {
-        id: insertedData?.id,
-        title: newArticle.title,
-        slug: newArticle.slug,
+        title: `Gangguan Sistem`,
+        slug,
         original_url: '',
-        content: newArticle.content,
-        semantic_keywords: newArticle.semantic_keywords.join(', '),
-        faq_items: newArticle.faq_items,
-        published_at: newArticle.published_at
+        content: `
+          <p>Terjadi gangguan koneksi saat mencoba mengambil artikel <strong>${title}</strong>.</p>
+          <p>Sistem kami sedang mengupayakan koneksi ulang. Silakan muat ulang halaman ini beberapa saat lagi.</p>
+        `,
+        semantic_keywords: 'error',
+        faq_items: []
       };
     }
-  } catch (err) {
-    console.error('AGC database or routing error, rendering client fallback content', err);
-    // Hardcoded fallback article in case APIs are offline
-    const title = getTitleFromSlug(slug);
-    article = {
-      title,
-      slug,
-      original_url: '',
-      content: `
-        <p><strong>${title}</strong> adalah strategi krusial dalam pertumbuhan ekosistem bisnis digital modern Indonesia.</p>
-        <h2>Mengapa Ini Penting?</h2>
-        <p>Dalam pasar digital yang kompetitif, memiliki visibilitas di halaman pertama mesin pencari konvensional maupun jawaban AI generatif merupakan aset defensif jangka panjang.</p>
-        <h2>Langkah Implementasi Praktis</h2>
-        <ul>
-          <li><strong>Diagnosis Struktur:</strong> Audit kecepatan dan performa aksesibilitas web.</li>
-          <li><strong>Arsitektur Konten:</strong> Petakan keyword long-tail untuk menjangkau audiens secara presisi.</li>
-          <li><strong>Copywriting Konversi:</strong> Tulis pesan yang mengedepankan value dan memicu tindakan langsung.</li>
-        </ul>
-      `,
-      semantic_keywords: 'growth marketing, seo',
-      faq_items: [
-        { question: `Bagaimana cara mengukur keberhasilan strategi ini?`, answer: `Evaluasi berkala terhadap traffic organik, tingkat keterbacaan entitas, dan yang terpenting: conversion rate dari formulir yang diisi.` }
-      ]
-    };
-  }
 
   // Schema Markup generation
   const faqList = article.faq_items.map(faq => ({

@@ -160,36 +160,47 @@ const fallbackEntities: Entity[] = [
 const fallbackArticles: Article[] = [
   {
     id: 'a1',
-    title: 'Cara Optimasi Web UMKM di Indonesia agar Masuk Halaman Pertama Google',
-    slug: 'cara-optimasi-web-umkm-indonesia',
-    content: '<p>Di era digital, memiliki website saja tidak cukup. Anda membutuhkan strategi optimasi (SEO) yang tepat agar bisnis Anda mudah ditemukan oleh calon pelanggan di Google...</p><p>Berikut adalah langkah-langkah utama yang bisa Anda terapkan mulai hari ini...</p>',
-    meta_title: 'Cara Optimasi Web UMKM di Indonesia (2026)',
-    meta_description: 'Panduan lengkap cara mengoptimalkan website UMKM di Indonesia agar tampil di halaman pertama Google dan mendatangkan lebih banyak penjualan.',
+    title: 'Berapa Biaya SEO di Indonesia? Panduan Transparansi Anggaran 2026',
+    slug: 'berapa-biaya-seo-di-indonesia',
+    content: '<p>Berapa sebenarnya biaya optimasi SEO yang ideal untuk bisnis Anda di Indonesia? Di pasar lokal, tarif SEO sangat bervariasi mulai dari paket murah Rp 500 ribu hingga puluhan juta rupiah per bulan. Namun, mengapa terdapat perbedaan harga yang begitu kontras?</p><h4>1. Struktur Layanan & Otoritas</h4><p>Layanan SEO berkualitas tinggi melibatkan Technical Audit, On-page Optimization, riset kata kunci semantik, dan pembuatan konten berkualitas tinggi secara konsisten. Di <a href="/#services">Layanan Growth Architect</a>, kami menggabungkan rekayasa kode Next.js dengan optimasi mesin pencari.</p><h4>2. Mengapa SEO Murah Seringkali Gagal?</h4><p>Banyak agensi murah hanya fokus pada optimasi keyword instan menggunakan teknik spam backlink yang rentan diblokir oleh pembaruan algoritma Google Core. Padahal, SEO modern menuntut kecepatan website sub-detik dan Core Web Vitals yang sempurna. Anda bisa menguji performa situs Anda sekarang menggunakan <a href="/utility/audit-engine">Audit Engine Kecepatan Web</a> gratis kami.</p><h4>3. Memilih Paket yang Tepat</h4><p>Sebelum memulai, pastikan Anda meninjau <a href="/#rate-card">Rate Card Terbuka</a> kami untuk memperkirakan kecocokan anggaran dengan kebutuhan bisnis Anda. Kami menawarkan pilihan transparan mulai dari Starter hingga Growth Engine, lengkap dengan <a href="/#case-studies">Kajian Kasus Nyata</a> yang membuktikan keberhasilan metrik pertumbuhan. Hubungi kami langsung di <a href="/#partnership">Formulir Kemitraan</a> untuk konsultasi awal gratis.</p>',
+    meta_title: 'Berapa Biaya SEO di Indonesia? (Panduan Lengkap 2026)',
+    meta_description: 'Analisis biaya SEO di Indonesia. Temukan mengapa harga bervariasi, bahaya SEO murah, dan cara memilih paket optimasi yang memiliki ROI terukur.',
     author_name: 'Muhammad Khoiruzzadittaqwa',
     is_published: true,
     published_at: new Date().toISOString()
   },
   {
     id: 'a2',
-    title: 'Mengapa AI Search Mengubah Cara Kita Menulis Konten',
-    slug: 'mengapa-ai-search-mengubah-cara-kita-menulis-konten',
-    content: '<p>Google SGE (Search Generative Experience) dan mesin pencari AI lainnya telah merubah aturan main SEO. Konten berkualitas tinggi dan relevan semakin diutamakan dibandingkan sekadar keyword stuffing...</p>',
-    meta_title: 'Dampak AI Search terhadap SEO dan Penulisan Konten',
-    meta_description: 'Pelajari bagaimana mesin pencari AI seperti Google SGE mengubah lanskap SEO dan strategi konten apa yang harus Anda persiapkan.',
+    title: 'Panduan Harga Pembuatan Website Next.js Premium vs WordPress Murah',
+    slug: 'panduan-harga-pembuatan-website-2026',
+    content: '<p>Memilih platform untuk website bisnis Anda adalah keputusan investasi jangka panjang. Seringkali, pemilik bisnis tergoda dengan penawaran pembuatan website WordPress seharga Rp 500 ribu yang berujung pada performa lambat dan rentan diretas.</p><h4>1. Mengapa Next.js Layak Diperhitungkan?</h4><p>Next.js menawarkan performa loading sub-detik berkat teknologi Server-Side Rendering (SSR) dan static generation (ISR). Website yang cepat secara dramatis menurunkan bounce rate dan meningkatkan conversion rate hingga 3x lipat dibanding CMS konvensional yang lambat. Anda dapat membaca perbandingan detail fitur di <a href="/#rate-card">Tabel Perbandingan Rate Card</a> kami.</p><h4>2. Pengaruh Kecepatan pada SEO & Otoritas</h4><p>Mesin pencari modern seperti Google menempatkan Core Web Vitals sebagai faktor peringkat utama. Website Next.js yang bersih menjamin skor Lighthouse Anda menyentuh angka 95-100 secara konsisten. Gunakan <a href="/utility/audit-engine">Audit Engine Kecepatan</a> kami untuk menguji kesiapan website Anda.</p><h4>3. Membangun Ekosistem Digital Berkelanjutan</h4><p>Untuk meluncurkan situs Next.js yang terintegrasi dengan basis data tepercaya, pelajari pilihan di <a href="/#services">Modul Solusi Terintegrasi</a> atau pelajari bagaimana kami mengimplementasikan arsitektur ini pada klien publik di <a href="/#case-studies">Kajian Kasus Kecepatan Web</a>. Jika Anda siap berdiskusi, kirimkan kebutuhan Anda melalui <a href="/#partnership">Formulir Kemitraan Digital</a>.</p>',
+    meta_title: 'Harga Pembuatan Website Next.js Premium (2026)',
+    meta_description: 'Panduan harga pembuatan website modern di Indonesia. Kenapa Next.js lebih unggul dibanding CMS WordPress dalam hal performa, konversi, dan SEO jangka panjang.',
     author_name: 'Zadit Growth',
     is_published: true,
     published_at: new Date(Date.now() - 86400000).toISOString()
   },
   {
     id: 'a3',
-    title: 'Panduan Praktis Technical SEO untuk Aplikasi Next.js',
-    slug: 'panduan-seo-teknikal-nextjs',
-    content: '<p>Next.js menawarkan banyak fitur unggulan untuk SEO, mulai dari Server-Side Rendering (SSR) hingga Image Optimization. Mari kita bahas konfigurasi terbaik untuk proyek Next.js Anda...</p>',
-    meta_title: 'Technical SEO Guide untuk Next.js 14+',
-    meta_description: 'Cara mengonfigurasi Next.js untuk mendapatkan skor Lighthouse 100 dan mendominasi peringkat teknikal SEO.',
+    title: 'Analisis Biaya Otomatisasi Konten: Membangun AGC Menggunakan Gemini AI & RSS',
+    slug: 'analisis-biaya-otomatisasi-ai-scraper',
+    content: '<p>Memproduksi konten blog secara konsisten adalah tantangan terbesar dalam SEO. Di sinilah sistem Auto-Generated Content (AGC) dengan pemrosesan bahasa alami (LLM) hadir sebagai penyelamat biaya operasional Anda.</p><h4>1. Strategi Zero-Cost AI Content Pipeline</h4><p>Dengan memanfaatkan RSS feed eksternal yang di-ingest secara berkala, lalu diproses menggunakan API Google Gemini Flash yang efisien, Anda dapat memproduksi puluhan artikel berkualitas secara otomatis tanpa biaya penulis konten eksternal yang mahal. Layanan ini sepenuhnya tercakup dalam paket <a href="/#rate-card">Growth Engine</a> kami.</p><h4>2. Mitigasi Kegagalan dengan Dynamic Fallback</h4><p>Sistem AGC yang andal tidak boleh rusak ketika API AI offline. Kami mengimplementasikan sistem hybrid dengan No-AI Fallback: jika API offline, sistem menyajikan snippet asli beserta tombol rujukan resmi. Anda dapat melihat integrasi teknisnya di halaman <a href="/#services">Daftar Layanan Integrasi</a>.</p><h4>3. Mengukur Dampak & Hasil Konversi</h4><p>Otomatisasi konten yang terstruktur telah terbukti melipatgandakan indeks pencarian organik di mesin pencari. Kunjungi halaman <a href="/#case-studies">Studi Kasus Pertumbuhan</a> kami untuk melihat hasil nyata dari implementasi sistem ini, atau uji kualitas indeks sitemap Anda di <a href="/utility/audit-engine">Audit Engine Kecepatan & SEO</a>. Silakan hubungi kami di <a href="/#partnership">Hub Kemitraan</a> untuk detail setup lebih lanjut.</p>',
+    meta_title: 'Analisis Biaya AGC Gemini AI & Scraper Konten (2026)',
+    meta_description: 'Cara kerja dan rincian biaya membangun sistem AGC berbasis AI & RSS feed dengan fallback dinamis tanpa biaya lisensi bulanan yang mahal.',
     author_name: 'Zadit Growth',
     is_published: true,
     published_at: new Date(Date.now() - 172800000).toISOString()
+  },
+  {
+    id: 'a4',
+    title: 'Mengapa SEO Murah Biasanya Gagal? Bahaya Tersembunyi di Balik Paket Instan',
+    slug: 'mengapa-seo-murah-biasanya-gagal',
+    content: '<p>Banyak pemilik bisnis terjebak dengan paket SEO murah seharga Rp 300 ribu hingga Rp 1 juta per bulan yang menjanjikan posisi nomor satu Google secara instan. Artikel ini mengungkap mengapa praktik tersebut sangat berisiko bagi reputasi domain Anda.</p><h4>1. Bahaya Backlink Spam & Duplikasi Konten</h4><p>Penyedia SEO murah biasanya menggunakan software otomatis untuk menyebarkan komentar spam dan backlink di website berkualitas rendah. Hal ini memicu penalti manual dari Google yang dapat menghapus domain Anda sepenuhnya dari hasil pencarian.</p><h4>2. Pentingnya Technical SEO & Otoritas Asli</h4><p>SEO modern berfokus pada pengalaman pengguna yang nyata: kecepatan muat, struktur navigasi yang logis, dan tulisan yang otoritatif. Di <a href="/#services">Layanan Growth Architect</a>, kami membangun optimasi teknikal tingkat lanjut. Anda dapat menguji tingkat kesehatan website Anda di <a href="/utility/audit-engine">Audit Engine</a> kami.</p><h4>3. Investasi SEO yang Berorientasi Hasil</h4><p>SEO adalah maraton, bukan sprint. Lihat bagaimana kami membantu mitra strategis meningkatkan visibilitas SERP hingga +148% di <a href="/#case-studies">Kajian Kasus Otoritas Publik</a>, dan pilih anggaran investasi terbaik untuk bisnis Anda di <a href="/#rate-card">Rate Card Terbuka</a> kami. Mulailah bermitra secara profesional melalui <a href="/#partnership">Formulir Pengajuan Proposal</a> kami.</p>',
+    meta_title: 'Mengapa Layanan SEO Murah Biasanya Gagal? (Bahaya Penalti)',
+    meta_description: 'Ketahui bahaya tersembunyi di balik jasa SEO murah instan, risiko penalti algoritma Google, dan bagaimana investasi SEO berkualitas bekerja.',
+    author_name: 'Muhammad Khoiruzzadittaqwa',
+    is_published: true,
+    published_at: new Date(Date.now() - 259200000).toISOString()
   }
 ];
 
@@ -369,7 +380,99 @@ export const getSystemConfig = unstable_cache(
       available_status: 'AVAILABLE',
       ai_prompt: 'Kamu adalah SEO content writer ahli untuk pasar Indonesia...',
       site_title: 'Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect',
-      analytics_id: 'G-2CD1CPGEYF'
+      analytics_id: 'G-2CD1CPGEYF',
+      pricing_packages: JSON.stringify([
+        {
+          id: 'starter',
+          name: 'Starter Plan',
+          price: 'Rp 3.500.000',
+          period: '/ proy',
+          badge: 'UMKM & Rintisan',
+          description: 'Sangat cocok untuk bisnis lokal yang ingin membangun eksistensi digital pertama mereka dengan performa web ultra-cepat.',
+          suitable_for: 'UMKM lokal, personal brand, dan draf awal peluncuran bisnis.',
+          objective: 'Menghasilkan landing page konversi tinggi dengan integrasi SEO dasar.',
+          deliverables: [
+            '1x Landing Page Berkecepatan Tinggi (Next.js)',
+            'Technical SEO & Setup Google Search Console',
+            'Desain Visual Responsif (Mobile-First)',
+            'Integrasi Formulir Leads & Kontak WhatsApp',
+            'Laporan Performa Kecepatan Web (Skor Lighthouse >90)'
+          ],
+          timeline: '7 Hari Kerja',
+          revisions: '2x Revisi Mayor',
+          support: 'WhatsApp Chat & Dokumentasi Mandiri',
+          cta: 'Mulai Proyek Starter',
+          cta_url: 'https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20dengan%20Paket%20Starter%20Plan.'
+        },
+        {
+          id: 'growth',
+          name: 'Growth Engine',
+          price: 'Rp 7.500.000',
+          period: '/ proy',
+          badge: 'Paling Populer',
+          description: 'Dirancang untuk bisnis berkembang yang membutuhkan ekosistem konten aktif secara otomatis guna mendominasi Google Search lokal.',
+          suitable_for: 'Agensi regional, penyedia jasa profesional, dan klinik lokal.',
+          objective: 'Membangun kredibilitas, memproduksi konten organik berkala lewat auto-ingest RSS, dan menangkap prospek bisnis secara konsisten.',
+          deliverables: [
+            'Semua fitur paket Starter + Struktur Multi-halaman',
+            'Sistem Auto-Generated Content (Scraper RSS + AI Rewrite)',
+            'Pemasangan Database Klien (Supabase / Firestore)',
+            'Technical & On-Page SEO Lanjutan (Peta Entitas Lokal)',
+            'Integrasi Script Pelacakan Analytics Tanpa Cookie (Privacy-First)',
+            'Dashboard Pemantauan Prospek Ringkas'
+          ],
+          timeline: '14 Hari Kerja',
+          revisions: '3x Revisi Mayor',
+          support: 'WhatsApp & Google Meet Prioritas',
+          cta: 'Klaim Paket Growth',
+          cta_url: 'https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20dengan%20Paket%20Growth%20Engine.'
+        },
+        {
+          id: 'professional',
+          name: 'Professional Authority',
+          price: 'Rp 15.000.000',
+          period: '/ proy',
+          badge: 'Rekomendasi Skala',
+          description: 'Layanan ujung-ke-ujung terintegrasi untuk mendominasi pasar digital regional dengan optimasi kecepatan ekstrem, konten, presentasi, dan unit economics.',
+          suitable_for: 'Instansi swasta, korporasi berkembang, dan lembaga publik.',
+          objective: 'Membangun otoritas bisnis mutlak, mengoptimalkan rasio konversi leads, serta meyakinkan komite eksekutif lewat narasi proposal & slide premium.',
+          deliverables: [
+            'Semua fitur paket Growth + Ekosistem Digital Lengkap',
+            'Optimasi Kecepatan Muat Sub-Detik & Skor Core Web Vitals 100',
+            '1x Desain Proposal Bisnis & Slide Presentasi Visual (Pitch Deck Standard)',
+            'Sistem Audit Kecepatan Mandiri (Audit Engine terintegrasi di web)',
+            'Strategi Unit Economics & Visualisasi Analitik Bisnis',
+            'Analisis Kompetitor & Perencanaan Konten Cluster SEO'
+          ],
+          timeline: '21 Hari Kerja',
+          revisions: 'Revisi Unlimited (Selama masa pengembangan)',
+          support: 'Dukungan Telepon 24/7 & Pertemuan Rutin Mingguan',
+          cta: 'Mulai Dominasi Pasar',
+          cta_url: 'https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20dengan%20Paket%20Professional%20Authority.'
+        },
+        {
+          id: 'enterprise',
+          name: 'Custom Enterprise',
+          price: 'Hubungi Kami',
+          period: '',
+          badge: 'Solusi Khusus',
+          description: 'Dukungan strategis penuh untuk korporasi besar atau lembaga publik yang membutuhkan integrasi teknologi khusus, data geospasial, dan arsitektur sitemap dinamis berskala jutaan halaman.',
+          suitable_for: 'Perusahaan logistik nasional, portal publik perkotaan, dan ekosistem multi-cabang.',
+          objective: 'Keandalan tinggi, infrastruktur cloud khusus, penyesuaian regulasi hukum dan keamanan data.',
+          deliverables: [
+            'Infrastruktur Cloud Khusus (Vercel Enterprise / Google Cloud Platform)',
+            'Integrasi Data Geospasial Kompleks (Peta Layanan Publik Terstruktur)',
+            'Dukungan Aksesibilitas WCAG AA Penuh',
+            'Perjanjian SLA (Service Level Agreement) Kecepatan & Uptime',
+            'Sistem Audit Skala Besar & Optimasi Infrastruktur Kode Khusus'
+          ],
+          timeline: 'Kustom (Berdasarkan cakupan proyek)',
+          revisions: 'Revisi Khusus (Sesuai kesepakatan)',
+          support: 'Dedicated Slack Channel & Dedicated Support Engineer',
+          cta: 'Ajukan Rapat Kemitraan',
+          cta_url: 'https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20mengadakan%20rapat%20untuk%20Paket%20Enterprise.'
+        }
+      ])
     };
     try {
       const { data, error } = await supabase.from('system_configs').select('key, value');
