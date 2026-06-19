@@ -7,6 +7,8 @@ export const revalidate = 21600; // 6 hours edge cache
 interface MacroEconomicsData {
   gdpGrowth: string;
   inflationRate: string;
+  biRate: string;
+  fedRate: string;
   period: string;
   verdict: string;
   attribution: string;
@@ -47,7 +49,7 @@ export async function GET() {
 
     if (!isEmergencyLock && apiKey && apiKey.trim() !== '') {
       const abortController = new AbortController();
-      const timeoutId = setTimeout(() => abortController.abort(), 4000);
+      const timeoutId = setTimeout(() => abortController.abort(), 6000);
 
       try {
         const bpsUrl = `https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/456/key/${apiKey}`;
@@ -57,6 +59,25 @@ export async function GET() {
             'Accept': 'application/json'
           }
         });
+
+        let fedRate = '5.25%';
+        const fredApiKey = process.env.FRED_API_KEY;
+        if (fredApiKey && fredApiKey.trim() !== '') {
+          try {
+            const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=FEDFUNDS&api_key=${fredApiKey}&file_type=json&sort_order=desc&limit=1`;
+            const fredRes = await fetch(fredUrl, { signal: abortController.signal });
+            if (fredRes.ok) {
+              const fredData = await fredRes.json();
+              const latestVal = fredData.observations?.[0]?.value;
+              if (latestVal) {
+                fedRate = `${parseFloat(latestVal).toFixed(2)}%`;
+              }
+            }
+          } catch (fredErr) {
+            console.warn('FRED API FFR fetch failed:', fredErr);
+          }
+        }
+
         clearTimeout(timeoutId);
 
         if (response.ok) {
@@ -68,9 +89,11 @@ export async function GET() {
             payload = {
               gdpGrowth: parsedGdp,
               inflationRate: parsedInflation,
+              biRate: '6.25%',
+              fedRate: fedRate,
               period: 'Q4 2025',
               verdict: 'Stabil Pertumbuhan Positif',
-              attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS)',
+              attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS) & FRED',
               isFresh: true
             };
 
@@ -100,17 +123,24 @@ export async function GET() {
           : fallbackConfig.value;
 
         payload = {
-          ...parsedFallback,
-          attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS)',
+          gdpGrowth: parsedFallback.gdpGrowth || '5.05%',
+          inflationRate: parsedFallback.inflationRate || '2.75%',
+          biRate: parsedFallback.biRate || '6.25%',
+          fedRate: parsedFallback.fedRate || '5.25%',
+          period: parsedFallback.period || 'Q4 2025',
+          verdict: parsedFallback.verdict || 'Ekonomi Terkendali',
+          attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS) & FRED',
           isFresh: false
         };
       } else {
         payload = {
           gdpGrowth: '5.01%',
           inflationRate: '2.56%',
+          biRate: '6.25%',
+          fedRate: '5.25%',
           period: 'Tahun 2025 (Fallback)',
           verdict: 'Ekonomi Terkendali (Offline Mode)',
-          attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS)',
+          attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS) & FRED',
           isFresh: false
         };
       }

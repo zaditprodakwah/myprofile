@@ -22,6 +22,7 @@ interface Article {
 
 // Generate human-friendly title from slug
 function getTitleFromSlug(slug: string): string {
+  if (!slug) return '';
   return slug
     .split('-')
     .map(w => w.charAt(0).toUpperCase() + w.slice(1))
@@ -29,9 +30,9 @@ function getTitleFromSlug(slug: string): string {
 }
 
 export async function generateMetadata(
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = params;
+  const { slug } = await params;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
   
   const { data } = await supabase
@@ -81,8 +82,8 @@ export async function generateMetadata(
 
 
 // Dynamic server-side SEO/AEO AGC Article page
-export default async function BlogArticlePage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function BlogArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   let article: Article | null = null;
   let relatedPosts: any[] = [];

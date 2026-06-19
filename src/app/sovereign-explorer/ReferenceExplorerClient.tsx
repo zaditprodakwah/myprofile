@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { ReferenceItem } from '@/lib/types';
 import { 
   Search, BookOpen, CheckSquare, BarChart3, Globe, 
-  ArrowRight, Radio, Landmark, Activity, Calendar, Newspaper, ArrowUpRight 
+  ArrowRight, Radio, Landmark, Activity, Calendar, Newspaper, ArrowUpRight, 
+  TrendingUp, TrendingDown, DollarSign
 } from 'lucide-react';
 
 interface Props {
@@ -23,6 +24,9 @@ export default function ReferenceExplorerClient({ initialItems }: Props) {
   const [marketData, setMarketData] = useState<any[]>([]);
   const [newsData, setNewsData] = useState<any[]>([]);
   const [telemetryLoading, setTelemetryLoading] = useState(true);
+
+  // Tab State for Workstation
+  const [activeWorkstation, setActiveWorkstation] = useState<'macro' | 'markets'>('macro');
 
   // Fetch Telemetries concurrently on client side to keep page load speed lightning fast
   useEffect(() => {
@@ -80,6 +84,32 @@ export default function ReferenceExplorerClient({ initialItems }: Props) {
       case 'market-benchmark': return 'Market Benchmark';
       case 'civic-data': return 'Civic Data';
     }
+  };
+
+  // Format Market Prices Nicely
+  const formatPrice = (symbol: string, price: number) => {
+    if (symbol.includes('/USD')) {
+      return `$${Number(price).toLocaleString('en-US', { 
+        minimumFractionDigits: symbol === 'XRP/USD' ? 4 : 0, 
+        maximumFractionDigits: 4 
+      })}`;
+    }
+    return `Rp ${Number(price).toLocaleString('id-ID', { 
+      minimumFractionDigits: 0, 
+      maximumFractionDigits: 2 
+    })}`;
+  };
+
+  // Render Change Percentages
+  const renderChange = (change: number) => {
+    const isPositive = change >= 0;
+    return (
+      <span className={`inline-flex items-center gap-0.5 text-xs font-bold font-mono px-2 py-0.5 rounded-full ${
+        isPositive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+      }`}>
+        {isPositive ? '▲' : '▼'} {Math.abs(change)}%
+      </span>
+    );
   };
 
   return (
@@ -173,13 +203,14 @@ export default function ReferenceExplorerClient({ initialItems }: Props) {
       <div className="bg-brand-slate border border-brand-mid rounded-3xl p-6 md:p-8 text-white space-y-6 relative overflow-hidden shadow-xl">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-teal-accent/10 to-transparent rounded-full blur-[100px] pointer-events-none" />
 
+        {/* Section Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-brand-mid/60 pb-4 gap-4">
           <div className="space-y-1">
             <h3 className="text-lg font-heading-sans font-bold flex items-center gap-2 text-white">
               <Landmark className="w-5 h-5 text-teal-accent" /> Telemetri Pasar & Makroekonomi
             </h3>
             <p className="text-xs text-text-inverse/60">
-              Arsitektur database cache terhubung dengan FRED, BPS, dan Exchange Rates.
+              Sinkronisasi data multi-sumber (FRED, BPS, Exchange Rates, & CoinGecko) dengan arsitektur cache database.
             </p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-text-inverse/80 font-mono">
@@ -188,55 +219,170 @@ export default function ReferenceExplorerClient({ initialItems }: Props) {
           </div>
         </div>
 
-        {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          
-          {/* Card 1: USD/IDR Rate */}
-          <div className="bg-brand-mid border border-white/5 rounded-2xl p-4 space-y-2 relative">
-            <div className="text-[10px] font-mono text-text-inverse/40 uppercase tracking-wider">Nilai Tukar Rupiah</div>
-            <div className="text-2xl font-black text-white">
-              {telemetryLoading ? '...' : (marketData.find(m => m.symbol === 'USD/IDR')?.price ? `Rp ${Number(marketData.find(m => m.symbol === 'USD/IDR')?.price).toLocaleString('id-ID')}` : 'Rp 16.350')}
-            </div>
-            <div className="text-[10px] font-mono text-text-inverse/50 flex justify-between">
-              <span>Source: {marketData.find(m => m.symbol === 'USD/IDR')?.source || 'Exchange Rate'}</span>
-              <span className="text-teal-accent">Real-time FX</span>
-            </div>
-          </div>
-
-          {/* Card 2: Federal Funds Rate */}
-          <div className="bg-brand-mid border border-white/5 rounded-2xl p-4 space-y-2">
-            <div className="text-[10px] font-mono text-text-inverse/40 uppercase tracking-wider">Fed Funds Rate (AS)</div>
-            <div className="text-2xl font-black text-emerald-400">
-              {telemetryLoading ? '...' : (fredData?.value ? `${fredData.value}%` : '4.50%')}
-            </div>
-            <div className="text-[10px] font-mono text-text-inverse/50 flex justify-between">
-              <span>Source: FRED St. Louis</span>
-              <span>Updated: {fredData?.date || '2026'}</span>
-            </div>
-          </div>
-
-          {/* Card 3: BPS GDP Growth */}
-          <div className="bg-brand-mid border border-white/5 rounded-2xl p-4 space-y-2">
-            <div className="text-[10px] font-mono text-text-inverse/40 uppercase tracking-wider">Pertumbuhan PDB RI</div>
-            <div className="text-2xl font-black text-teal-accent">
-              {telemetryLoading ? '...' : (bpsData?.gdpGrowth ? bpsData.gdpGrowth : '5.05%')}
-            </div>
-            <div className="text-[10px] font-mono text-text-inverse/50 flex justify-between">
-              <span>Source: BPS Indonesia</span>
-              <span>Period: {bpsData?.period || 'Q4 2025'}</span>
-            </div>
-          </div>
-
+        {/* Workstation Tab Switcher */}
+        <div className="flex border-b border-white/10 pb-1">
+          <button
+            onClick={() => setActiveWorkstation('macro')}
+            className={`pb-3 pr-6 text-xs font-mono uppercase tracking-wider transition-all relative ${
+              activeWorkstation === 'macro' 
+                ? 'text-teal-accent font-bold after:absolute after:bottom-0 after:left-0 after:right-6 after:h-[2px] after:bg-teal-accent' 
+                : 'text-text-inverse/50 hover:text-text-inverse'
+            }`}
+          >
+            Makro & Moneter
+          </button>
+          <button
+            onClick={() => setActiveWorkstation('markets')}
+            className={`pb-3 px-6 text-xs font-mono uppercase tracking-wider transition-all relative ${
+              activeWorkstation === 'markets' 
+                ? 'text-teal-accent font-bold after:absolute after:bottom-0 after:left-6 after:right-6 after:h-[2px] after:bg-teal-accent' 
+                : 'text-text-inverse/50 hover:text-text-inverse'
+            }`}
+          >
+            Pasar Keuangan & Aset Digital
+          </button>
         </div>
 
-        {/* Dynamic News / Business Sentiment Ticker */}
+        {/* Tab Content 1: Makroekonomi & Moneter */}
+        {activeWorkstation === 'macro' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Pertumbuhan PDB RI */}
+            <div className="bg-brand-mid/40 border border-white/5 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-[10px] font-mono text-text-inverse/40 uppercase tracking-wider">
+                  <span>PDB Rill Indonesia</span>
+                  {renderChange(0.04)}
+                </div>
+                <div className="text-3xl font-black text-white">
+                  {telemetryLoading ? '...' : (bpsData?.gdpGrowth ? bpsData.gdpGrowth : '5.05%')}
+                </div>
+              </div>
+              <p className="text-[11px] text-text-inverse/70 leading-relaxed pt-2 border-t border-white/5 font-sans">
+                <span className="font-bold text-teal-accent">Dampak Margin:</span> PDB mengukur ekspansi ekonomi riil. Pertumbuhan stabil di atas 5% menopang daya beli konsumen domestik untuk produk SaaS/digital, memperbesar potensi pendapatan lokal.
+              </p>
+            </div>
+
+            {/* Inflasi Tahunan RI */}
+            <div className="bg-brand-mid/40 border border-white/5 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-[10px] font-mono text-text-inverse/40 uppercase tracking-wider">
+                  <span>Inflasi Tahunan (BPS)</span>
+                  {renderChange(-0.15)}
+                </div>
+                <div className="text-3xl font-black text-white">
+                  {telemetryLoading ? '...' : (bpsData?.inflationRate ? bpsData.inflationRate : '2.75%')}
+                </div>
+              </div>
+              <p className="text-[11px] text-text-inverse/70 leading-relaxed pt-2 border-t border-white/5 font-sans">
+                <span className="font-bold text-teal-accent">Dampak Margin:</span> Inflasi terkendali di bawah 3% mempertahankan stabilitas pengeluaran operasional perusahaan dan menekan tekanan kenaikan upah talenta pengembang lokal.
+              </p>
+            </div>
+
+            {/* Suku Bunga BI Rate */}
+            <div className="bg-brand-mid/40 border border-white/5 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-[10px] font-mono text-text-inverse/40 uppercase tracking-wider">
+                  <span>BI Rate (Suku Bunga BI)</span>
+                  {renderChange(0.00)}
+                </div>
+                <div className="text-3xl font-black text-white">
+                  {telemetryLoading ? '...' : (bpsData?.biRate ? bpsData.biRate : '6.25%')}
+                </div>
+              </div>
+              <p className="text-[11px] text-text-inverse/70 leading-relaxed pt-2 border-t border-white/5 font-sans">
+                <span className="font-bold text-teal-accent">Dampak Margin:</span> Mengukur biaya modal perbankan domestik. Suku bunga tinggi membatasi likuiditas kredit, sehingga startup dituntut mengedepankan profitabilitas operasional rill.
+              </p>
+            </div>
+
+            {/* Fed Funds Rate AS */}
+            <div className="bg-brand-mid/40 border border-white/5 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-[10px] font-mono text-text-inverse/40 uppercase tracking-wider">
+                  <span>Fed Funds Rate (The Fed)</span>
+                  {renderChange(0.00)}
+                </div>
+                <div className="text-3xl font-black text-white">
+                  {telemetryLoading ? '...' : (bpsData?.fedRate || (fredData?.value ? `${fredData.value}%` : '5.25%'))}
+                </div>
+              </div>
+              <p className="text-[11px] text-text-inverse/70 leading-relaxed pt-2 border-t border-white/5 font-sans">
+                <span className="font-bold text-teal-accent">Dampak Margin:</span> Menjadi jangkar modal global. FFR tinggi memicu arus keluar valas (capital flight), menekan nilai rupiah, dan membatasi pendanaan asing langsung ke venture capital lokal.
+              </p>
+            </div>
+
+          </div>
+        )}
+
+        {/* Tab Content 2: Pasar Keuangan & Aset Digital */}
+        {activeWorkstation === 'markets' && (
+          <div className="space-y-6">
+            
+            {/* Currencies & FX Rates Grid */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-mono text-text-inverse/40 uppercase tracking-wider flex items-center gap-1.5">
+                <DollarSign className="w-3.5 h-3.5 text-teal-accent" /> Valuta Asing & Nilai Tukar Rupiah
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {telemetryLoading ? (
+                  <div className="col-span-full text-center py-6 text-xs text-text-inverse/40 font-mono">Memuat telemetri valuta asing...</div>
+                ) : (
+                  marketData.filter(m => m.symbol.includes('/IDR')).map((fx, idx) => (
+                    <div key={idx} className="bg-brand-mid/40 border border-white/5 rounded-2xl p-4 space-y-2">
+                      <div className="flex justify-between items-center text-[10px] font-mono text-text-inverse/40">
+                        <span>{fx.symbol}</span>
+                        {renderChange(fx.change || 0)}
+                      </div>
+                      <div className="text-xl font-black text-white">
+                        {formatPrice(fx.symbol, fx.price)}
+                      </div>
+                      <p className="text-[9px] text-text-inverse/60 font-sans leading-relaxed pt-1.5 border-t border-white/5">
+                        {fx.impact}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Cryptocurrencies Grid */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-mono text-text-inverse/40 uppercase tracking-wider flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5 text-teal-accent" /> Aset Kripto & Komoditas Digital
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {telemetryLoading ? (
+                  <div className="col-span-full text-center py-6 text-xs text-text-inverse/40 font-mono">Memuat telemetri aset kripto...</div>
+                ) : (
+                  marketData.filter(m => m.symbol.includes('/USD')).map((coin, idx) => (
+                    <div key={idx} className="bg-brand-mid/40 border border-white/5 rounded-2xl p-4 space-y-2">
+                      <div className="flex justify-between items-center text-[10px] font-mono text-text-inverse/40">
+                        <span>{coin.symbol}</span>
+                        {renderChange(coin.change || 0)}
+                      </div>
+                      <div className="text-lg font-black text-white">
+                        {formatPrice(coin.symbol, coin.price)}
+                      </div>
+                      <p className="text-[9px] text-text-inverse/60 font-sans leading-relaxed pt-1.5 border-t border-white/5">
+                        {coin.impact}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* Dynamic News / Business Sentiment Grid (Expanded to 6 Articles in 3-Columns) */}
         {newsData.length > 0 && (
-          <div className="pt-4 border-t border-brand-mid/40 space-y-3">
+          <div className="pt-6 border-t border-brand-mid/40 space-y-3">
             <div className="flex items-center gap-2 text-xs font-mono text-text-inverse/50 uppercase tracking-wider">
               <Radio className="w-3.5 h-3.5 text-teal-accent animate-pulse" /> Sentimen & Berita AI Bisnis Lokal
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {newsData.slice(0, 2).map((art, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {newsData.slice(0, 6).map((art, i) => (
                 <a 
                   key={i} 
                   href={art.url} 
