@@ -4,7 +4,8 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 // Added import for Next.js Image component
 import Image from 'next/image';
-import { Award, TrendingUp, Users, Shield, Globe, ChevronDown, Zap, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Award, TrendingUp, Users, Shield, Globe, ChevronDown, Zap, Check, Database } from 'lucide-react';
 
 interface HeroSectionProps {
   headline?: string;
@@ -213,15 +214,28 @@ export default function HeroSection({
             </span>
           </motion.div>
 
-          {/* Role Rotating — identity anchoring */}
+          {/* Role Rotating & Floating Avatar (Mobile) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.15 }}
-            className="flex items-center gap-2 text-sm font-heading-sans text-text-muted"
+            className="flex items-center gap-4"
           >
-            <span className="font-mono text-[10px] tracking-widest uppercase text-text-muted/70">Muhammad Khoiruzzadittaqwa —</span>
-            <RotatingTag />
+            {/* Floating Avatar - Visible only on mobile */}
+            <div className="block lg:hidden relative w-12 h-12 rounded-full overflow-hidden border-2 border-teal-accent/30 shadow-lg glow-border-teal flex-shrink-0">
+              <Image
+                src="/zadit-foto.png"
+                alt="Zadit"
+                fill
+                sizes="48px"
+                className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
+              />
+            </div>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm font-heading-sans text-text-muted">
+              <span className="font-mono text-[10px] sm:text-xs tracking-widest uppercase text-text-muted/70">Muhammad Khoiruzzadittaqwa —</span>
+              <RotatingTag />
+            </div>
           </motion.div>
 
           {/* Hero H1: Staggered word reveal */}
@@ -306,11 +320,11 @@ export default function HeroSection({
           transition={{ duration: 0.75, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
           className="lg:col-span-5 flex flex-col gap-5"
         >
-          {/* Profile Photo Card — Grayscale hover reveal */}
+          {/* Profile Photo Card — Hidden on mobile, visible on lg */}
           <motion.div
             whileHover={{ scale: 1.01 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="bg-white border border-brand-border p-3 rounded-2xl shadow-lg relative overflow-hidden group glow-border-teal"
+            className="hidden lg:block bg-white border border-brand-border p-3 rounded-2xl shadow-lg relative overflow-hidden group glow-border-teal"
           >
           <Image
             src="/zadit-foto.png"
@@ -328,8 +342,11 @@ export default function HeroSection({
                 <span className="w-1.5 h-1.5 rounded-full bg-teal-accent pulse-badge" />
                 Growth Architect
               </div>
-              <div className="dark-liquid-glass text-gold-muted px-3 py-1.5 rounded-full text-[9px] font-mono tracking-widest uppercase">
-                2026 Available
+              <div className={cn(
+                "dark-liquid-glass px-3 py-1.5 rounded-full text-[9px] font-mono tracking-widest uppercase",
+                availabilityStatus === 'AVAILABLE' ? "text-gold-muted" : "text-amber-500"
+              )}>
+                {availabilityStatus === 'AVAILABLE' ? '2026 AVAILABLE' : 'CURRENTLY BUSY'}
               </div>
             </div>
           </motion.div>
@@ -345,18 +362,27 @@ export default function HeroSection({
               <span className="text-[10px] font-mono text-text-primary font-bold uppercase tracking-widest">
                 Status Sistem Real-time
               </span>
-              <span className="flex items-center gap-1.5 text-[9px] font-mono bg-teal-accent/10 text-teal-accent px-2.5 py-1 rounded-full border border-teal-accent/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-accent animate-pulse" />
-                ONLINE
+              <span className={cn(
+                "flex items-center gap-1.5 text-[9px] font-mono px-2.5 py-1 rounded-full border",
+                availabilityStatus === 'AVAILABLE' 
+                  ? "bg-teal-accent/10 text-teal-accent border-teal-accent/20" 
+                  : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+              )}>
+                <span className={cn(
+                  "w-1.5 h-1.5 rounded-full animate-pulse",
+                  availabilityStatus === 'AVAILABLE' ? "bg-teal-accent" : "bg-amber-500"
+                )} />
+                {availabilityStatus === 'AVAILABLE' ? 'ONLINE' : 'BUSY'}
               </span>
             </div>
 
             <div className="space-y-3">
               {[
+                { label: 'SOVEREIGN DATA (BPS)', icon: Database, val: 'SINKRONISASI AKTIF', color: 'text-teal-accent' },
+                { label: 'SCRAPER ENGINE', icon: Globe, val: 'MENUNGGU CRON', color: 'text-teal-accent' },
                 { label: 'ANTREAN AUDIT WEB', icon: Zap, val: liveStats?.totalAudits ? `${liveStats.totalAudits} Kueri` : 'Aktif', color: 'text-teal-accent' },
                 { label: 'PROFIL TERINDEKS', icon: Users, val: liveStats?.totalDirectories ? `${liveStats.totalDirectories} Entitas` : 'Optimal', color: 'text-teal-accent' },
                 { label: 'PERFORMA WEB LCP', icon: Check, val: lcpScore ? `${lcpScore.toFixed(2)}s` : '< 1.8s', color: 'text-teal-accent' },
-                { label: 'PROTOKOL KEAMANAN', icon: Shield, val: 'SSL TERVERIFIKASI', color: 'text-teal-accent' },
               ].map(({ label, icon: Icon, val, color }) => (
                 <div key={label} className="flex justify-between items-center text-xs">
                   <span className="text-text-muted font-mono text-[10px] tracking-wider">{label}</span>
