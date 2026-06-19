@@ -379,11 +379,11 @@ export default function HeroSection({
 
             <div className="space-y-3">
               {[
-                { label: 'SOVEREIGN DATA (BPS)', icon: Database, val: 'SINKRONISASI AKTIF', color: 'text-teal-accent' },
-                { label: 'SCRAPER ENGINE', icon: Globe, val: 'MENUNGGU CRON', color: 'text-teal-accent' },
+                { label: 'INTEGRASI DATA PUBLIK', icon: Database, val: 'SINKRONISASI AKTIF', color: 'text-teal-accent' },
+                { label: 'AUTOMASI DIREKTORI B2B', icon: Globe, val: 'RUTIN DIPERBARUI', color: 'text-teal-accent' },
                 { label: 'ANTREAN AUDIT WEB', icon: Zap, val: liveStats?.totalAudits ? `${liveStats.totalAudits} Kueri` : 'Aktif', color: 'text-teal-accent' },
                 { label: 'PROFIL TERINDEKS', icon: Users, val: liveStats?.totalDirectories ? `${liveStats.totalDirectories} Entitas` : 'Optimal', color: 'text-teal-accent' },
-                { label: 'PERFORMA WEB LCP', icon: Check, val: lcpScore ? `${lcpScore.toFixed(2)}s` : '< 1.8s', color: 'text-teal-accent' },
+                { label: 'KECEPATAN MUAT HALAMAN', icon: Check, val: lcpScore ? `${lcpScore.toFixed(2)}s` : '< 1.8s', color: 'text-teal-accent' },
               ].map(({ label, icon: Icon, val, color }) => (
                 <div key={label} className="flex justify-between items-center text-xs">
                   <span className="text-text-muted font-mono text-[10px] tracking-wider">{label}</span>

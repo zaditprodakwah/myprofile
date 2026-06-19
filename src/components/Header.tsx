@@ -96,7 +96,7 @@ export default function Header() {
               }`}
             />
             <span className="font-mono text-[9px] tracking-wider text-text-primary uppercase font-semibold">
-              ● Ekosistem Aktif // Vercel Edge Runtime 2026
+              {availability === 'AVAILABLE' ? 'Kesiapan: Siap Berkolaborasi' : 'Status: Kapasitas Penuh'}
             </span>
           </div>
 
