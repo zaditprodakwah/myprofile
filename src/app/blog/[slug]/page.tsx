@@ -26,6 +26,38 @@ function getTitleFromSlug(slug: string): string {
     .join(' ');
 }
 
+export async function generateMetadata(
+  { params }: { params: { slug: string } }
+) {
+  const { slug } = params;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
+  
+  const { data } = await supabase
+    .from('articles')
+    .select('title, meta_description, semantic_keywords, slug')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  const title = data?.title ? `${data.title} | Zadit Growth Blog` : `${getTitleFromSlug(slug)} | Zadit Growth Blog`;
+  const description = data?.meta_description || `Artikel komprehensif mengenai ${getTitleFromSlug(slug)} untuk pertumbuhan ekosistem bisnis digital modern.`;
+  const keywords = Array.isArray(data?.semantic_keywords) ? data?.semantic_keywords.join(', ') : (data?.semantic_keywords || 'growth marketing, seo, digital business');
+
+  return {
+    title,
+    description,
+    keywords,
+    alternates: {
+      canonical: `/blog/${slug}`
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/blog/${slug}`,
+      type: 'article'
+    }
+  };
+}
+
 // Dynamic server-side SEO/AEO AGC Article page
 export default async function BlogArticlePage({ params }: { params: { slug: string } }) {
   const { slug } = params;

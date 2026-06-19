@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://zadit.dev';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
 
 export async function GET() {
   const staticPages = [
@@ -48,6 +48,18 @@ export async function GET() {
       });
     }
 
+    // Fetch reference items
+    const { data: references } = await supabase
+      .from('reference_items')
+      .select('slug')
+      .eq('is_active', true);
+
+    if (references) {
+      references.forEach(ref => {
+        dynamicPages.push(`/sovereign-explorer/${ref.slug}`);
+      });
+    }
+
   } catch (err) {
     console.error('Failed to fetch dynamic paths for sitemap', err);
     // Fallbacks just in case
@@ -56,7 +68,9 @@ export async function GET() {
       '/directory/jakarta-selatan',
       '/blog/cara-optimasi-web-umkm-indonesia',
       '/blog/mengapa-ai-search-mengubah-cara-kita-menulis-konten',
-      '/blog/panduan-seo-teknikal-nextjs'
+      '/blog/panduan-seo-teknikal-nextjs',
+      '/sovereign-explorer/b2b-growth-playbook-landing-page-conversion',
+      '/sovereign-explorer/checklist-technical-seo-nextjs-speed'
     ];
   }
 

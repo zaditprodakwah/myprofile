@@ -202,7 +202,7 @@ CREATE POLICY "Public read paa_questions" ON paa_questions FOR SELECT TO anon US
 -- Seed Data (Default Values)
 INSERT INTO site_content (section_key, content_type, value) VALUES
 ('hero_headline', 'text', 'Dari Kata ke Konversi. Dari Data ke Dominasi.'),
-('hero_subheading', 'text', 'Saya membantu UMKM, instansi, dan lembaga publik merancang ekosistem digital yang bukan hanya tampil — tapi mengkonversi secara sistematis.'),
+('hero_subheading', 'text', 'Zadit membantu UMKM, instansi, dan lembaga publik merancang ekosistem digital yang bukan hanya tampil — tapi mengkonversi secara sistematis.'),
 ('process_title', 'text', 'Metodologi Pertumbuhan Terpadu'),
 ('process_subtitle', 'text', 'Proses kerja terukur yang dirancang untuk mengamankan kejelasan pesan, kecepatan web, dan konversi maksimal.'),
 ('partnership_title', 'text', 'Mari Bangun Sistem Bersama'),

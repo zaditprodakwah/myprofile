@@ -1,0 +1,78 @@
+-- Create reference_items table
+CREATE TABLE IF NOT EXISTS reference_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('growth-playbook', 'seo-checklist', 'market-benchmark', 'civic-data')),
+  summary TEXT NOT NULL,
+  content TEXT NOT NULL,
+  tags TEXT[],
+  source_name TEXT,
+  source_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create external_telemetry_cache table
+CREATE TABLE IF NOT EXISTS external_telemetry_cache (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL,
+  source TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE reference_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE external_telemetry_cache ENABLE ROW LEVEL SECURITY;
+
+-- Public Select policies (bypasses RLS for reads)
+DROP POLICY IF EXISTS "Public read reference_items" ON reference_items;
+CREATE POLICY "Public read reference_items" ON reference_items FOR SELECT TO anon USING (true);
+
+DROP POLICY IF EXISTS "Public read external_telemetry_cache" ON external_telemetry_cache;
+CREATE POLICY "Public read external_telemetry_cache" ON external_telemetry_cache FOR SELECT TO anon USING (true);
+
+-- Seed initial reference items
+INSERT INTO reference_items (title, slug, category, summary, content, tags, source_name, source_url) VALUES
+(
+  'B2B Growth Playbook: Strategi Konversi Landing Page Terukur',
+  'b2b-growth-playbook-landing-page-conversion',
+  'growth-playbook',
+  'Panduan menyusun narasi landing page konversi tinggi menggunakan PAS (Problem-Agitate-Solve) framework untuk pasar B2B.',
+  '<h3>Metodologi PAS Framework untuk Konversi B2B</h3><p>Dalam dunia bisnis-ke-bisnis (B2B), keputusan pembelian didasari oleh logika, efisiensi, dan mitigasi risiko. Oleh karena itu, tulisan penjualan (copywriting) tidak boleh sekadar berhias jargon indah, melainkan harus menyelesaikan masalah spesifik.</p><h4>1. Problem (Identifikasi Masalah)</h4><p>Mulai dengan mendefinisikan rasa sakit terdalam klien Anda. Misalnya, "Trafik website naik, tapi tidak ada leads masuk." Ini langsung menyaring audiens yang tepat.</p><h4>2. Agitate (Perparah Masalah)</h4><p>Jelaskan konsekuensi membiarkan masalah tersebut. "Setiap hari masalah ini dibiarkan, anggaran iklan Anda terbuang percuma dan kompetitor merebut pangsa pasar potensial Anda."</p><h4>3. Solve (Tawarkan Solusi Terukur)</h4><p>Tawarkan solusi spesifik Anda dengan data konkret. "Sistem audit kecepatan dan optimasi Next.js kami meningkatkan rasio konversi leads hingga 148%."</p>',
+  ARRAY['Growth', 'Copywriting', 'PAS Framework', 'B2B Conversion'],
+  'Internal Growth Research',
+  'https://muhzadit.vercel.app'
+),
+(
+  'Checklist Technical SEO 2026: Kecepatan Muat Sub-Detik Next.js',
+  'checklist-technical-seo-nextjs-speed',
+  'seo-checklist',
+  'Panduan taktis optimasi Core Web Vitals (LCP, INP, CLS) pada framework Next.js App Router.',
+  '<h3>Panduan Optimasi Kecepatan Next.js</h3><p>Kecepatan website adalah sinyal peringkat utama di mesin pencari modern (Google Search & AI Search). Halaman yang dimuat lebih dari 2 detik kehilangan hingga 50% calon pembeli.</p><h4>Langkah Wajib Optimasi:</h4><ul><li><strong>Dynamic Image Optimization:</strong> Selalu gunakan komponen <code>next/image</code> untuk resize dan WebP conversion otomatis.</li><li><strong>Turbopack Production Build:</strong> Manfaatkan Turbopack compiler untuk proses caching modul yang sangat cepat.</li><li><strong>Incremental Static Regeneration (ISR):</strong> Gunakan <code>revalidate</code> untuk mem-build halaman secara statis di CDN namun tetap diperbarui di latar belakang secara terjadwal.</li></ul>',
+  ARRAY['Next.js', 'Technical SEO', 'LCP', 'Web Performance'],
+  'Next.js Documentation',
+  'https://nextjs.org/docs'
+),
+(
+  'Analisis Likuiditas Global: Panduan Indikator FRED Interest Rate',
+  'analisis-fred-interest-rate-liquidity',
+  'market-benchmark',
+  'Memahami dampak naik-turunnya Fed Funds Rate terhadap iklim investasi dan daya serap pasar startup di Indonesia.',
+  '<h3>Mengapa Startup & Agensi Harus Memantau Fed Funds Rate?</h3><p>Federal Funds Rate (suku bunga bank sentral AS) adalah jangkar likuiditas keuangan global. Ketika Fed menaikkan suku bunga, aliran modal cenderung kembali ke aset berisiko rendah di AS (capital flight), mempersulit pendanaan ventura di Asia Tenggara.</p><h4>Dampak pada Bisnis Lokal:</h4><ul><li><strong>Biaya Modal Naik:</strong> Bank lokal biasanya menaikkan suku bunga pinjaman untuk mengimbangi nilai tukar Rupiah.</li><li><strong>Fokus pada Profitabilitas:</strong> Klien B2B memotong anggaran pemasaran eksperimental dan hanya menyetujui program SEO/Growth yang memiliki ROI transparan.</li></ul>',
+  ARRAY['FRED', 'Macro Economics', 'Monetary Policy', 'B2B Capital'],
+  'Federal Reserve Bank of St. Louis',
+  'https://fred.stlouisfed.org'
+),
+(
+  'Tracking Makroekonomi Domestik: GDP & Inflasi BPS 2026',
+  'bps-macroeconomic-gdp-inflation-tracker',
+  'market-benchmark',
+  'Panduan membaca data pertumbuhan ekonomi riil dan indeks harga konsumen Indonesia dari portal resmi BPS.',
+  '<h3>Menerjemahkan GDP Domestik Menjadi Anggaran Pemasaran B2B</h3><p>Badan Pusat Statistik (BPS) merilis data PDB dan Inflasi secara berkala. Pertumbuhan PDB yang stabil di atas 5% menunjukkan daya beli korporasi yang kuat, memicu ekspansi anggaran iklan digital.</p><h4>Poin Kunci Riset Pasar:</h4><ul><li><strong>Sektor Tumbuh:</strong> Selaraskan penawaran SEO Anda ke sektor dengan pertumbuhan PDB tertinggi (misal: Logistik, Agritech, Layanan Kesehatan).</li><li><strong>Mitigasi Inflasi:</strong> Pastikan copywriting penjualan Anda menekankan penghematan biaya operasional saat inflasi merangkak naik.</li></ul>',
+  ARRAY['BPS', 'Indonesia GDP', 'Inflation', 'Market Intel'],
+  'Badan Pusat Statistik Indonesia',
+  'https://www.bps.go.id'
+)
+ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, content = EXCLUDED.content;

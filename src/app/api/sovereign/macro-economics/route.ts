@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { getTelemetryCache, setTelemetryCache } from '@/lib/telemetry-cache';
 
-export const revalidate = 86400;
+export const revalidate = 21600; // 6 hours edge cache
 
 interface MacroEconomicsData {
   gdpGrowth: string;
@@ -13,12 +14,26 @@ interface MacroEconomicsData {
 }
 
 export async function GET() {
-  const CACHE_CONTROL = 's-maxage=86400, stale-while-revalidate=172800';
-  let isFresh = true;
-  let payload: MacroEconomicsData | null = null;
+  const CACHE_CONTROL = 's-maxage=21600, stale-while-revalidate=43200';
+  const cacheKey = 'bps_macro';
 
   try {
-    // Check Emergency Lock & Get Configs
+    // 1. Check database cache first
+    const cachedData = await getTelemetryCache(cacheKey, 6);
+    if (cachedData) {
+      return new NextResponse(JSON.stringify({ success: true, data: cachedData, source: 'DB Cache' }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': CACHE_CONTROL
+        }
+      });
+    }
+
+    // 2. Fetch new data
+    let isFresh = true;
+    let payload: MacroEconomicsData | null = null;
+
     const { data: configs } = await supabase
       .from('system_configs')
       .select('key, value')
@@ -32,7 +47,7 @@ export async function GET() {
 
     if (!isEmergencyLock && apiKey && apiKey.trim() !== '') {
       const abortController = new AbortController();
-      const timeoutId = setTimeout(() => abortController.abort(), 3000);
+      const timeoutId = setTimeout(() => abortController.abort(), 4000);
 
       try {
         const bpsUrl = `https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/456/key/${apiKey}`;
@@ -46,13 +61,7 @@ export async function GET() {
 
         if (response.ok) {
           const raw = await response.json();
-          // BPS logic: we extract standard macro metrics here.
-          // Due to complex BPS data structure, we assume we fetch recent indicators:
-          // In a real system we'd parse specific var/turvar IDs. For this integration we simulate parsing.
-          
           if (raw.data && raw.data.length > 0) {
-            // Simulated parsing from generic BPS list, prepare real parsing when API is verified
-            // Expected BPS structure: raw.data[0].nilai
             const parsedGdp = raw.data[0]?.nilai ? `${raw.data[0].nilai}%` : '5.05%';
             const parsedInflation = raw.data[1]?.nilai ? `${raw.data[1].nilai}%` : '2.75%';
 
@@ -64,6 +73,9 @@ export async function GET() {
               attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS)',
               isFresh: true
             };
+
+            // Save to DB cache
+            await setTelemetryCache(cacheKey, payload, 'BPS');
           }
         } else {
           isFresh = false;
@@ -71,19 +83,22 @@ export async function GET() {
       } catch (err) {
         clearTimeout(timeoutId);
         isFresh = false;
-        console.warn('BPS API timeout or failure. Using Fallback.');
+        console.warn('BPS API fetch failed, trying fallback:', err);
       }
     } else {
       isFresh = false;
     }
 
-    // Use Fallback if needed
+    // 3. Fallback to Stale Cache or static fallbacks
     if (!isFresh || !payload) {
-      if (fallbackConfig && fallbackConfig.value) {
-        const parsedFallback = typeof fallbackConfig.value === 'string' 
-          ? JSON.parse(fallbackConfig.value) 
+      const staleData = await getTelemetryCache(cacheKey, 99999);
+      if (staleData) {
+        payload = { ...staleData, isFresh: false };
+      } else if (fallbackConfig && fallbackConfig.value) {
+        const parsedFallback = typeof fallbackConfig.value === 'string'
+          ? JSON.parse(fallbackConfig.value)
           : fallbackConfig.value;
-        
+
         payload = {
           ...parsedFallback,
           attribution: 'Layanan ini menggunakan API Badan Pusat Statistik (BPS)',
@@ -101,7 +116,7 @@ export async function GET() {
       }
     }
 
-    return new NextResponse(JSON.stringify({ success: true, data: payload }), {
+    return new NextResponse(JSON.stringify({ success: true, data: payload, source: isFresh ? 'External API' : 'DB Stale Fallback' }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

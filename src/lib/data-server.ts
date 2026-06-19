@@ -1,11 +1,11 @@
 import { supabase } from './supabase';
 import { unstable_cache } from 'next/cache';
-import { Service, CaseStudy, City, Entity, Article } from './types';
+import { Service, CaseStudy, City, Entity, Article, ReferenceItem } from './types';
 
 // Safe fallbacks to keep site building and running even if DB tables do not exist yet
 const fallbackSiteContent: Record<string, string> = {
   hero_headline: "Code doesn't scale without story. Story doesn't convert without data. Data doesn't persuade without execution.",
-  hero_subheading: "Saya membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
+  hero_subheading: "Zadit membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
   hero_category_label: "// INTEGRASI ARSITEKTUR DIGITAL & NARASI BISNIS",
   hero_cta_primary: "Pelajari Metodologi & Wawasan",
   hero_cta_secondary: "Diagnostik Situs Gratis",
@@ -190,6 +190,57 @@ const fallbackArticles: Article[] = [
     author_name: 'Zadit Growth',
     is_published: true,
     published_at: new Date(Date.now() - 172800000).toISOString()
+  }
+];
+
+const fallbackReferenceItems: ReferenceItem[] = [
+  {
+    id: 'r1',
+    title: 'B2B Growth Playbook: Strategi Konversi Landing Page Terukur',
+    slug: 'b2b-growth-playbook-landing-page-conversion',
+    category: 'growth-playbook',
+    summary: 'Panduan menyusun narasi landing page konversi tinggi menggunakan PAS (Problem-Agitate-Solve) framework untuk pasar B2B.',
+    content: '<h3>Metodologi PAS Framework untuk Konversi B2B</h3><p>Dalam dunia bisnis-ke-bisnis (B2B), keputusan pembelian didasari oleh logika, efisiensi, dan mitigasi risiko. Oleh karena itu, tulisan penjualan (copywriting) tidak boleh sekadar berhias jargon indah, melainkan harus menyelesaikan masalah spesifik.</p><h4>1. Problem (Identifikasi Masalah)</h4><p>Mulai dengan mendefinisikan rasa sakit terdalam klien Anda. Misalnya, "Trafik website naik, tapi tidak ada leads masuk." Ini langsung menyaring audiens yang tepat.</p><h4>2. Agitate (Perparah Masalah)</h4><p>Jelaskan konsekuensi membiarkan masalah tersebut. "Setiap hari masalah ini dibiarkan, anggaran iklan Anda terbuang percuma dan kompetitor merebut pangsa pasar potensial Anda."</p><h4>3. Solve (Tawarkan Solusi Terukur)</h4><p>Tawarkan solusi spesifik Anda dengan data konkret. "Sistem audit kecepatan dan optimasi Next.js kami meningkatkan rasio konversi leads hingga 148%."</p>',
+    tags: ['Growth', 'Copywriting', 'PAS Framework', 'B2B Conversion'],
+    source_name: 'Internal Growth Research',
+    source_url: 'https://muhzadit.vercel.app',
+    is_active: true
+  },
+  {
+    id: 'r2',
+    title: 'Checklist Technical SEO 2026: Kecepatan Muat Sub-Detik Next.js',
+    slug: 'checklist-technical-seo-nextjs-speed',
+    category: 'seo-checklist',
+    summary: 'Panduan taktis optimasi Core Web Vitals (LCP, INP, CLS) pada framework Next.js App Router.',
+    content: '<h3>Panduan Optimasi Kecepatan Next.js</h3><p>Kecepatan website adalah sinyal peringkat utama di mesin pencari modern (Google Search & AI Search). Halaman yang dimuat lebih dari 2 detik kehilangan hingga 50% calon pembeli.</p><h4>Langkah Wajib Optimasi:</h4><ul><li><strong>Dynamic Image Optimization:</strong> Selalu gunakan komponen <code>next/image</code> untuk resize dan WebP conversion otomatis.</li><li><strong>Turbopack Production Build:</strong> Manfaatkan Turbopack compiler untuk proses caching modul yang sangat cepat.</li><li><strong>Incremental Static Regeneration (ISR):</strong> Gunakan <code>revalidate</code> untuk mem-build halaman secara statis di CDN namun tetap diperbarui di latar belakang secara terjadwal.</li></ul>',
+    tags: ['Next.js', 'Technical SEO', 'LCP', 'Web Performance'],
+    source_name: 'Next.js Documentation',
+    source_url: 'https://nextjs.org/docs',
+    is_active: true
+  },
+  {
+    id: 'r3',
+    title: 'Analisis Likuiditas Global: Panduan Indikator FRED Interest Rate',
+    slug: 'analisis-fred-interest-rate-liquidity',
+    category: 'market-benchmark',
+    summary: 'Memahami dampak naik-turunnya Fed Funds Rate terhadap iklim investasi dan daya serap pasar startup di Indonesia.',
+    content: '<h3>Mengapa Startup & Agensi Harus Memantau Fed Funds Rate?</h3><p>Federal Funds Rate (suku bunga bank sentral AS) adalah jangkar likuiditas keuangan global. Ketika Fed menaikkan suku bunga, aliran modal cenderung kembali ke aset berisiko rendah di AS (capital flight), mempersulit pendanaan ventura di Asia Tenggara.</p><h4>Dampak pada Bisnis Lokal:</h4><ul><li><strong>Biaya Modal Naik:</strong> Bank lokal biasanya menaikkan suku bunga pinjaman untuk mengimbangi nilai tukar Rupiah.</li><li><strong>Fokus pada Profitabilitas:</strong> Klien B2B memotong anggaran pemasaran eksperimental dan hanya menyetujui program SEO/Growth yang memiliki ROI transparan.</li></ul>',
+    tags: ['FRED', 'Macro Economics', 'Monetary Policy', 'B2B Capital'],
+    source_name: 'Federal Reserve Bank of St. Louis',
+    source_url: 'https://fred.stlouisfed.org',
+    is_active: true
+  },
+  {
+    id: 'r4',
+    title: 'Tracking Makroekonomi Domestik: GDP & Inflasi BPS 2026',
+    slug: 'bps-macroeconomic-gdp-inflation-tracker',
+    category: 'market-benchmark',
+    summary: 'Panduan membaca data pertumbuhan ekonomi riil dan indeks harga konsumen Indonesia dari portal resmi BPS.',
+    content: '<h3>Menerjemahkan GDP Domestik Menjadi Anggaran Pemasaran B2B</h3><p>Badan Pusat Statistik (BPS) merilis data PDB dan Inflasi secara berkala. Pertumbuhan PDB yang stabil di atas 5% menunjukkan daya beli korporasi yang kuat, memicu ekspansi anggaran iklan digital.</p><h4>Poin Kunci Riset Pasar:</h4><ul><li><strong>Sektor Tumbuh:</strong> Selaraskan penawaran SEO Anda ke sektor dengan pertumbuhan PDB tertinggi (misal: Logistik, Agritech, Layanan Kesehatan).</li><li><strong>Mitigasi Inflasi:</strong> Pastikan copywriting penjualan Anda menekankan penghematan biaya operasional saat inflasi merangkak naik.</li></ul>',
+    tags: ['BPS', 'Indonesia GDP', 'Inflation', 'Market Intel'],
+    source_name: 'Badan Pusat Statistik Indonesia',
+    source_url: 'https://www.bps.go.id',
+    is_active: true
   }
 ];
 
@@ -417,4 +468,45 @@ export const getLiveStats = unstable_cache(
   },
   ['live_stats_cache'],
   { revalidate: 600 }
+);
+
+export const getReferenceItems = unstable_cache(
+  async (): Promise<ReferenceItem[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('reference_items')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      if (error || !data || data.length === 0) {
+        return fallbackReferenceItems;
+      }
+      return data as ReferenceItem[];
+    } catch {
+      return fallbackReferenceItems;
+    }
+  },
+  ['reference_items_cache'],
+  { revalidate: 3600 }
+);
+
+export const getReferenceItemBySlug = unstable_cache(
+  async (slug: string): Promise<ReferenceItem | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('reference_items')
+        .select('*')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .single();
+      if (error || !data) {
+        return fallbackReferenceItems.find(r => r.slug === slug) || null;
+      }
+      return data as ReferenceItem;
+    } catch {
+      return fallbackReferenceItems.find(r => r.slug === slug) || null;
+    }
+  },
+  ['reference_item_by_slug_cache'],
+  { revalidate: 3600 }
 );

@@ -15,7 +15,7 @@
   --color-text-muted: #475569;
   --color-text-inverse: #f8fafc;
 
-  --font-sans: var(--font-inter), sans-serif;
+  --font-sans: var(--font-outfit), sans-serif;
   --font-heading-serif: var(--font-outfit), sans-serif;
   --font-heading-sans: var(--font-outfit), sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;

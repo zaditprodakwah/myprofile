@@ -105,14 +105,14 @@ const TRUST_BADGES = [
 
 export default function HeroSection({
   headline = "Code doesn't scale without story. Story doesn't convert without data. Data doesn't persuade without execution.",
-  subheading = "Saya membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
+  subheading = "Zadit membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
   whatsappNumber = "6282316363177",
   availabilityStatus = "AVAILABLE",
   liveStats,
 }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [stats, setStats] = useState({ years: 0, projects: 0, clients: 0 });
-  const [geoData, setGeoData] = useState({ city: 'Jakarta', country: 'ID' });
+  const [geoData, setGeoData] = useState({ city: '', country: 'ID' });
   const [lcpScore, setLcpScore] = useState<number | null>(null);
 
   // Parallax depth on scroll
@@ -157,11 +157,15 @@ export default function HeroSection({
   }, []);
 
   const headlineWords = headline.split(' ');
-  const geoSubheading = subheading.replace(
-    'UMKM, instansi swasta, hingga',
-    `UMKM & instansi di ${geoData.city}, hingga`
-  );
-  const waLink = `https://wa.me/${whatsappNumber}?text=Halo%20Zadit%2C%20saya%20dari%20${geoData.city}%20tertarik%20untuk%20berdiskusi%20mengenai%20kemitraan%20dan%20growth%20strategy.%20Mari%20jadwalkan%20pertemuan!`;
+  
+  // Programmatic guard to change "Saya/saya" self-references to "Zadit"
+  const cleanSubheading = subheading
+    .replace(/\bSaya membantu\b/g, 'Zadit membantu')
+    .replace(/\bsaya membantu\b/g, 'Zadit membantu')
+    .replace(/\bSaya\b/g, 'Zadit')
+    .replace(/\bsaya\b/g, 'zadit');
+
+  const waLink = `https://wa.me/${whatsappNumber}?text=Halo%20Zadit%2C%20saya%20tertarik%20untuk%20berdiskusi%20mengenai%20kemitraan%20dan%20growth%20strategy.%20Mari%20jadwalkan%20pertemuan!`;
 
   return (
     <section
@@ -205,9 +209,9 @@ export default function HeroSection({
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-wrap items-center gap-3"
           >
-            <span className="trust-badge">
-              <Globe className="w-3 h-3" />
-              Wilayah: {geoData.city}, {geoData.country}
+            <span className="trust-badge !normal-case">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-accent animate-pulse" />
+              {geoData.city ? `Halo rekan bisnis di ${geoData.city}! 👋` : 'Selamat datang, mari berkolaborasi! ✨'}
             </span>
             <span className="trust-badge uppercase font-bold tracking-widest text-gold-accent">
               <span className="w-1.5 h-1.5 rounded-full bg-gold-accent pulse-badge" />
@@ -264,7 +268,7 @@ export default function HeroSection({
             transition={{ duration: 0.65, delay: 0.55 }}
             className="text-base md:text-lg text-text-muted leading-relaxed max-w-[520px] font-sans"
           >
-            {geoSubheading}
+            {cleanSubheading}
           </motion.p>
 
           {/* CTA Actions */}
@@ -275,10 +279,12 @@ export default function HeroSection({
             className="flex flex-col sm:flex-row gap-3 pt-1"
           >
             <MagneticButton
-              href="/#process"
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
               className="relative inline-flex items-center justify-center gap-2 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans font-bold uppercase tracking-wider px-8 py-4 rounded-xl text-xs text-center transition-colors duration-300 shadow-md shadow-teal-accent/20 shimmer select-none group"
             >
-              <span>Pelajari Metodologi & Wawasan</span>
+              <span>Jadwalkan Konsultasi Gratis</span>
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
             </MagneticButton>
             <a
@@ -331,7 +337,7 @@ export default function HeroSection({
             src="/zadit-foto.png"
             alt="Muhammad Khoiruzzadittaqwa — Digital Marketing & Branding Strategist"
             className="w-full h-72 object-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
-            loading="eager"
+            priority
             width={640}
             height={360}
           />

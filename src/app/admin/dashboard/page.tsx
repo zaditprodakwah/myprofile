@@ -18,7 +18,7 @@ export default function AdminDashboardPage() {
   const [secretKey, setSecretKey] = useState('');
   const [authError, setAuthError] = useState('');
 
-  const [activeTab, setActiveTab] = useState<'leads' | 'content' | 'portfolio' | 'directory' | 'blog' | 'seo' | 'config' | 'scraper'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'content' | 'portfolio' | 'directory' | 'blog' | 'reference' | 'seo' | 'config' | 'scraper'>('leads');
   const [isLoading, setIsLoading] = useState(false);
   const [actionMessage, setActionMessage] = useState({ text: '', type: 'success' });
 
@@ -43,6 +43,22 @@ export default function AdminDashboardPage() {
   const [cities, setCities] = useState<City[]>([]);
   const [entities, setEntities] = useState<Entity[]>([]);
   const [bulkJson, setBulkJson] = useState('');
+
+  // Reference state
+  const [referenceItems, setReferenceItems] = useState<any[]>([]);
+  const [editingReference, setEditingReference] = useState<any | null>(null);
+  const [showReferenceForm, setShowReferenceForm] = useState(false);
+  const [referenceForm, setReferenceForm] = useState({
+    title: '',
+    slug: '',
+    category: 'growth-playbook' as any,
+    summary: '',
+    content: '',
+    tags: '',
+    source_name: '',
+    source_url: '',
+    is_active: true
+  });
 
   // Blog state
   const [articles, setArticles] = useState<Article[]>([]);
@@ -195,6 +211,15 @@ export default function AdminDashboardPage() {
     }
   }, []);
 
+  const fetchReferenceItems = useCallback(async () => {
+    try {
+      const { data } = await supabase.from('reference_items').select('*').order('created_at', { ascending: false });
+      if (data) setReferenceItems(data);
+    } catch (err) {
+      console.error('ReferenceItems fetch error', err);
+    }
+  }, []);
+
   const fetchConfigs = useCallback(async () => {
     try {
       const { data } = await supabase.from('system_configs').select('*');
@@ -223,12 +248,13 @@ export default function AdminDashboardPage() {
       else if (activeTab === 'portfolio') await fetchPortfolio();
       else if (activeTab === 'directory') await fetchDirectory();
       else if (activeTab === 'blog') await fetchArticles();
+      else if (activeTab === 'reference') await fetchReferenceItems();
       else if (activeTab === 'config') await fetchConfigs();
       setIsLoading(false);
     };
 
     loadData();
-  }, [isAuthenticated, activeTab, fetchLeads, fetchSiteContent, fetchPortfolio, fetchDirectory, fetchArticles, fetchConfigs]);
+  }, [isAuthenticated, activeTab, fetchLeads, fetchSiteContent, fetchPortfolio, fetchDirectory, fetchArticles, fetchReferenceItems, fetchConfigs]);
 
   // LEADS STATUS MANAGEMENT
   const handleUpdateStatus = async (table: 'utility_leads' | 'directory_leads' | 'contact_leads', id: string, newStatus: string) => {
@@ -608,6 +634,80 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleReferenceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const tagsArray = referenceForm.tags.split(',').map(t => t.trim()).filter(Boolean);
+      const referencePayload = {
+        title: referenceForm.title,
+        slug: referenceForm.slug.toLowerCase().trim(),
+        category: referenceForm.category,
+        summary: referenceForm.summary,
+        content: referenceForm.content,
+        tags: tagsArray,
+        source_name: referenceForm.source_name || null,
+        source_url: referenceForm.source_url || null,
+        is_active: referenceForm.is_active,
+        updated_at: new Date().toISOString()
+      };
+
+      if (editingReference) {
+        const { error } = await supabase.from('reference_items').update(referencePayload).eq('id', editingReference.id);
+        if (error) throw error;
+        triggerMessage('Item referensi berhasil diperbarui!');
+      } else {
+        const { error } = await supabase.from('reference_items').insert([referencePayload]);
+        if (error) throw error;
+        triggerMessage('Item referensi baru berhasil ditambahkan!');
+      }
+
+      setReferenceForm({
+        title: '',
+        slug: '',
+        category: 'growth-playbook',
+        summary: '',
+        content: '',
+        tags: '',
+        source_name: '',
+        source_url: '',
+        is_active: true
+      });
+      setEditingReference(null);
+      setShowReferenceForm(false);
+      await fetchReferenceItems();
+    } catch (err) {
+      triggerMessage((err as Error).message || 'Gagal menyimpan item referensi', 'error');
+    }
+  };
+
+  const handleEditReference = (ref: any) => {
+    setEditingReference(ref);
+    setReferenceForm({
+      title: ref.title,
+      slug: ref.slug,
+      category: ref.category,
+      summary: ref.summary,
+      content: ref.content,
+      tags: (ref.tags || []).join(', '),
+      source_name: ref.source_name || '',
+      source_url: ref.source_url || '',
+      is_active: ref.is_active
+    });
+    setShowReferenceForm(true);
+  };
+
+  const handleDeleteReference = async (id: string) => {
+    if (!confirm('Hapus item referensi ini secara permanen?')) return;
+    try {
+      const { error } = await supabase.from('reference_items').delete().eq('id', id);
+      if (error) throw error;
+      triggerMessage('Item referensi berhasil dihapus');
+      await fetchReferenceItems();
+    } catch (err) {
+      triggerMessage((err as Error).message || 'Gagal menghapus item referensi', 'error');
+    }
+  };
+
   // RSS INGEST AGC ACTION
   const handleTriggerScraper = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -790,6 +890,15 @@ export default function AdminDashboardPage() {
               )}
             >
               <Cpu className="w-4 h-4" /> Blog & AGC
+            </button>
+            <button
+              onClick={() => setActiveTab('reference')}
+              className={cn(
+                "flex items-center gap-2 px-5 py-3 border-b-2 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap",
+                activeTab === 'reference' ? "border-teal-accent text-teal-accent font-semibold" : "border-transparent text-text-muted hover:text-text-primary"
+              )}
+            >
+              <Database className="w-4 h-4" /> Bank Referensi
             </button>
             <button
               onClick={() => setActiveTab('seo')}
@@ -2023,6 +2132,205 @@ export default function AdminDashboardPage() {
                                   <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
                                     <button onClick={() => handleEditArticle(art)} className="text-teal-accent hover:text-teal-glow inline-flex items-center gap-0.5"><Edit2 className="w-3.5 h-3.5" /> Edit</button>
                                     <button onClick={() => handleDeleteArticle(art.id)} className="text-red-600 hover:text-red-800 inline-flex items-center gap-0.5"><Trash2 className="w-3.5 h-3.5" /> Hapus</button>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 5.5. REFERENCE ITEMS TAB */}
+                {activeTab === 'reference' && (
+                  <div className="space-y-6 animate-fade-in">
+                    <div className="flex border-b border-brand-border gap-2 pb-2 justify-between items-center">
+                      <h3 className="text-lg font-heading-serif font-bold text-text-primary">Kelola Bank Referensi Data B2B</h3>
+                      <button
+                        type="button"
+                        onClick={() => { setEditingReference(null); setReferenceForm({ title: '', slug: '', category: 'growth-playbook', summary: '', content: '', tags: '', source_name: '', source_url: '', is_active: true }); setShowReferenceForm(!showReferenceForm); }}
+                        className="inline-flex items-center gap-1 bg-teal-accent text-white text-[10px] font-mono uppercase px-3 py-1.5 rounded-lg font-bold"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Tambah Item Referensi
+                      </button>
+                    </div>
+
+                    {showReferenceForm && (
+                      <form onSubmit={handleReferenceSubmit} className="bg-offwhite border border-brand-border p-6 rounded-2xl space-y-4 max-w-4xl">
+                        <div className="flex justify-between items-center border-b border-brand-border pb-2">
+                          <h4 className="font-heading-sans font-bold text-xs uppercase text-gold-accent">{editingReference ? '// Sunting Item Referensi' : '// Tambah Item Baru'}</h4>
+                          <button type="button" onClick={() => setShowReferenceForm(false)} className="text-text-muted"><X className="w-4 h-4" /></button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Judul Referensi</label>
+                            <input
+                              type="text"
+                              required
+                              value={referenceForm.title}
+                              onChange={(e) => setReferenceForm({ ...referenceForm, title: e.target.value })}
+                              className="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-xs text-text-primary outline-none focus:ring-1 focus:ring-teal-accent"
+                              placeholder="e.g. Panduan SEO Next.js Speed"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Slug URL</label>
+                            <input
+                              type="text"
+                              required
+                              value={referenceForm.slug}
+                              onChange={(e) => setReferenceForm({ ...referenceForm, slug: e.target.value })}
+                              className="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-xs text-text-primary outline-none focus:ring-1 focus:ring-teal-accent"
+                              placeholder="e.g. panduan-seo-nextjs-speed"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Kategori</label>
+                            <select
+                              value={referenceForm.category}
+                              onChange={(e) => setReferenceForm({ ...referenceForm, category: e.target.value as any })}
+                              className="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-xs text-text-primary outline-none focus:ring-1 focus:ring-teal-accent"
+                            >
+                              <option value="growth-playbook">Growth Playbook</option>
+                              <option value="seo-checklist">SEO Checklist</option>
+                              <option value="market-benchmark">Market Benchmark</option>
+                              <option value="civic-data">Civic Data</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Tag (Pisahkan dengan koma)</label>
+                            <input
+                              type="text"
+                              value={referenceForm.tags}
+                              onChange={(e) => setReferenceForm({ ...referenceForm, tags: e.target.value })}
+                              className="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-xs text-text-primary outline-none focus:ring-1 focus:ring-teal-accent"
+                              placeholder="e.g. SEO, Next.js, Web-Vitals"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Nama Sumber Data (Opsional)</label>
+                            <input
+                              type="text"
+                              value={referenceForm.source_name}
+                              onChange={(e) => setReferenceForm({ ...referenceForm, source_name: e.target.value })}
+                              className="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-xs text-text-primary outline-none focus:ring-1 focus:ring-teal-accent"
+                              placeholder="e.g. BPS Indonesia"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">URL Sumber Data (Opsional)</label>
+                            <input
+                              type="url"
+                              value={referenceForm.source_url}
+                              onChange={(e) => setReferenceForm({ ...referenceForm, source_url: e.target.value })}
+                              className="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-xs text-text-primary outline-none focus:ring-1 focus:ring-teal-accent"
+                              placeholder="e.g. https://www.bps.go.id"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Ringkasan Deskripsi</label>
+                          <textarea
+                            required
+                            rows={3}
+                            value={referenceForm.summary}
+                            onChange={(e) => setReferenceForm({ ...referenceForm, summary: e.target.value })}
+                            className="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-xs text-text-primary outline-none focus:ring-1 focus:ring-teal-accent"
+                            placeholder="Ringkasan singkat untuk ditampilkan pada daftar kartu referensi..."
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Konten Utama (HTML/Markdown)</label>
+                          <textarea
+                            required
+                            rows={8}
+                            value={referenceForm.content}
+                            onChange={(e) => setReferenceForm({ ...referenceForm, content: e.target.value })}
+                            className="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-xs font-mono text-text-primary outline-none focus:ring-1 focus:ring-teal-accent"
+                            placeholder="Tulis konten referensi lengkap di sini..."
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="ref-active"
+                            checked={referenceForm.is_active}
+                            onChange={(e) => setReferenceForm({ ...referenceForm, is_active: e.target.checked })}
+                            className="rounded border-brand-border text-teal-accent focus:ring-teal-accent"
+                          />
+                          <label htmlFor="ref-active" className="text-xs text-text-primary font-mono">Aktif & Publikasikan</label>
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowReferenceForm(false)}
+                            className="px-4 py-2 bg-zinc-200 hover:bg-zinc-300 text-text-primary text-xs font-mono rounded-xl cursor-pointer"
+                          >
+                            Batal
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-4 py-2 bg-teal-accent hover:bg-teal-glow text-white text-xs font-mono rounded-xl font-bold cursor-pointer"
+                          >
+                            {editingReference ? 'Simpan Perubahan' : 'Terbitkan Referensi'}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+
+                    {!showReferenceForm && (
+                      <div className="overflow-x-auto border border-brand-border rounded-xl">
+                        <table className="w-full text-left font-sans text-xs text-text-muted">
+                          <thead className="bg-offwhite border-b border-brand-border font-mono text-[10px] uppercase text-text-primary">
+                            <tr>
+                              <th className="p-4 font-semibold">Kategori</th>
+                              <th className="p-4 font-semibold">Judul Referensi</th>
+                              <th className="p-4 font-semibold">Sumber</th>
+                              <th className="p-4 font-semibold">Status</th>
+                              <th className="p-4 font-semibold text-right">Aksi</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-brand-border animate-fade-in">
+                            {referenceItems.length === 0 ? (
+                              <tr>
+                                <td colSpan={5} className="p-8 text-center text-text-muted font-mono">Belum ada item referensi.</td>
+                              </tr>
+                            ) : (
+                              referenceItems.map((ref) => (
+                                <tr key={ref.id} className="hover:bg-offwhite/50">
+                                  <td className="p-4 font-mono font-semibold text-[10px] uppercase text-teal-accent">{ref.category}</td>
+                                  <td className="p-4">
+                                    <div className="font-bold text-text-primary text-sm">{ref.title}</div>
+                                    <div className="text-[10px] text-text-muted mt-0.5 line-clamp-1">{ref.summary}</div>
+                                  </td>
+                                  <td className="p-4 font-mono text-[10px]">{ref.source_name || '-'}</td>
+                                  <td className="p-4">
+                                    <span className={cn(
+                                      "inline-block px-2 py-0.5 rounded text-[10px] font-mono",
+                                      ref.is_active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+                                    )}>
+                                      {ref.is_active ? 'AKTIF' : 'DRAFT'}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
+                                    <button onClick={() => handleEditReference(ref)} className="text-teal-accent hover:text-teal-glow inline-flex items-center gap-0.5 cursor-pointer"><Edit2 className="w-3.5 h-3.5" /> Edit</button>
+                                    <button onClick={() => handleDeleteReference(ref.id)} className="text-red-600 hover:text-red-800 inline-flex items-center gap-0.5 cursor-pointer"><Trash2 className="w-3.5 h-3.5" /> Hapus</button>
                                   </td>
                                 </tr>
                               ))

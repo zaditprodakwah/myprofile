@@ -30,6 +30,7 @@ export default function SovereignTrustBentoBlock() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
+  const [connectionError, setConnectionError] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -47,9 +48,12 @@ export default function SovereignTrustBentoBlock() {
           if (d.fred) setFredData(d.fred);
           if (d.sentiment) setSentimentData(d.sentiment);
           if (d.esg) setEsgData(d.esg);
+        } else {
+          setConnectionError(true);
         }
       } catch (err) {
         console.error('Failed to fetch sovereign data:', err);
+        setConnectionError(true);
       } finally {
         setIsLoading(false);
       }
@@ -67,13 +71,25 @@ export default function SovereignTrustBentoBlock() {
 
   return (
     <div className="@container w-full my-12 bg-black rounded-3xl p-6 md:p-10 border border-white/5">
-      <div className="mb-8 space-y-2">
+      <div className="mb-8 space-y-2 relative">
         <h2 className="text-2xl md:text-4xl font-heading-sans font-black text-white tracking-tight flex items-center gap-3">
           <Database className="w-8 h-8 text-indigo-400" /> Sovereign Telemetry Engine
         </h2>
         <p className="text-sm md:text-base text-slate-400 max-w-2xl">
           Zero-Mock Open Data Platform. Integrasi 10+ streams instansi publik & market global dengan arsitektur Edge SWR dan CLS 0.
         </p>
+
+        <AnimatePresence>
+          {connectionError && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              className="absolute top-0 right-0 bg-red-500/20 border border-red-500/50 text-red-400 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2"
+            >
+              <AlertTriangle className="w-3.5 h-3.5" /> Koneksi Offline (Menggunakan Cache)
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <motion.div 

@@ -8,11 +8,11 @@ import PartnershipForm from "@/components/PartnershipForm";
 import SidebarNav from "@/components/SidebarNav";
 import Footer from "@/components/Footer";
 import GrowthCalculator from "@/components/GrowthCalculator";
-import ActivityFeed from "@/components/ActivityFeed";
+
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats } from "@/lib/data-server";
 
-import SovereignTrustBentoBlock from "@/components/sovereign/SovereignTrustBentoBlock";
+import B2BGrowthHubSection from "@/components/B2BGrowthHubSection";
 
 export const revalidate = 3600; // Revalidate page hourly (ISR)
 
@@ -37,16 +37,8 @@ export default async function Home() {
           availabilityStatus={config.available_status as string}
           liveStats={liveStats}
         />
-        <section className="bg-white border-b border-brand-border/40 py-12">
-          <div className="max-w-6xl mx-auto px-6">
-            <SovereignTrustBentoBlock />
-          </div>
-        </section>
-        <section className="bg-offwhite border-b border-brand-border/40 py-12">
-          <div className="max-w-4xl mx-auto px-6">
-            <ActivityFeed />
-          </div>
-        </section>
+        <B2BGrowthHubSection />
+
         <ProcessSection />
         <CaseStudiesSection caseStudies={caseStudies} />
         <TestimonialsCarousel caseStudies={caseStudies} />

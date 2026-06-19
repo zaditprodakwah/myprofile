@@ -1,7 +1,7 @@
 'use client';
 
 import { useReducedMotion as useFramerReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+
 
 // Wrapper to prevent hydration mismatch and handle SSR safely
 export function useReducedMotion() {

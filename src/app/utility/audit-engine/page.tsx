@@ -134,8 +134,8 @@ export default function AuditEnginePage() {
         contact_info: { whatsapp: formData.whatsapp, email: formData.email },
         target_site_url: formData.url,
         audit_category: 'Real Growth & Performance Audit',
-        accessibility_score: auditData.scores.accessibility || 0,
-        narrative_score: auditData.scores.performance || 0,
+        accessibility_score: auditData.data?.accessibility || 0,
+        narrative_score: auditData.data?.performance || 0,
         status: 'PENDING',
       });
 
@@ -165,7 +165,7 @@ export default function AuditEnginePage() {
 
   const handleWhatsAppRedirect = () => {
     if (!auditResult) return;
-    const waText = `Halo Zadit, saya baru saja meminta audit pertumbuhan gratis untuk website saya: ${formData.url}. Hasil: Narrative Score 62/100, Accessibility Score 78/100. Mohon kirimkan dokumen blueprint rekomendasinya.`;
+    const waText = `Halo Zadit, saya baru saja meminta audit pertumbuhan gratis untuk website saya: ${formData.url}. Hasil: Narrative Score ${auditResult.data?.narrative || 0}/100, Accessibility Score ${auditResult.data?.accessibility || 0}/100. Mohon kirimkan dokumen blueprint rekomendasinya.`;
     const waLink = `https://wa.me/6282316363177?text=${encodeURIComponent(waText)}`;
     window.open(waLink, '_blank');
   };
@@ -184,7 +184,7 @@ export default function AuditEnginePage() {
     return { leak: 42, color: 'text-red-600', label: 'Tinggi (Kritis)' };
   };
 
-  const leakMetrics = auditResult ? calculateConversionLeak(auditResult.scores.performance) : null;
+  const leakMetrics = auditResult?.data ? calculateConversionLeak(auditResult.data.performance) : null;
 
   return (
     <>
@@ -323,33 +323,8 @@ export default function AuditEnginePage() {
 
               {/* Gauge scores Row */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col items-center gap-2 bg-white border border-brand-border rounded-xl p-4 shadow-xs">
-                  <div className="relative w-16 h-16">
-                    <svg className="w-full h-full transform -rotate-90">
-                      <circle cx="32" cy="32" r="26" className="stroke-slate-100 fill-none" strokeWidth="5" />
-                      <circle cx="32" cy="32" r="26" className="fill-none stroke-gold-accent" strokeWidth="5" strokeDasharray="188.49" strokeDashoffset="41.46" />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center font-mono font-bold text-xs text-text-primary">78</div>
-                  </div>
-                  <span className="text-[9px] font-mono tracking-widest text-text-muted uppercase">A11y Gauge Score</span>
-                  <span className="text-[9px] text-center font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold">
-                    Butuh Perbaikan (Aksesibilitas Seluler Lemah)
-                  </span>
-                </div>
-
-                <div className="flex flex-col items-center gap-2 bg-white border border-brand-border rounded-xl p-4 shadow-xs">
-                  <div className="relative w-16 h-16">
-                    <svg className="w-full h-full transform -rotate-90">
-                      <circle cx="32" cy="32" r="26" className="stroke-slate-100 fill-none" strokeWidth="5" />
-                      <circle cx="32" cy="32" r="26" className="fill-none stroke-gold-accent" strokeWidth="5" strokeDasharray="188.49" strokeDashoffset="71.62" />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center font-mono font-bold text-xs text-text-primary">62</div>
-                  </div>
-                  <span className="text-[9px] font-mono tracking-widest text-text-muted uppercase">Narrative Gauge Score</span>
-                  <span className="text-[9px] text-center font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold">
-                    Terlalu Banyak Jargon (Struktur Narasi Rumit)
-                  </span>
-                </div>
+                <CircularProgress score={auditResult.data?.accessibility || 0} label="A11y Gauge Score" />
+                <CircularProgress score={auditResult.data?.narrative || 0} label="Narrative Gauge Score" />
               </div>
 
               {/* Zeigarnik Loop Verdict */}
@@ -359,7 +334,9 @@ export default function AuditEnginePage() {
                   <span className="text-xs font-mono tracking-widest text-gold-accent uppercase font-bold">HASIL DIAGNOSIS AWAL</span>
                 </div>
                 <p className="text-xs text-text-muted leading-relaxed">
-                  Situs web Anda memiliki kecepatan dasar yang cukup baik, namun ukuran tombol interaksi Anda terlalu kecil di layar handphone dan struktur 200 kata pertama di beranda Anda sulit dicerna oleh audiens awam. Hal ini membuat situs Anda berpotensi kehilangan hingga 35% calon pelanggan baru sebelum mereka memahami apa layanan Anda. Hubungi Zadit untuk mendapatkan dokumen blueprint rekomendasi teknis yang komprehensif secara gratis.
+                  Berdasarkan audit PageSpeed Insights (Google Lighthouse) pada <b>{formData.url}</b>, tingkat potensi kebocoran konversi pelanggan baru Anda berada di level <strong className={leakMetrics?.color}>{leakMetrics?.label} (Perkiraan Leak: {leakMetrics?.leak}%)</strong>.
+                  Skor Performa aktual Anda adalah {auditResult.data?.performance || 0}/100 dan Aksesibilitas di angka {auditResult.data?.accessibility || 0}/100.
+                  Hubungi Zadit untuk mendapatkan dokumen blueprint rekomendasi teknis komprehensif secara gratis agar tidak kehilangan audiens lebih banyak.
                 </p>
               </div>
 

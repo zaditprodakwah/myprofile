@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
 import "./globals.css";
 
@@ -7,14 +7,6 @@ const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
-  display: "swap",
-  preload: false,
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
   display: "swap",
   preload: false,
 });
@@ -27,17 +19,34 @@ const jetbrainsMono = JetBrains_Mono({
   preload: false,
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://muhzadit.vercel.app";
+
 export const metadata: Metadata = {
   title: "Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect",
   description: "Portofolio & Growth Engine Muhammad Khoiruzzadittaqwa (Zadit) - Full-Stack Growth Architect. Spesialis SEO teknikal, copywriting konversi, dan rekayasa web terukur.",
-  metadataBase: new URL("https://zadit.dev"),
+  keywords: ["Zadit", "Muhzadit", "Muhammad Khoiruzzadittaqwa", "Full-Stack Growth Architect", "SEO Teknikal", "Copywriting", "AEO", "GEO", "Next.js Developer Indonesia"],
+  authors: [{ name: "Muhammad Khoiruzzadittaqwa", url: SITE_URL }],
+  creator: "Muhammad Khoiruzzadittaqwa",
+  publisher: "NaikDigital",
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   openGraph: {
     title: "Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect",
     description: "Portofolio & Growth Engine Muhammad Khoiruzzadittaqwa (Zadit) - Full-Stack Growth Architect. Spesialis SEO teknikal, copywriting konversi, dan rekayasa web terukur.",
-    url: "https://zadit.dev",
+    url: SITE_URL,
     siteName: "Zadit Growth Portfolio",
     images: [
       {
@@ -50,6 +59,16 @@ export const metadata: Metadata = {
     locale: "id_ID",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect",
+    description: "Portofolio & Growth Engine Muhammad Khoiruzzadittaqwa (Zadit) - Full-Stack Growth Architect.",
+    creator: "@muhzadit",
+    images: ["/og-profile.jpg"],
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
+  },
 };
 
 const personSchema = {
@@ -61,8 +80,8 @@ const personSchema = {
     "alternateName": ["Zadit", "Aditt", "Muhzadit"],
     "jobTitle": "Full-Stack Growth Architect",
     "description": "Spesialis SEO teknikal, copywriting konversi, dan strategi digital marketing dengan pengalaman 10+ tahun sejak 2015.",
-    "url": "https://zadit.dev",
-    "image": "https://zadit.dev/og-profile.jpg",
+    "url": SITE_URL,
+    "image": `${SITE_URL}/og-profile.jpg`,
     "knowsAbout": [
       "SEO Teknikal", "AEO", "GEO", "Copywriting",
       "Digital Marketing", "Brand Strategy", "Content Marketing",
@@ -98,7 +117,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-alabaster text-text-primary font-sans">
         <script

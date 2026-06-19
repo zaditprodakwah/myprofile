@@ -135,3 +135,18 @@ export interface ContactLead {
   status: 'PENDING' | 'CONTACTED' | 'WON';
   created_at?: string;
 }
+
+export interface ReferenceItem {
+  id: string;
+  title: string;
+  slug: string;
+  category: 'growth-playbook' | 'seo-checklist' | 'market-benchmark' | 'civic-data';
+  summary: string;
+  content: string;
+  tags: string[];
+  source_name?: string;
+  source_url?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
