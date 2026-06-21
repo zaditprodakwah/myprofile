@@ -29,9 +29,7 @@ export async function GET(request: NextRequest) {
             alignItems: 'flex-start',
             justifyContent: 'space-between',
             backgroundColor: '#0f1923',
-            backgroundImage: 'radial-gradient(circle at 90% 10%, #00c8a015 0%, transparent 60%), radial-gradient(circle at 10% 90%, #d4af3710 0%, transparent 60%)',
             padding: '80px',
-            fontFamily: 'system-ui, -apple-system, sans-serif',
           }}
         >
           {/* Top Row: Badge & Branding */}
@@ -64,9 +62,10 @@ export async function GET(request: NextRequest) {
                 fontWeight: 800,
                 color: '#ffffff',
                 letterSpacing: '1px',
+                display: 'flex',
               }}
             >
-              muhzadit<span style={{ color: '#00c8a0' }}>.app</span>
+              <span>muhzadit</span><span style={{ color: '#00c8a0' }}>.app</span>
             </div>
           </div>
 

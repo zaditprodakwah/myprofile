@@ -20,17 +20,17 @@ interface HeroSectionProps {
 }
 
 // Performance-safe Magnetic Button using Spring Physics
-function MagneticButton({ 
-  children, 
-  className, 
-  href, 
-  target, 
-  rel 
-}: { 
-  children: React.ReactNode; 
-  className: string; 
-  href: string; 
-  target?: string; 
+function MagneticButton({
+  children,
+  className,
+  href,
+  target,
+  rel
+}: {
+  children: React.ReactNode;
+  className: string;
+  href: string;
+  target?: string;
   rel?: string;
 }) {
   const x = useMotionValue(0);
@@ -105,7 +105,7 @@ const TRUST_BADGES = [
 
 export default function HeroSection({
   headline = "Code doesn't scale without story. Story doesn't convert without data. Data doesn't persuade without execution.",
-  subheading = "Zadit membantu UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
+  subheading = "Zadit membantu Anda, UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
   whatsappNumber = "6282316363177",
   availabilityStatus = "AVAILABLE",
   liveStats,
@@ -150,7 +150,7 @@ export default function HeroSection({
   }, []);
 
   const headlineWords = headline.split(' ');
-  
+
   // Programmatic guard to change "Saya/saya" self-references to "Zadit"
   const cleanSubheading = subheading
     .replace(/\bSaya membantu\b/g, 'Zadit membantu')
@@ -213,7 +213,7 @@ export default function HeroSection({
                 className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
               />
             </div>
-            
+
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm font-heading-sans text-text-muted">
               <span className="font-mono text-[10px] sm:text-xs tracking-widest uppercase text-text-muted/70">Muhammad Khoiruzzadittaqwa —</span>
               <RotatingTag />
@@ -310,14 +310,14 @@ export default function HeroSection({
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             className="hidden lg:block bg-white border border-brand-border p-3 rounded-2xl shadow-lg relative overflow-hidden group glow-border-teal"
           >
-          <Image
-            src="/zadit-foto.png"
-            alt="Muhammad Khoiruzzadittaqwa — Digital Marketing & Branding Strategist"
-            className="w-full h-72 object-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
-            priority
-            width={640}
-            height={360}
-          />
+            <Image
+              src="/zadit-foto.png"
+              alt="Zadit — Digital Marketing & Branding Strategist"
+              className="w-full h-72 object-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+              priority
+              width={640}
+              height={360}
+            />
             {/* Gradient overlay bottom */}
             <div className="absolute inset-x-3 bottom-3 h-20 bg-gradient-to-t from-brand-slate/40 to-transparent rounded-xl pointer-events-none" />
             {/* Role chip */}
@@ -348,8 +348,8 @@ export default function HeroSection({
               </span>
               <span className={cn(
                 "flex items-center gap-1.5 text-[9px] font-mono px-2.5 py-1 rounded-full border",
-                availabilityStatus === 'AVAILABLE' 
-                  ? "bg-teal-accent/10 text-teal-accent border-teal-accent/20" 
+                availabilityStatus === 'AVAILABLE'
+                  ? "bg-teal-accent/10 text-teal-accent border-teal-accent/20"
                   : "bg-amber-500/10 text-amber-600 border-amber-500/20"
               )}>
                 <span className={cn(
