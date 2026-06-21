@@ -8,7 +8,7 @@ import { routeLLM } from '@/lib/llm-router';
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const { secret, feedUrl = 'https://news.google.com/rss/search?q=seo+growth+marketing+indonesia&hl=id&gl=ID&ceid=ID:id' } = body;
+    const { secret, feedUrl = 'https://news.google.com/rss/search?q=seo+growth+marketing+indonesia&hl=id&gl=ID&ceid=ID:id', testOnly = false } = body;
 
     const adminKey = process.env.ADMIN_SECRET_KEY;
     if (!adminKey || secret !== adminKey) {
@@ -23,6 +23,10 @@ export async function POST(request: Request) {
 
     const itemsRegex = /<item>([\s\S]*?)<\/item>/gi;
     const matchedItems = xmlText.match(itemsRegex) || [];
+
+    if (testOnly) {
+      return NextResponse.json({ success: true, message: `Koneksi Berhasil. Menemukan ${matchedItems.length} artikel rujukan.` });
+    }
 
     if (matchedItems.length === 0) {
       return NextResponse.json({ success: true, message: 'No RSS items found in feed' });

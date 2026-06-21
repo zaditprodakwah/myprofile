@@ -9,9 +9,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/directory', label: 'Direktori B2B' },
-  { href: '/sovereign-explorer', label: 'Bank Referensi' },
-  { href: '/utility/audit-engine', label: 'Audit SEO' },
-  { href: '/blog', label: 'Blog & Insight' },
+  { href: '/blog', label: 'Growth Hub & Telemetri' },
+  { href: '/utility/audit-engine', label: 'Audit Kecepatan & SEO' },
 ];
 
 export default function Header() {

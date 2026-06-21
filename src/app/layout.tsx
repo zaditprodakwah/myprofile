@@ -29,6 +29,11 @@ export const metadata: Metadata = {
   creator: "Muhammad Khoiruzzadittaqwa",
   publisher: "NaikDigital",
   metadataBase: new URL(SITE_URL),
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   alternates: {
     canonical: "/",
     languages: {
@@ -55,7 +60,7 @@ export const metadata: Metadata = {
     siteName: "Zadit Growth Portfolio",
     images: [
       {
-        url: `${SITE_URL}/api/og?type=home`,
+        url: `${SITE_URL}/background.png`,
         width: 1200,
         height: 630,
         alt: "Muhammad Khoiruzzadittaqwa - Full-Stack Growth Architect",
@@ -69,10 +74,13 @@ export const metadata: Metadata = {
     title: "Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect",
     description: "Portofolio & Growth Engine Muhammad Khoiruzzadittaqwa (Zadit) - Full-Stack Growth Architect.",
     creator: "@muhzadit",
-    images: [`${SITE_URL}/api/og?type=home`],
+    images: [`${SITE_URL}/background.png`],
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
+    google: "BJYm8JSKI4BDrYrkwuPrIEynUPXylZ52ziWOE7DrGDY",
+    other: {
+      "msvalidate.01": "015756E98C3F3893642C5EC255A85850"
+    }
   },
 };
 

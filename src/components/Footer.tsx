@@ -151,10 +151,11 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5">
               {[
-                { href: '/sovereign-explorer', label: 'Bank Data Referensi' },
-                { href: '/directory', label: 'Direktori Bisnis Kredibel' },
+                { href: '/blog', label: 'Growth Hub & Telemetri' },
+                { href: '/directory', label: 'Direktori Bisnis Wilayah' },
                 { href: '/utility/audit-engine', label: 'Audit Kecepatan Website' },
-                { href: '/blog', label: 'Blog & Artikel Edukasi' },
+                { href: '/utility/fact-checker', label: 'B2B Fact-Checker Engine' },
+                { href: '/utility/video-auditor', label: 'YouTube Video Auditor' },
                 { href: 'https://kontak.link/muhzadit', label: 'Kontak.Link', external: true },
               ].map(({ href, label, external }) => (
                 <li key={href}>

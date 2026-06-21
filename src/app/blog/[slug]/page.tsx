@@ -1,26 +1,26 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { routeLLM } from "@/lib/llm-router";
 import { supabase } from "@/lib/supabase";
 import { ChevronRight, ArrowLeft, Send, Clock, Zap, Home, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import SocialShare from '@/components/SocialShare';
 import ArticleInteractiveWidgets from '@/components/ArticleInteractiveWidgets';
 import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/seo';
+import { Metadata } from 'next';
 
-
-interface Article {
+interface UnifiedPost {
   id?: string;
+  type: 'article' | 'reference';
   title: string;
   slug: string;
-  original_url: string;
+  original_url?: string;
   content: string;
   semantic_keywords: string;
   faq_items: Array<{ question: string; answer: string }>;
   published_at?: string;
+  categoryLabel?: string;
 }
 
-// Generate human-friendly title from slug
 function getTitleFromSlug(slug: string): string {
   if (!slug) return '';
   return slug
@@ -31,20 +31,52 @@ function getTitleFromSlug(slug: string): string {
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
-) {
+): Promise<Metadata> {
   const { slug } = await params;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
   
-  const { data } = await supabase
+  // 1. Try fetching from articles
+  let { data: article } = await supabase
     .from('articles')
     .select('title, meta_description, semantic_keywords, slug, published_at')
     .eq('slug', slug)
     .maybeSingle();
 
-  const title = data?.title ? `${data.title} | Zadit Growth Blog` : `${getTitleFromSlug(slug)} | Zadit Growth Blog`;
-  const description = data?.meta_description || `Artikel komprehensif mengenai ${getTitleFromSlug(slug)} untuk pertumbuhan ekosistem bisnis digital modern.`;
-  const keywords = Array.isArray(data?.semantic_keywords) ? data?.semantic_keywords.join(', ') : (data?.semantic_keywords || 'growth marketing, seo, digital business');
-  const ogTitle = data?.title || getTitleFromSlug(slug);
+  let title = '';
+  let description = '';
+  let keywords = '';
+  let ogTitle = '';
+  let publishedTime = '';
+
+  if (article) {
+    title = `${article.title} | Zadit Growth Hub`;
+    description = article.meta_description || `Artikel komprehensif mengenai ${article.title}.`;
+    keywords = Array.isArray(article.semantic_keywords) ? article.semantic_keywords.join(', ') : (article.semantic_keywords || '');
+    ogTitle = article.title;
+    publishedTime = article.published_at || new Date().toISOString();
+  } else {
+    // 2. Try fetching from reference_items
+    const { data: ref } = await supabase
+      .from('reference_items')
+      .select('title, summary, tags, slug, created_at')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (ref) {
+      title = `${ref.title} | Zadit Growth Playbook`;
+      description = ref.summary || `Playbook taktis mengenai ${ref.title}.`;
+      keywords = Array.isArray(ref.tags) ? ref.tags.join(', ') : '';
+      ogTitle = ref.title;
+      publishedTime = ref.created_at || new Date().toISOString();
+    } else {
+      title = `${getTitleFromSlug(slug)} | Zadit Growth Hub`;
+      description = `Panduan dan wawasan mengenai ${getTitleFromSlug(slug)}.`;
+      keywords = 'growth marketing, seo, data intelligence';
+      ogTitle = getTitleFromSlug(slug);
+      publishedTime = new Date().toISOString();
+    }
+  }
+
   const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(ogTitle)}&type=blog&subtitle=${encodeURIComponent(description.substring(0, 110))}`;
 
   return {
@@ -59,7 +91,7 @@ export async function generateMetadata(
       description,
       url: `${siteUrl}/blog/${slug}`,
       type: 'article',
-      publishedTime: data?.published_at || new Date().toISOString(),
+      publishedTime,
       authors: ['Muhammad Khoiruzzadittaqwa'],
       images: [
         {
@@ -80,88 +112,107 @@ export async function generateMetadata(
   };
 }
 
-
-// Dynamic server-side SEO/AEO AGC Article page
 export default async function BlogArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  let article: Article | null = null;
+  let post: UnifiedPost | null = null;
   let relatedPosts: any[] = [];
 
   try {
-    // 1. Check if article exists in Supabase
-    const { data } = await supabase
+    // 1. Try articles table
+    const { data: artData } = await supabase
       .from('articles')
       .select('*')
       .eq('slug', slug)
-      .single();
+      .maybeSingle();
 
-      if (data) {
-        article = {
-          id: data.id,
-          title: data.title,
-          slug: data.slug,
-          original_url: data.original_url || '',
-          content: data.content,
-          semantic_keywords: Array.isArray(data.semantic_keywords) ? data.semantic_keywords.join(', ') : data.semantic_keywords || '',
-          faq_items: Array.isArray(data.faq_items) ? data.faq_items : [],
-          published_at: data.published_at
-        };
+    if (artData) {
+      post = {
+        id: artData.id,
+        type: 'article',
+        title: artData.title,
+        slug: artData.slug,
+        original_url: artData.original_url || '',
+        content: artData.content,
+        semantic_keywords: Array.isArray(artData.semantic_keywords) ? artData.semantic_keywords.join(', ') : artData.semantic_keywords || '',
+        faq_items: Array.isArray(artData.faq_items) ? artData.faq_items : [],
+        published_at: artData.published_at,
+        categoryLabel: 'Artikel AI & Wawasan'
+      };
 
-        // Fetch related posts based on semantic keywords or just latest posts if no keywords match
-        const kws = Array.isArray(data.semantic_keywords) ? data.semantic_keywords : [];
-        let query = supabase.from('articles').select('id, title, slug').neq('id', data.id).limit(4);
-        
-        if (kws.length > 0) {
-          query = query.contains('semantic_keywords', [kws[0]]);
-        }
-        
-        const { data: relatedData } = await query;
-        if (relatedData && relatedData.length > 0) {
-          relatedPosts = relatedData;
-        } else {
-          // Fallback to latest
-          const { data: latestData } = await supabase.from('articles').select('id, title, slug').neq('id', data.id).order('published_at', { ascending: false }).limit(4);
-          relatedPosts = latestData || [];
-        }
-
-      } else {
-        // Article not found in DB.
-        // Instead of generating via LLM on-the-fly (which causes Vercel 504 timeouts),
-        // we display a fallback or 404-like state. AGC should be done asynchronously via cron/admin.
-        const title = getTitleFromSlug(slug);
-        article = {
-          title: `Artikel ${title} Tidak Ditemukan`,
-          slug,
-          original_url: '',
-          content: `
-            <p>Maaf, artikel tentang <strong>${title}</strong> belum dipublikasikan atau sedang dalam proses penyusunan oleh sistem <em>Auto-Generated Content</em> kami.</p>
-            <h2>Mencari Informasi Lain?</h2>
-            <p>Silakan kembali ke halaman blog untuk melihat artikel-artikel terbaru yang sudah tayang, atau hubungi admin untuk request topik ini.</p>
-          `,
-          semantic_keywords: 'not found, 404',
-          faq_items: []
-        };
+      // Related articles query
+      const kws = Array.isArray(artData.semantic_keywords) ? artData.semantic_keywords : [];
+      let query = supabase.from('articles').select('id, title, slug').neq('id', artData.id).limit(4);
+      if (kws.length > 0) {
+        query = query.contains('semantic_keywords', [kws[0]]);
       }
-    } catch (err) {
-      console.error('Database error fetching article:', err);
-      // Hardcoded fallback article in case APIs are offline
+      const { data: rel } = await query;
+      relatedPosts = rel || [];
+    } else {
+      // 2. Try reference_items table
+      const { data: refData } = await supabase
+        .from('reference_items')
+        .select('*')
+        .eq('slug', slug)
+        .maybeSingle();
+
+      if (refData) {
+        post = {
+          id: refData.id,
+          type: 'reference',
+          title: refData.title,
+          slug: refData.slug,
+          original_url: refData.source_url || '',
+          content: refData.content,
+          semantic_keywords: Array.isArray(refData.tags) ? refData.tags.join(', ') : '',
+          faq_items: [], // reference items don't have default faqs
+          published_at: refData.created_at,
+          categoryLabel: refData.category.replace('-', ' ').toUpperCase()
+        };
+
+        // Related references query
+        const { data: relRef } = await supabase
+          .from('reference_items')
+          .select('id, title, slug')
+          .eq('category', refData.category)
+          .neq('id', refData.id)
+          .limit(4);
+        relatedPosts = relRef || [];
+      }
+    }
+
+    if (!post) {
       const title = getTitleFromSlug(slug);
-      article = {
-        title: `Gangguan Sistem`,
+      post = {
+        type: 'article',
+        title: `Halaman "${title}" Belum Siap`,
         slug,
-        original_url: '',
         content: `
-          <p>Terjadi gangguan koneksi saat mencoba mengambil artikel <strong>${title}</strong>.</p>
-          <p>Sistem kami sedang mengupayakan koneksi ulang. Silakan muat ulang halaman ini beberapa saat lagi.</p>
+          <p>Maaf, materi tentang <strong>${title}</strong> belum dipublikasikan atau sedang dalam proses sinkronisasi database kami.</p>
+          <div style="margin-top: 30px;">
+            <a href="/blog" style="background-color: #0d9488; color: #ffffff; padding: 12px 24px; border-radius: 12px; font-weight: bold; text-decoration: none;">
+              Kembali Ke Growth Hub
+            </a>
+          </div>
         `,
-        semantic_keywords: 'error',
+        semantic_keywords: 'not found',
         faq_items: []
       };
     }
+  } catch (err) {
+    console.error('Database error in blog article:', err);
+    post = {
+      type: 'article',
+      title: `Gangguan Sistem Koneksi`,
+      slug,
+      content: `<p>Maaf, saat ini terjadi gangguan koneksi dengan server database. Silakan muat ulang beberapa saat lagi.</p>`,
+      semantic_keywords: 'error',
+      faq_items: []
+    };
+  }
 
-  // Schema Markup generation
-  const faqList = article.faq_items.map(faq => ({
+  // Schema Markup
+  const faqList = post.faq_items.map(faq => ({
     "@type": "Question",
     "name": faq.question,
     "acceptedAnswer": {
@@ -170,14 +221,20 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
     }
   }));
 
-  const articleObj = generateArticleSchema(article);
+  const articleObj = generateArticleSchema({
+    title: post.title,
+    slug: post.slug,
+    content: post.content,
+    published_at: post.published_at
+  } as any);
+
   const breadcrumbObj = generateBreadcrumbSchema([
     { name: "Beranda", path: "/" },
-    { name: "Blog", path: "/blog" },
-    { name: article.title, path: `/blog/${article.slug}` }
+    { name: "Growth Hub", path: "/blog" },
+    { name: post.title, path: `/blog/${post.slug}` }
   ]);
 
-  const articleSchema = {
+  const schemaGraph = {
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -195,88 +252,75 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
     ]
   };
 
-
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
-  const fullUrl = `${siteUrl}/blog/${article.slug}`;
-
-  // Estimate Read Time
-  const wordCount = article.content.replace(/<[^>]*>?/gm, '').split(/\s+/).length;
+  const fullUrl = `${siteUrl}/blog/${post.slug}`;
+  const wordCount = post.content.replace(/<[^>]*>?/gm, '').split(/\s+/).length;
   const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
       <Header />
-      
-      {/* Reading progress bar */}
       <div className="scroll-progress" />
 
       <main className="flex-1 bg-alabaster pt-28 pb-24 px-6 min-h-screen">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* Main Article Content (Left - 8 columns) */}
           <article className="lg:col-span-8 space-y-6">
-            
-            {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-text-muted mb-6">
               <Link href="/" className="hover:text-teal-accent flex items-center gap-1"><Home className="w-3 h-3" /> Beranda</Link>
               <ChevronRight className="w-3 h-3" />
-              <Link href="/blog" className="hover:text-teal-accent">Blog</Link>
+              <Link href="/blog" className="hover:text-teal-accent">Growth Hub</Link>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-text-primary truncate max-w-[200px]">{article.title}</span>
+              <span className="text-text-primary truncate max-w-[200px]">{post.title}</span>
             </nav>
 
             <div className="space-y-4">
-              <span className="text-xs font-mono text-gold-accent tracking-widest uppercase">Wawasan Pertumbuhan</span>
+              <span className="text-xs font-mono text-gold-accent tracking-widest uppercase">{post.categoryLabel || 'INFORMASI'}</span>
               <h1 className="text-3xl md:text-5xl font-heading-serif font-bold text-text-primary leading-tight">
-                {article.title}
+                {post.title}
               </h1>
               <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-text-muted">
                 <span>Penulis: Muhammad Khoiruzzadittaqwa</span>
                 <span className="inline-flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-teal-accent" /> {readTime} Menit Baca</span>
-                {article.published_at && (
-                  <span>{new Date(article.published_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                {post.published_at && (
+                  <span>{new Date(post.published_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 )}
               </div>
             </div>
 
-            {/* Interactive Widgets: Like, View, TTS, Bookmark */}
-            <ArticleInteractiveWidgets articleId={article.id || article.slug} />
+            <ArticleInteractiveWidgets articleId={post.id || post.slug} />
 
-            {/* Rich text container with Definition-Lead styling */}
             <div 
               id="article-content"
               className="prose max-w-none prose-sm md:prose-base text-text-muted leading-relaxed space-y-6 pt-2 prose-headings:text-text-primary prose-headings:font-heading-sans prose-a:text-teal-accent
               [&>p:first-of-type]:text-lg [&>p:first-of-type]:md:text-xl [&>p:first-of-type]:text-text-primary [&>p:first-of-type]:font-medium [&>p:first-of-type]:leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: article.content }}
+              dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
-            {/* Source Reference Link if ingested from external feed */}
-            {article.original_url && (
+            {post.original_url && (
               <div className="mt-8 p-4 bg-offwhite border border-brand-border rounded-xl">
                 <p className="text-sm text-text-muted font-sans flex items-center gap-2">
-                  <span className="font-bold">Sumber Referensi:</span> 
-                  <a href={article.original_url} target="_blank" rel="nofollow noopener noreferrer" className="text-teal-accent hover:underline flex items-center gap-1">
-                    Baca Artikel Asli <ExternalLink className="w-3 h-3" />
+                  <span className="font-bold">Kredit Sumber Rujukan:</span> 
+                  <a href={post.original_url} target="_blank" rel="nofollow noopener noreferrer" className="text-teal-accent hover:underline flex items-center gap-1">
+                    Baca Halaman Asli <ExternalLink className="w-3 h-3" />
                   </a>
                 </p>
               </div>
             )}
 
-            {/* Bottom Share */}
             <div className="mt-16 pt-8 border-t border-brand-border">
-              <SocialShare url={fullUrl} title={article.title} />
+              <SocialShare url={fullUrl} title={post.title} />
             </div>
 
-            {/* Dynamic FAQ Accordions */}
-            {article.faq_items && article.faq_items.length > 0 && (
+            {post.faq_items && post.faq_items.length > 0 && (
               <div className="pt-8 border-t border-brand-border mt-12 space-y-4">
                 <span className="text-xs font-mono text-gold-accent tracking-widest uppercase">Pertanyaan Yang Sering Diajukan (FAQ)</span>
                 <div className="space-y-4">
-                  {article.faq_items.map((faq, idx) => (
+                  {post.faq_items.map((faq, idx) => (
                     <details key={idx} className="bg-white border border-brand-border rounded-xl p-5 group transition-all duration-300">
                       <summary className="font-heading-sans font-bold text-text-primary text-sm cursor-pointer list-none flex justify-between items-center select-none">
                         <span>{faq.question}</span>
@@ -292,16 +336,12 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             )}
           </article>
 
-          {/* Sticky Conversion Sidebar (Right - 4 columns) */}
           <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
-            {/* Desktop Share Widget */}
             <div className="hidden lg:block bg-white border border-brand-border rounded-2xl p-6 shadow-sm">
-              <SocialShare url={fullUrl} title={article.title} />
+              <SocialShare url={fullUrl} title={post.title} />
             </div>
 
-            {/* Conversion Card */}
             <div className="bg-gradient-to-br from-brand-slate to-[#1a2b3c] border border-brand-slate rounded-2xl p-6 text-text-inverse relative overflow-hidden group shadow-xl">
-              {/* Background glow */}
               <div className="absolute -top-20 -right-20 w-40 h-40 bg-teal-accent/20 blur-[50px] rounded-full pointer-events-none" />
               
               <div className="relative z-10 space-y-4">
@@ -309,27 +349,27 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                   <Zap className="w-5 h-5" />
                 </div>
                 <h3 className="text-xl font-heading-sans font-bold leading-tight">
-                  Butuh Implementasi Sistem Serupa?
+                  Butuh Konsultasi Arsitektur Digital?
                 </h3>
                 <p className="text-sm text-text-inverse/70 leading-relaxed font-sans">
-                  Dapatkan arsitektur web berkecepatan tinggi, SEO teknikal, dan ekosistem data yang meningkatkan konversi bisnis Anda.
+                  Dapatkan bimbingan taktis, rekayasa web performa Next.js 16, dan optimasi SEO terpadu langsung dari Zadit.
                 </p>
                 
                 <div className="pt-2">
                   <a 
-                    href={`https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20membaca%20artikel%20"${encodeURIComponent(article.title)}"%20dan%20tertarik%20berdiskusi%20kemitraan.`}
+                    href={`https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20berdiskusi%20kemitraan%20setelah%20membaca%20halaman%20"${encodeURIComponent(post.title)}".`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block w-full bg-teal-accent hover:bg-white hover:text-brand-slate text-text-inverse text-center font-heading-sans font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all duration-300"
                   >
-                    Konsultasikan Sekarang <Send className="w-4 h-4 inline-block ml-1" />
+                    Konsultasikan Sekarang
                   </a>
                 </div>
               </div>
             </div>
 
             <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-sm">
-              <h4 className="text-xs font-mono text-text-primary uppercase tracking-wider mb-4">ARTIKEL TERKAIT</h4>
+              <h4 className="text-xs font-mono text-text-primary uppercase tracking-wider mb-4">REKOMENDASI TERKAIT</h4>
               {relatedPosts.length > 0 ? (
                 <ul className="space-y-3 text-xs">
                   {relatedPosts.map((rp) => (
@@ -342,7 +382,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-text-muted">Belum ada artikel terkait.</p>
+                <p className="text-xs text-text-muted">Belum ada rujukan terkait.</p>
               )}
             </div>
           </aside>

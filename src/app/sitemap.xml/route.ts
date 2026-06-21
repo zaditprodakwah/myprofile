@@ -47,12 +47,20 @@ export async function GET() {
       imageTitle: 'Zadit Growth Blog'
     },
     {
-      loc: `${SITE_URL}/sovereign-explorer`,
+      loc: `${SITE_URL}/utility/fact-checker`,
       lastmod: new Date().toISOString().split('T')[0],
       changefreq: 'weekly',
-      priority: '0.9',
-      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Bank Referensi')}&type=reference`,
-      imageTitle: 'Bank Data Referensi & Playbook Pertumbuhan'
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Google Fact-Checker')}&type=home&subtitle=${encodeURIComponent('Validasi klaim informasi lewat Google Fact Check API')}`,
+      imageTitle: 'Google Fact-Checker - Validasi Klaim Berita'
+    },
+    {
+      loc: `${SITE_URL}/utility/video-auditor`,
+      lastmod: new Date().toISOString().split('T')[0],
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('YouTube Video & Channel Auditor')}&type=home&subtitle=${encodeURIComponent('Audit video & channel YouTube dengan YouTube Data API v3')}`,
+      imageTitle: 'YouTube Video & Channel Auditor'
     }
   ];
 
@@ -125,13 +133,40 @@ export async function GET() {
       references.forEach(ref => {
         const lastmodDate = ref.updated_at || ref.created_at || new Date().toISOString();
         entries.push({
-          loc: `${SITE_URL}/sovereign-explorer/${ref.slug}`,
+          loc: `${SITE_URL}/blog/${ref.slug}`,
           lastmod: lastmodDate.split('T')[0],
           changefreq: 'weekly',
-          priority: '0.9',
+          priority: '0.8',
           imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(ref.title)}&type=reference`,
           imageTitle: ref.title
         });
+      });
+    }
+
+    // 5. Fetch audited domains for pSEO indexing
+    const { data: auditedLeads } = await supabase
+      .from('utility_leads')
+      .select('target_site_url, created_at')
+      .order('created_at', { ascending: false });
+
+    if (auditedLeads) {
+      const uniqueDomains = new Set<string>();
+      auditedLeads.forEach(lead => {
+        if (lead.target_site_url) {
+          const cleanDomain = lead.target_site_url.replace(/^https?:\/\//i, '').replace(/\/$/, '').trim();
+          if (cleanDomain && !uniqueDomains.has(cleanDomain)) {
+            uniqueDomains.add(cleanDomain);
+            const lastmodDate = lead.created_at || new Date().toISOString();
+            entries.push({
+              loc: `${SITE_URL}/utility/audit-engine/${cleanDomain}`,
+              lastmod: lastmodDate.split('T')[0],
+              changefreq: 'weekly',
+              priority: '0.6',
+              imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(`Laporan Audit ${cleanDomain}`)}&type=reference`,
+              imageTitle: `Laporan Audit Kecepatan & SEO untuk ${cleanDomain}`
+            });
+          }
+        }
       });
     }
 

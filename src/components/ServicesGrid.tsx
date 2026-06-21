@@ -108,6 +108,7 @@ export default function ServicesGrid({ services }: ServicesGridProps) {
   return (
     <section id="services" className="bg-[#f9fafb] py-24 border-b border-brand-border relative">
       {/* Faint section background gradient */}
+      <div className="absolute inset-0 grid-bg opacity-35 pointer-events-none" />
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

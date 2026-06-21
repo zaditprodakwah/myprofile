@@ -1,0 +1,40 @@
+name: Scheduled Cron Jobs
+
+on:
+  schedule:
+    # Jalankan Ingest RSS setiap 3 jam
+    - cron: '0 */3 * * *'
+    # Jalankan optimasi DB, UI, AI Graph, dan SEO secara harian (pukul 02:00 UTC)
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Memungkinkan eksekusi manual dari UI GitHub
+
+jobs:
+  trigger-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger RSS Cron Ingest
+        if: github.event.schedule == '0 */3 * * *' || github.event_name == 'workflow_dispatch'
+        run: |
+          curl -X GET "https://muhzadit.vercel.app/api/cron/rss" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -f || echo "Trigger failed or returned non-2xx status"
+
+      - name: Trigger Daily DB & UI Workers
+        if: github.event.schedule == '0 2 * * *' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "Triggering DB worker..."
+          curl -X GET "https://muhzadit.vercel.app/api/cron/worker-db" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" -f || echo "DB worker failed"
+          
+          echo "Triggering UI worker..."
+          curl -X GET "https://muhzadit.vercel.app/api/cron/worker-ui" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" -f || echo "UI worker failed"
+          
+          echo "Triggering AI Graph & Taxonomy worker..."
+          curl -X GET "https://muhzadit.vercel.app/api/cron/ai-graph" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" -f || echo "AI Graph failed"
+          
+          echo "Triggering SEO Refresh worker..."
+          curl -X GET "https://muhzadit.vercel.app/api/cron/seo-refresh" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" -f || echo "SEO Refresh failed"

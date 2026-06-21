@@ -65,6 +65,10 @@ export default function AdminDashboardPage() {
   const [rssFeedUrl, setRssFeedUrl] = useState('https://news.google.com/rss/search?q=seo+growth+marketing+indonesia&hl=id&gl=ID&ceid=ID:id');
   const [isScraping, setIsScraping] = useState(false);
   const [scrapeResult, setScrapeResult] = useState('');
+  const [newFeedName, setNewFeedName] = useState('');
+  const [newFeedUrl, setNewFeedUrl] = useState('');
+  const [testFeedLoading, setTestFeedLoading] = useState<string | null>(null);
+  const [testFeedResult, setTestFeedResult] = useState<Record<string, string>>({});
 
   // Scraper Tab State
   const [scraperTab, setScraperTab] = useState<'gmaps' | 'rss'>('gmaps');
@@ -2649,26 +2653,218 @@ export default function AdminDashboardPage() {
                       </div>
                     )}
 
-                    {scraperTab === 'rss' && (
-                      <div className="space-y-4">
-                        <div className="bg-offwhite border border-brand-border rounded-2xl p-6 space-y-3 max-w-2xl">
-                          <span className="text-xs font-mono text-gold-accent uppercase tracking-widest flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> TRIGGER RSS SCRAPER MANUAL</span>
-                          <p className="text-xs text-text-muted">Aksi ini akan menjalankan `worker-db` dan `rss` cron jobs secara berurutan.</p>
-                          <button
-                            onClick={handleTriggerScraper}
-                            disabled={isScraping}
-                            className="bg-brand-slate hover:bg-black text-text-inverse font-mono text-[10px] uppercase font-bold py-3 px-6 rounded-xl cursor-pointer"
-                          >
-                            {isScraping ? 'Memproses...' : 'Mulai AGC RSS'}
-                          </button>
+                    {scraperTab === 'rss' && (() => {
+                      let feeds: any[] = [];
+                      try {
+                        feeds = JSON.parse(sysConfigs.rss_feeds);
+                        if (!Array.isArray(feeds)) feeds = [];
+                      } catch (e) {
+                        feeds = [];
+                      }
+
+                      const handleSaveFeeds = async (updatedFeeds: any[]) => {
+                        const strFeeds = JSON.stringify(updatedFeeds);
+                        setSysConfigs({ ...sysConfigs, rss_feeds: strFeeds });
+                        // Save directly to supabase
+                        const { error } = await supabase
+                          .from('system_configs')
+                          .upsert({ key: 'rss_feeds', value: updatedFeeds }, { onConflict: 'key' });
+                        if (error) {
+                          triggerMessage('Gagal menyimpan feed ke database: ' + error.message, 'error');
+                        } else {
+                          triggerMessage('Daftar Feed RSS berhasil diperbarui!');
+                        }
+                      };
+
+                      const handleAddFeed = (e: React.FormEvent) => {
+                        e.preventDefault();
+                        if (!newFeedName || !newFeedUrl) return;
+                        const newFeed = {
+                          id: Date.now().toString(),
+                          name: newFeedName,
+                          url: newFeedUrl,
+                          is_active: true
+                        };
+                        const updated = [...feeds, newFeed];
+                        handleSaveFeeds(updated);
+                        setNewFeedName('');
+                        setNewFeedUrl('');
+                      };
+
+                      const handleDeleteFeed = (id: string) => {
+                        const updated = feeds.filter(f => f.id !== id);
+                        handleSaveFeeds(updated);
+                      };
+
+                      const handleToggleFeed = (id: string) => {
+                        const updated = feeds.map(f => f.id === id ? { ...f, is_active: !f.is_active } : f);
+                        handleSaveFeeds(updated);
+                      };
+
+                      const handleTestFeed = async (url: string, id: string) => {
+                        setTestFeedLoading(id);
+                        try {
+                          const res = await fetch('/api/agc', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ secret: secretKey, feedUrl: url, testOnly: true })
+                          });
+                          const data = await res.json();
+                          setTestFeedResult(prev => ({ ...prev, [id]: data.message || 'Koneksi Berhasil' }));
+                        } catch (err: any) {
+                          setTestFeedResult(prev => ({ ...prev, [id]: 'Gagal: ' + err.message }));
+                        } finally {
+                          setTestFeedLoading(null);
+                        }
+                      };
+
+                      const handleManualIngest = async (url: string) => {
+                        setIsScraping(true);
+                        setScrapeResult('');
+                        try {
+                          const res = await fetch('/api/agc', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ secret: secretKey, feedUrl: url })
+                          });
+                          const data = await res.json();
+                          setScrapeResult(data.message || 'Proses Ingest Selesai.');
+                          triggerMessage('Proses Ingest RSS Feed selesai!');
+                          await fetchArticles();
+                        } catch (err: any) {
+                          setScrapeResult('Error: ' + err.message);
+                          triggerMessage(err.message, 'error');
+                        } finally {
+                          setIsScraping(false);
+                        }
+                      };
+
+                      return (
+                        <div className="space-y-6 max-w-4xl">
+                          {/* Form Tambah Feed */}
+                          <form onSubmit={handleAddFeed} className="bg-offwhite border border-brand-border rounded-2xl p-6 space-y-4">
+                            <h4 className="text-xs font-mono text-gold-accent uppercase tracking-widest flex items-center gap-1.5">
+                              <Plus className="w-4 h-4" /> Tambah Sumber RSS Feed Baru
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <input
+                                type="text"
+                                required
+                                placeholder="Nama Feed (Contoh: Google News SEO)"
+                                value={newFeedName}
+                                onChange={(e) => setNewFeedName(e.target.value)}
+                                className="bg-white border border-brand-border rounded-xl px-4 py-3 text-xs"
+                              />
+                              <input
+                                type="url"
+                                required
+                                placeholder="URL RSS Feed"
+                                value={newFeedUrl}
+                                onChange={(e) => setNewFeedUrl(e.target.value)}
+                                className="bg-white border border-brand-border rounded-xl px-4 py-3 text-xs"
+                              />
+                            </div>
+                            <button
+                              type="submit"
+                              className="bg-teal-accent hover:bg-teal-glow text-white font-mono text-[10px] uppercase font-bold py-3 px-6 rounded-xl cursor-pointer"
+                            >
+                              Tambah Feed
+                            </button>
+                          </form>
+
+                          {/* Daftar Feeds */}
+                          <div className="bg-white border border-brand-border rounded-2xl p-6 space-y-4 shadow-xs">
+                            <h4 className="text-xs font-mono text-text-primary uppercase tracking-widest flex items-center gap-1.5">
+                              <Globe className="w-4 h-4 text-teal-accent" /> Daftar Sumber RSS Feed Terdaftar
+                            </h4>
+                            {feeds.length === 0 ? (
+                              <p className="text-xs text-text-muted">Belum ada RSS Feed yang dikonfigurasi.</p>
+                            ) : (
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                  <thead>
+                                    <tr className="border-b border-brand-border text-[10px] font-mono text-text-muted uppercase">
+                                      <th className="py-3 px-2">Nama</th>
+                                      <th className="py-3 px-2">URL</th>
+                                      <th className="py-3 px-2">Status</th>
+                                      <th className="py-3 px-2 text-right">Aksi</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {feeds.map((feed) => (
+                                      <tr key={feed.id} className="border-b border-brand-border/40 text-xs">
+                                        <td className="py-4 px-2 font-bold text-text-primary">{feed.name}</td>
+                                        <td className="py-4 px-2 font-mono text-[10px] text-text-muted break-all max-w-[200px]">{feed.url}</td>
+                                        <td className="py-4 px-2">
+                                          <label className="inline-flex items-center gap-1 cursor-pointer">
+                                            <input
+                                              type="checkbox"
+                                              checked={feed.is_active}
+                                              onChange={() => handleToggleFeed(feed.id)}
+                                              className="rounded border-brand-border text-teal-accent focus:ring-teal-accent"
+                                            />
+                                            <span className="text-[10px] font-mono">{feed.is_active ? 'AKTIF' : 'NONAKTIF'}</span>
+                                          </label>
+                                        </td>
+                                        <td className="py-4 px-2 text-right space-x-1.5">
+                                          <button
+                                            onClick={() => handleTestFeed(feed.url, feed.id)}
+                                            disabled={testFeedLoading === feed.id}
+                                            className="px-3 py-1.5 bg-offwhite border border-brand-border text-[9px] font-mono rounded hover:border-teal-accent hover:text-teal-accent cursor-pointer"
+                                          >
+                                            {testFeedLoading === feed.id ? 'Menguji...' : 'Uji Koneksi'}
+                                          </button>
+                                          <button
+                                            onClick={() => handleManualIngest(feed.url)}
+                                            disabled={isScraping}
+                                            className="px-3 py-1.5 bg-teal-accent/10 border border-teal-accent/20 text-teal-accent text-[9px] font-mono rounded hover:bg-teal-accent hover:text-white cursor-pointer"
+                                          >
+                                            Jalankan AGC
+                                          </button>
+                                          <button
+                                            onClick={() => handleDeleteFeed(feed.id)}
+                                            className="px-2 py-1.5 bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] rounded hover:bg-red-500 hover:text-white cursor-pointer"
+                                          >
+                                            Hapus
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Hasil Uji Koneksi */}
+                          {Object.keys(testFeedResult).length > 0 && (
+                            <div className="bg-white border border-brand-border rounded-2xl p-6 space-y-2">
+                              <h5 className="text-[10px] font-mono text-gold-accent uppercase tracking-wider">Hasil Pengujian Ketersambungan</h5>
+                              <ul className="space-y-1 text-xs">
+                                {Object.entries(testFeedResult).map(([id, res]) => {
+                                  const feed = feeds.find(f => f.id === id);
+                                  return (
+                                    <li key={id} className="font-mono">
+                                      <span className="font-bold">{feed ? feed.name : 'Unknown'}:</span> {res}
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Log Eksekusi AGC */}
                           {scrapeResult && (
-                            <pre className="p-4 bg-black text-green-400 font-mono text-[10px] rounded-xl overflow-x-auto whitespace-pre-wrap mt-2">
-                              {scrapeResult}
-                            </pre>
+                            <div className="bg-brand-slate border border-brand-mid rounded-2xl p-6 text-white space-y-2">
+                              <span className="text-[10px] font-mono text-teal-accent uppercase tracking-wider block">Log Jalankan AGC Manual</span>
+                              <pre className="p-4 bg-black/40 text-green-400 font-mono text-[10px] rounded-xl overflow-x-auto whitespace-pre-wrap">
+                                {scrapeResult}
+                              </pre>
+                            </div>
                           )}
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </div>
                 )}
               </>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
@@ -22,7 +23,19 @@ export async function GET(request: Request) {
     const url = searchParams.get('url');
 
     if (!url) {
-      return NextResponse.json({ success: false, error: 'URL parameter is required' }, { status: 400 });
+      // Query recent audits list securely without leaking contact info
+      const { data, error } = await supabase
+        .from('utility_leads')
+        .select('target_site_url, accessibility_score, narrative_score, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      }
+
+      const filtered = (data || []).filter(item => item.target_site_url);
+      return NextResponse.json({ success: true, data: filtered });
     }
 
     return await runAudit(url);

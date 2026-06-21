@@ -6,9 +6,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.ap
  * Generates JSON-LD Article Schema for Blog Articles & Reference Items
  */
 export function generateArticleSchema(article: Article | any) {
+  const url = `${SITE_URL}/blog/${article.slug}`;
   const isReference = article.category !== undefined;
-  const route = isReference ? 'sovereign-explorer' : 'blog';
-  const url = `${SITE_URL}/${route}/${article.slug}`;
   const wordCount = article.content ? article.content.replace(/<[^>]*>?/gm, '').split(/\s+/).length : 0;
   
   return {

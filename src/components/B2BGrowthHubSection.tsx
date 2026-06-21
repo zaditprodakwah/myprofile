@@ -1,56 +1,108 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, Variants } from 'framer-motion';
 import { MapPin, Search, Database, ArrowRight, Gauge, CheckSquare } from 'lucide-react';
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
     y: 0, 
-    transition: { type: 'spring', stiffness: 100, damping: 15 } 
+    transition: { type: 'spring', stiffness: 80, damping: 18 } 
   }
 };
 
+interface SpotlightBentoCardProps {
+  children: React.ReactNode;
+  delay?: number;
+}
+
+function SpotlightBentoCard({ children, delay = 0 }: SpotlightBentoCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const { left, top } = cardRef.current.getBoundingClientRect();
+    cardRef.current.style.setProperty('--x', `${e.clientX - left}px`);
+    cardRef.current.style.setProperty('--y', `${e.clientY - top}px`);
+  }, []);
+
+  return (
+    <motion.div 
+      ref={cardRef}
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="bento-card relative bg-white border border-brand-border rounded-[2rem] p-8 flex flex-col justify-between hover:shadow-2xl transition-all duration-500 group h-96 overflow-hidden"
+      style={{ '--x': '50%', '--y': '50%' } as React.CSSProperties}
+    >
+      {/* Glow border mask */}
+      <div
+        className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+        style={{
+          background: 'radial-gradient(350px circle at var(--x) var(--y), rgba(13,148,136,0.15), transparent 80%)',
+        }}
+      />
+      
+      {/* Inner glowing border */}
+      <div
+        className="absolute inset-x-0 top-0 h-px rounded-t-[2rem] transition-opacity duration-500 pointer-events-none"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: 'linear-gradient(to right, transparent, rgba(13,148,136,0.4), transparent)',
+        }}
+      />
+
+      {children}
+    </motion.div>
+  );
+}
+
 export default function B2BGrowthHubSection() {
   return (
-    <section className="py-20 bg-alabaster border-b border-brand-border/40 relative overflow-hidden">
-      {/* Decorative glow background */}
-      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[500px] h-[500px] bg-teal-accent/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] bg-gold-accent/5 rounded-full blur-[100px] pointer-events-none" />
+    <section className="py-24 bg-alabaster border-b border-brand-border/40 relative overflow-hidden">
+      {/* Decorative premium radial glows */}
+      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[600px] h-[600px] bg-teal-accent/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-gold-accent/5 rounded-full blur-[120px] pointer-events-none" />
+      
+      {/* Background Grid Pattern */}
+      <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
         {/* Section Header */}
-        <div className="mb-12 space-y-4 text-center md:text-left">
+        <div className="mb-16 space-y-4 text-center md:text-left">
           <span className="text-xs font-mono tracking-widest text-gold-accent uppercase block">
-            {'// Pusat Kendali Pertumbuhan & Data'}
+            {'// Pusat Kendali Pertumbuhan & Intelijen Data B2B'}
           </span>
           <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary tracking-tight">
-            Hub Pertumbuhan B2B & Intelijen Data
+            Hub Pertumbuhan B2B & <span className="gradient-text-teal">Intelijen Data</span>
           </h2>
           <p className="text-sm md:text-base text-text-muted max-w-2xl leading-relaxed">
-            Ekosistem terpadu yang memadukan wawasan taktis makro, peta kemitraan wilayah, dan perangkat pengukur performa untuk melipatgandakan konversi digital Anda.
+            Ekosistem digital terpadu yang memadukan wawasan taktis makro, peta kemitraan wilayah, dan perangkat pengukur performa untuk melipatgandakan konversi digital Anda secara sistematis.
           </p>
         </div>
 
         {/* Grid Layout (Bento Style) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
           {/* Card 1: pSEO Directory */}
-          <motion.div 
-            variants={cardVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            className="bg-white border border-brand-border rounded-3xl p-8 hover:border-teal-accent transition-all duration-300 hover:shadow-lg flex flex-col justify-between group h-96"
-          >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent">
+          <SpotlightBentoCard delay={0}>
+            <div className="space-y-5 relative z-10">
+              <motion.div 
+                whileHover={{ y: -3, scale: 1.05 }}
+                className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent shadow-sm"
+              >
                 <MapPin className="w-6 h-6" />
-              </div>
+              </motion.div>
               <h3 className="text-xl font-heading-sans font-bold text-text-primary group-hover:text-teal-accent transition-colors">
                 Direktori Bisnis Wilayah
               </h3>
@@ -58,32 +110,28 @@ export default function B2BGrowthHubSection() {
                 Indeks kredibilitas publik regional. Memetakan potensi kemitraan bisnis lokal, agensi, dan institusi terverifikasi di kota-kota strategis Indonesia.
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">Cirebon</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">Jakarta Selatan</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">pSEO Maps</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Cirebon</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Jakarta Selatan</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">pSEO Maps</span>
               </div>
             </div>
             <Link 
               href="/directory" 
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-accent group-hover:underline pt-4 border-t border-brand-border mt-4"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-accent group-hover:underline pt-4 border-t border-brand-border/60 mt-4 relative z-10"
             >
               Eksplorasi Wilayah <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
-          </motion.div>
+          </SpotlightBentoCard>
 
           {/* Card 2: Audit Speed Engine */}
-          <motion.div 
-            variants={cardVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ delay: 0.1 }}
-            className="bg-white border border-brand-border rounded-3xl p-8 hover:border-teal-accent transition-all duration-300 hover:shadow-lg flex flex-col justify-between group h-96"
-          >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent">
+          <SpotlightBentoCard delay={0.1}>
+            <div className="space-y-5 relative z-10">
+              <motion.div 
+                whileHover={{ y: -3, scale: 1.05 }}
+                className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent shadow-sm"
+              >
                 <Gauge className="w-6 h-6" />
-              </div>
+              </motion.div>
               <h3 className="text-xl font-heading-sans font-bold text-text-primary group-hover:text-teal-accent transition-colors">
                 Audit SEO & Kecepatan Web
               </h3>
@@ -91,51 +139,47 @@ export default function B2BGrowthHubSection() {
                 Uji langsung kecepatan website dan struktur aksesibilitas halaman Anda secara instan menggunakan standardisasi Google Lighthouse. Temukan celah kebocoran leads.
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">LCP Analyzer</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">Lighthouse API</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">Leads Capture</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">LCP Analyzer</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Lighthouse API</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Leads Capture</span>
               </div>
             </div>
             <Link 
               href="/utility/audit-engine" 
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-accent group-hover:underline pt-4 border-t border-brand-border mt-4"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-accent group-hover:underline pt-4 border-t border-brand-border/60 mt-4 relative z-10"
             >
               Uji Website Anda <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
-          </motion.div>
+          </SpotlightBentoCard>
 
-          {/* Card 3: Reference Bank */}
-          <motion.div 
-            variants={cardVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ delay: 0.2 }}
-            className="bg-white border border-brand-border rounded-3xl p-8 hover:border-teal-accent transition-all duration-300 hover:shadow-lg flex flex-col justify-between group h-96"
-          >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent">
+          {/* Card 3: Reference Bank (Growth Hub & Telemetry) */}
+          <SpotlightBentoCard delay={0.2}>
+            <div className="space-y-5 relative z-10">
+              <motion.div 
+                whileHover={{ y: -3, scale: 1.05 }}
+                className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent shadow-sm"
+              >
                 <Database className="w-6 h-6" />
-              </div>
+              </motion.div>
               <h3 className="text-xl font-heading-sans font-bold text-text-primary group-hover:text-teal-accent transition-colors">
-                Bank Data Referensi
+                Growth Hub & Telemetri
               </h3>
               <p className="text-xs text-text-muted leading-relaxed">
-                Gudang wawasan bisnis. Berisi playbook pertumbuhan, checklist SEO teknis, sentimen berita makroekonomi (FRED/BPS), dan benchmark nilai tukar terintegrasi.
+                Gudang wawasan bisnis terpadu. Berisi playbook pertumbuhan, checklist SEO teknis, sentimen berita makroekonomi (FRED/BPS), dan benchmark nilai tukar terintegrasi.
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">Playbooks</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">Macro Data</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full text-text-muted border border-brand-border">SEO Checklists</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Playbooks</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Macro Data</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">SEO Checklists</span>
               </div>
             </div>
             <Link 
-              href="/sovereign-explorer" 
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-accent group-hover:underline pt-4 border-t border-brand-border mt-4"
+              href="/blog" 
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-accent group-hover:underline pt-4 border-t border-brand-border/60 mt-4 relative z-10"
             >
-              Akses Bank Referensi <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              Akses Growth Hub <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
-          </motion.div>
+          </SpotlightBentoCard>
 
         </div>
 

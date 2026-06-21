@@ -68,6 +68,22 @@ export default function AuditEnginePage() {
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const [auditResult, setAuditResult] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [recentAudits, setRecentAudits] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchRecentAudits() {
+      try {
+        const res = await fetch('/api/audit-speed');
+        const json = await res.json();
+        if (json.success && json.data) {
+          setRecentAudits(json.data);
+        }
+      } catch (err) {
+        console.error('Failed to load recent audits:', err);
+      }
+    }
+    fetchRecentAudits();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -273,6 +289,42 @@ export default function AuditEnginePage() {
                   Mulai Proses Diagnostik <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
+            </div>
+          )}
+
+          {auditProgress === 0 && recentAudits.length > 0 && (
+            <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-4">
+              <h3 className="font-heading-sans font-bold text-xs uppercase tracking-wider text-text-primary flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-teal-accent" /> Daftar Audit Website Terbaru
+              </h3>
+              <div className="divide-y divide-brand-border/60">
+                {recentAudits.map((item, idx) => (
+                  <div key={idx} className="py-3.5 flex justify-between items-center text-xs">
+                    <div className="space-y-0.5">
+                      <span className="font-bold text-text-primary block font-mono">
+                        {item.target_site_url}
+                      </span>
+                      <span className="text-[9px] font-mono text-text-muted">
+                        Diaudit: {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <span className="text-[9px] font-mono bg-teal-50 text-teal-700 border border-teal-100 px-2 py-0.5 rounded-full font-bold">
+                        A11y: {item.accessibility_score}
+                      </span>
+                      <span className="text-[9px] font-mono bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-full font-bold">
+                        Narrative: {item.narrative_score}
+                      </span>
+                      <a
+                        href={`/utility/audit-engine/${item.target_site_url.replace(/^https?:\/\//i, '').replace(/\/$/, '')}`}
+                        className="text-[10px] text-teal-accent hover:underline font-bold font-mono ml-2 flex items-center gap-0.5"
+                      >
+                        Laporan <ArrowRight className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

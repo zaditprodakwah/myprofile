@@ -35,7 +35,6 @@ export async function GET() {
     markdown += `- **Home Portfolio:** ${SITE_URL}\n`;
     markdown += `- **Growth Blog:** ${SITE_URL}/blog\n`;
     markdown += `- **Regional Business Directory:** ${SITE_URL}/directory\n`;
-    markdown += `- **Sovereign Reference Bank:** ${SITE_URL}/sovereign-explorer\n`;
     markdown += `- **Free Website Audit Engine:** ${SITE_URL}/utility/audit-engine\n`;
     markdown += `- **Contact/Partnership:** ${SITE_URL}/#partnership\n\n`;
     markdown += `---\n\n`;
@@ -71,7 +70,7 @@ export async function GET() {
         const excerpt = cleanContent.substring(0, 400);
         const tags = Array.isArray(ref.tags) ? ref.tags.join(', ') : '';
 
-        markdown += `### [${ref.title}](${SITE_URL}/sovereign-explorer/${ref.slug})\n`;
+        markdown += `### [${ref.title}](${SITE_URL}/blog/${ref.slug})\n`;
         markdown += `- **Category:** ${ref.category}\n`;
         markdown += `- **Summary:** ${ref.summary || ''}\n`;
         if (tags) {

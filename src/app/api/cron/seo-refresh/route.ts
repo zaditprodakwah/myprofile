@@ -31,7 +31,6 @@ export async function GET(request: Request) {
       `${siteUrl}/`,
       `${siteUrl}/blog`,
       `${siteUrl}/directory`,
-      `${siteUrl}/sovereign-explorer`,
       `${siteUrl}/llms-full.txt`
     ];
 
@@ -39,7 +38,7 @@ export async function GET(request: Request) {
       articles.forEach(art => urlsToIndex.push(`${siteUrl}/blog/${art.slug}`));
     }
     if (references && references.length > 0) {
-      references.forEach(ref => urlsToIndex.push(`${siteUrl}/sovereign-explorer/${ref.slug}`));
+      references.forEach(ref => urlsToIndex.push(`${siteUrl}/blog/${ref.slug}`));
     }
 
     // 3. Trigger IndexNow Protocol (Bing/Yandex)

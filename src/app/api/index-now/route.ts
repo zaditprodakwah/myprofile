@@ -3,16 +3,25 @@ import { google } from 'googleapis';
 
 export async function POST(request: Request) {
   try {
-    const { url, type } = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const { url, urls, type } = body;
 
-    if (!url) {
-      return new NextResponse('Missing URL parameter', { status: 400 });
+    // Resolve URL list
+    let urlList: string[] = [];
+    if (Array.isArray(urls)) {
+      urlList = urls.filter(u => typeof u === 'string' && u.startsWith('http'));
+    } else if (typeof url === 'string' && url.startsWith('http')) {
+      urlList = [url];
     }
 
-    let googleSuccess = false;
+    if (urlList.length === 0) {
+      return new NextResponse('Missing or invalid URL parameter', { status: 400 });
+    }
+
+    let googleSuccessCount = 0;
     let indexNowSuccess = false;
 
-    // 1. Google Indexing API Integration (JWT)
+    // 1. Google Indexing API Integration (JWT & Batch support)
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
     const privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
@@ -26,60 +35,76 @@ export async function POST(request: Request) {
 
         await jwtClient.authorize();
 
-        const googleRes = await fetch(
-          'https://indexing.googleapis.com/v3/urlNotifications:publish',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${jwtClient.credentials.access_token}`
-            },
-            body: JSON.stringify({ url, type: type || 'URL_UPDATED' })
+        // Process indexing in batch/parallel promises
+        const promises = urlList.map(async (targetUrl) => {
+          try {
+            const googleRes = await fetch(
+              'https://indexing.googleapis.com/v3/urlNotifications:publish',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${jwtClient.credentials.access_token}`
+                },
+                body: JSON.stringify({ url: targetUrl, type: type || 'URL_UPDATED' })
+              }
+            );
+            if (googleRes.ok) {
+              googleSuccessCount++;
+            }
+          } catch (e) {
+            console.error(`Failed to notify Google for url: ${targetUrl}`, e);
           }
-        );
+        });
 
-        if (googleRes.ok) {
-          googleSuccess = true;
-        } else {
-          console.warn('Google Indexing API returned non-OK status:', await googleRes.text());
-        }
+        await Promise.all(promises);
       } catch (err) {
-        console.error('Google Indexing API failed:', err);
+        console.error('Google Indexing JWT Auth failed:', err);
       }
     } else {
       console.info('Skipping Google Indexing: Credentials not fully configured.');
     }
 
-    // 2. IndexNow Protocol (Bing/Yandex)
+    // 2. IndexNow Protocol (Bing & Yandex Multi-Engine support)
     const indexNowKey = process.env.INDEXNOW_KEY || 'zadit_indexnow_key_2026';
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://zadit.dev';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
+    const host = siteUrl.replace('https://', '').replace('http://', '');
 
-    try {
-      const indexNowRes = await fetch(`https://api.indexnow.org/IndexNow`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
-        body: JSON.stringify({
-          host: siteUrl.replace('https://', '').replace('http://', ''),
-          key: indexNowKey,
-          keyLocation: `${siteUrl}/${indexNowKey}.txt`,
-          urlList: [url]
-        })
-      });
+    const engines = [
+      'https://api.indexnow.org/IndexNow',
+      'https://yandex.com/indexnow',
+      'https://www.bing.com/indexnow'
+    ];
 
-      if (indexNowRes.ok) {
-        indexNowSuccess = true;
-      } else {
-        console.warn('IndexNow returned non-OK status:', await indexNowRes.text());
+    // Trigger ping for multiple search engine endpoints in parallel (adopting indexnow-submitter)
+    const indexNowPromises = engines.map(async (engineUrl) => {
+      try {
+        const indexNowRes = await fetch(engineUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify({
+            host,
+            key: indexNowKey,
+            keyLocation: `${siteUrl}/${indexNowKey}.txt`,
+            urlList
+          })
+        });
+        if (indexNowRes.ok) {
+          indexNowSuccess = true;
+        }
+      } catch (err) {
+        console.error(`IndexNow submission failed for engine ${engineUrl}:`, err);
       }
-    } catch (err) {
-      console.error('IndexNow failed:', err);
-    }
+    });
+
+    await Promise.all(indexNowPromises);
 
     return NextResponse.json({
-      success: googleSuccess || indexNowSuccess,
-      google: googleSuccess,
+      success: googleSuccessCount > 0 || indexNowSuccess,
+      googleSuccessCount,
+      googleTotalSent: urlList.length,
       indexNow: indexNowSuccess,
-      message: `Indexing processed. Google: ${googleSuccess ? 'OK' : 'Skipped/Failed'}, IndexNow: ${indexNowSuccess ? 'OK' : 'Failed'}`
+      message: `Batch Indexing processed. Google: ${googleSuccessCount}/${urlList.length} OK, IndexNow Multi-Engine: ${indexNowSuccess ? 'OK' : 'Failed'}`
     });
   } catch (err) {
     console.error('Indexing API route handler error:', err);
