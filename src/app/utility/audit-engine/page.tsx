@@ -390,6 +390,17 @@ export default function AuditEnginePage() {
                   Skor Performa aktual Anda adalah {auditResult.data?.performance || 0}/100 dan Aksesibilitas di angka {auditResult.data?.accessibility || 0}/100.
                   Hubungi Zadit untuk mendapatkan dokumen blueprint rekomendasi teknis komprehensif secara gratis agar tidak kehilangan audiens lebih banyak.
                 </p>
+                <div className="border-t border-brand-border/60 pt-3 mt-3">
+                  <a 
+                    href={`/utility/audit-engine/${formData.url.replace(/^https?:\/\//i, '').replace(/\/$/, '')}`}
+                    className="text-xs font-semibold text-teal-accent hover:underline flex items-center gap-1.5"
+                  >
+                    Buka Halaman Laporan Permanen (Shareable SEO Report Page) ↗
+                  </a>
+                  <p className="text-[10px] text-text-muted mt-1">
+                    Laporan audit performa ini diarsipkan pada URL publik permanen agar ramah terhadap perayapan sitemap mesin pencari.
+                  </p>
+                </div>
               </div>
 
               {/* Action Buttons */}

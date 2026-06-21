@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
+import CommandPalette from "@/components/CommandPalette";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -161,6 +162,7 @@ export default function RootLayout({
         <SmoothScroll>
           {children}
         </SmoothScroll>
+        <CommandPalette />
       </body>
     </html>
   );
