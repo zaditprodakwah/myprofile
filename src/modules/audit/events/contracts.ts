@@ -111,47 +111,129 @@ export interface AuditFailedEvent extends BaseEvent {
   };
 }
 
-export interface EntityDiscoveredEvent extends BaseEvent {
-  event_name: 'EntityDiscovered';
-  payload_json: {
-    source_url: string;
-    raw_attributes: Record<string, any>;
-  };
+export type EventNames = 'EntityResolved'
+  | 'RelationshipInferred'
+  | 'MentionCaptured'
+  | 'GraphUpdated'
+  | 'IdentityCreated'
+  | 'ClaimRequested'
+  | 'ClaimVerificationStarted'
+  | 'ClaimVerified'
+  | 'ClaimRejected'
+  | 'OwnershipGranted'
+  | 'OwnershipRevoked'
+  | 'CreditsAdded'
+  | 'CreditsDeducted'
+  | 'CreditsTransferred'
+  | 'SubscriptionCreated'
+  | 'SubscriptionActivated'
+  | 'SubscriptionExpired'
+  | 'PaymentReceived'
+  | 'PaymentFailed';
+
+// ---------------------------------------------------------
+// PHASE 3 & 4 EVENT PAYLOADS
+// ---------------------------------------------------------
+
+export interface EntityDiscoveredPayload {
+  source_url: string;
+  raw_attributes?: Record<string, any>;
 }
 
-export interface EntityResolvedEvent extends BaseEvent {
-  event_name: 'EntityResolved';
-  payload_json: {
-    original_id: string;
-    canonical_id: string;
-    rule_id: string;
-  };
+export interface EntityResolvedPayload {
+  original_id: string;
+  canonical_id: string;
+  rule_id: string;
+  attributes?: Record<string, any>;
 }
 
-export interface RelationshipInferredEvent extends BaseEvent {
-  event_name: 'RelationshipInferred';
-  payload_json: {
-    from_id: string;
-    to_id: string;
-    rel_type: string;
-    confidence: number;
-    rule_id: string;
-  };
+export interface RelationshipInferredPayload {
+  from_id: string;
+  to_id: string;
+  rel_type: string;
+  confidence: number;
+  rule_id: string;
 }
 
-export interface MentionCapturedEvent extends BaseEvent {
-  event_name: 'MentionCaptured';
-  payload_json: {
-    mention_id: string;
-    source_url: string;
-    context: string;
-  };
+export interface MentionCapturedPayload {
+  mention_id: string;
+  source_url: string;
+  context: string;
 }
 
-export interface GraphUpdatedEvent extends BaseEvent {
-  event_name: 'GraphUpdated';
-  payload_json: {
-    entity_id: string;
-    changes: any[];
-  };
+export interface GraphUpdatedPayload {
+  entity_id: string;
+  changes: any[];
+}
+
+export interface IdentityCreatedPayload {
+  identity_id: string;
+  email_hash: string;
+}
+
+export interface ClaimRequestedPayload {
+  claim_id: string;
+  identity_id: string;
+  entity_id: string;
+  verification_method: string;
+}
+
+export interface ClaimVerificationPayload {
+  claim_id: string;
+  reason?: string;
+}
+
+export interface OwnershipGrantedPayload {
+  identity_id: string;
+  entity_id: string;
+  rule_id: string;
+}
+
+export interface CreditTransactionPayload {
+  transaction_id: string;
+  from_account?: string;
+  to_account?: string;
+  amount: number;
+  reason: string;
+}
+
+export interface SubscriptionPayload {
+  subscription_id: string;
+  identity_id: string;
+  plan_id: string;
+}
+
+export interface PaymentPayload {
+  external_id: string;
+  amount: number;
+  provider: string;
+}
+
+export interface EventPayloadMap {
+  JobCreated: any;
+  AuditSnapshotGenerated: any;
+  ScoreCalculated: any;
+  RecommendationGenerated: any;
+  JobCompleted: any;
+  JobFailed: any;
+  EntityDiscovered: EntityDiscoveredPayload;
+  EntityResolved: EntityResolvedPayload;
+  RelationshipInferred: RelationshipInferredPayload;
+  MentionCaptured: MentionCapturedPayload;
+  GraphUpdated: GraphUpdatedPayload;
+  IdentityCreated: IdentityCreatedPayload;
+  ClaimRequested: ClaimRequestedPayload;
+  ClaimVerificationStarted: ClaimVerificationPayload;
+  ClaimVerified: ClaimVerificationPayload;
+  ClaimRejected: ClaimVerificationPayload;
+  OwnershipGranted: OwnershipGrantedPayload;
+  OwnershipRevoked: OwnershipGrantedPayload;
+  CreditsAdded: CreditTransactionPayload;
+  CreditsDeducted: CreditTransactionPayload;
+  CreditsTransferred: CreditTransactionPayload;
+  SubscriptionCreated: SubscriptionPayload;
+  SubscriptionActivated: SubscriptionPayload;
+  SubscriptionExpired: SubscriptionPayload;
+  PaymentReceived: PaymentPayload;
+  PaymentFailed: PaymentPayload;
 }
