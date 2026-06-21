@@ -88,7 +88,7 @@ async function processOutscraperResults(resultsUrl: string) {
     // Assuming 'slug' is unique per city, but our schema might not have a composite unique key.
     // For safety, let's insert them directly or batch them.
     for (const batch of chunkArray(payloads, 50)) {
-       const { error } = await supabase.from('entities').upsert(batch, { onConflict: 'slug', ignoreDuplicates: true });
+       const { error } = await supabase.from('directory_entities').upsert(batch, { onConflict: 'slug', ignoreDuplicates: true });
        if (error) {
          console.error('Error inserting Outscraper batch:', error);
        }

@@ -39,7 +39,7 @@ export default function EntityDetailPage() {
     async function loadEntity() {
       try {
         const { data, error } = await supabase
-          .from('entities')
+          .from('directory_entities')
           .select('*')
           .eq('city_slug', city.toLowerCase())
           .eq('slug', slug.toLowerCase())

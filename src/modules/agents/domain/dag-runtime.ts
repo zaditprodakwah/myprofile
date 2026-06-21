@@ -15,10 +15,16 @@ export class DAGRuntime {
 
       switch (node.type) {
         case 'QUERY':
+          executionLog.push({ action: 'Executed DB Query', target: node.payload?.table || 'unknown' });
+          break;
         case 'FILTER':
+          executionLog.push({ action: 'Applied Filter', logic: node.payload?.logic || 'none' });
+          break;
         case 'REASON':
+          executionLog.push({ action: 'Ran Inference', context: node.payload?.prompt || 'none' });
+          break;
         case 'TOOL':
-          // Mock execution for lock
+          executionLog.push({ action: 'Called Tool', tool_name: node.payload?.tool_name || 'unknown' });
           break;
         case 'PROPOSE':
           proposals.push({

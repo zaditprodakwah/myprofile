@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
   
   // Try to fetch entity name from DB for accurate title
   const { data } = await supabase
-    .from('entities')
+    .from('directory_entities')
     .select('name, tagline')
     .eq('slug', entitySlug)
     .eq('city_slug', cityParam)

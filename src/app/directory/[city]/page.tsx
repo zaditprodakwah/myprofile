@@ -51,7 +51,7 @@ export default function CityDirectoryPage() {
       try {
         // Fetch from Supabase
         const { data } = await supabase
-          .from('entities')
+          .from('directory_entities')
           .select('*')
           .eq('city_slug', citySlug);
 

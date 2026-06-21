@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
   const fetchDirectory = useCallback(async () => {
     try {
       const { data: cts } = await supabase.from('cities').select('*').order('name');
-      const { data: ents } = await supabase.from('entities').select('*').order('name');
+      const { data: ents } = await supabase.from('directory_entities').select('*').order('name');
       if (cts) setCities(cts as City[]);
       if (ents) setEntities(ents as Entity[]);
     } catch (err) {
@@ -483,11 +483,11 @@ export default function AdminDashboardPage() {
       };
 
       if (editingEntity) {
-        const { error } = await supabase.from('entities').update(entPayload).eq('id', editingEntity.id);
+        const { error } = await supabase.from('directory_entities').update(entPayload).eq('id', editingEntity.id);
         if (error) throw error;
         triggerMessage('Entitas bisnis berhasil diperbarui!');
       } else {
-        const { error } = await supabase.from('entities').insert([entPayload]);
+        const { error } = await supabase.from('directory_entities').insert([entPayload]);
         if (error) throw error;
         triggerMessage('Entitas bisnis baru ditambahkan!');
       }
@@ -528,7 +528,7 @@ export default function AdminDashboardPage() {
   const handleDeleteEntity = async (id: string) => {
     if (!confirm('Hapus profil bisnis ini secara permanen?')) return;
     try {
-      const { error } = await supabase.from('entities').delete().eq('id', id);
+      const { error } = await supabase.from('directory_entities').delete().eq('id', id);
       if (error) throw error;
       triggerMessage('Profil bisnis berhasil dihapus');
       await fetchDirectory();
@@ -564,7 +564,7 @@ export default function AdminDashboardPage() {
         affiliate_url: item.affiliate_url || null
       }));
 
-      const { error } = await supabase.from('entities').insert(cleanPayloads);
+      const { error } = await supabase.from('directory_entities').insert(cleanPayloads);
       if (error) throw error;
 
       triggerMessage(`Sukses bulk import ${cleanPayloads.length} entitas bisnis!`);
@@ -1886,7 +1886,7 @@ export default function AdminDashboardPage() {
                               if (!selectedEntityIds.length) return triggerMessage('Pilih entitas dulu', 'error');
                               const newStatus = prompt('Masukkan status baru (unverified/claimed/verified):');
                               if (newStatus && ['unverified', 'claimed', 'verified'].includes(newStatus)) {
-                                await supabase.from('entities').update({ verification_status: newStatus }).in('id', selectedEntityIds);
+                                await supabase.from('directory_entities').update({ verification_status: newStatus }).in('id', selectedEntityIds);
                                 triggerMessage('Status massal diperbarui');
                                 setSelectedEntityIds([]);
                                 fetchDirectory();

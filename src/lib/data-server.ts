@@ -335,7 +335,7 @@ export const getEntities = unstable_cache(
   async (citySlug: string): Promise<Entity[]> => {
     try {
       const { data, error } = await supabase
-        .from('entities')
+        .from('directory_entities')
         .select('*')
         .eq('city_slug', citySlug.toLowerCase());
       if (error || !data || data.length === 0) {
@@ -580,7 +580,7 @@ export const getLatestArticles = unstable_cache(
 export const getLiveStats = unstable_cache(
   async (): Promise<{ totalDirectories: number, totalAudits: number, systemStatus: string }> => {
     try {
-      const { count: dirCount } = await supabase.from('entities').select('*', { count: 'exact', head: true });
+      const { count: dirCount } = await supabase.from('directory_entities').select('*', { count: 'exact', head: true });
       const { count: auditCount } = await supabase.from('utility_leads').select('*', { count: 'exact', head: true });
       
       return {

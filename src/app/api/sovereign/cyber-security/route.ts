@@ -73,7 +73,7 @@ export async function GET() {
     // Fallback Database Logic
     if (!isFresh || payload.length === 0) {
       const { data: fallbackData } = await supabase
-        .from('entities')
+        .from('directory_entities')
         .select('*')
         .eq('entity_type', 'agency')
         .contains('raw_metadata', { origin: 'bappenas' })

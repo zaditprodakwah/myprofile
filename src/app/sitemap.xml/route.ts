@@ -106,7 +106,7 @@ export async function GET() {
 
     // 3. Fetch entities
     const { data: entities } = await supabase
-      .from('entities')
+      .from('directory_entities')
       .select('name, city_slug, slug, created_at');
 
     if (entities) {

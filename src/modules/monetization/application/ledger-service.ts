@@ -5,12 +5,26 @@ import { v4 as uuidv4 } from 'uuid';
 export class LedgerService {
   private dispatcher = new IdentityEventDispatcher();
 
+  private async getAccountId(identityId: string): Promise<string> {
+    const { data, error } = await supabase
+      .from('credit_accounts')
+      .select('id')
+      .eq('identity_id', identityId)
+      .single();
+    
+    if (error || !data) {
+      throw new Error(`Could not find credit account for identity: ${identityId}`);
+    }
+    return data.id;
+  }
+
   public async topUp(identityId: string, amount: number, reason: string): Promise<string> {
     const txId = uuidv4();
+    const accountId = await this.getAccountId(identityId);
     
     const { error } = await supabase.from('credit_transactions').insert({
       id: txId,
-      to_account: identityId, // identityId === accountId
+      to_account: accountId,
       amount: amount,
       reason: reason,
       event_id: txId
@@ -20,7 +34,7 @@ export class LedgerService {
 
     await this.dispatcher.emit('CreditsAdded', identityId, {
       transaction_id: txId,
-      to_account: identityId,
+      to_account: accountId,
       amount,
       reason
     }, txId);
@@ -30,11 +44,12 @@ export class LedgerService {
 
   public async deduct(identityId: string, amount: number, reason: string): Promise<string> {
     const txId = uuidv4();
+    const accountId = await this.getAccountId(identityId);
 
     // The DB trigger handles deduction, but if it drops below 0 it should throw via constraint
     const { error } = await supabase.from('credit_transactions').insert({
       id: txId,
-      from_account: identityId,
+      from_account: accountId,
       amount: amount,
       reason: reason,
       event_id: txId
@@ -44,7 +59,7 @@ export class LedgerService {
 
     await this.dispatcher.emit('CreditsDeducted', identityId, {
       transaction_id: txId,
-      from_account: identityId,
+      from_account: accountId,
       amount,
       reason
     }, txId);
@@ -54,11 +69,13 @@ export class LedgerService {
 
   public async transfer(fromId: string, toId: string, amount: number, reason: string): Promise<string> {
     const txId = uuidv4();
+    const fromAccountId = await this.getAccountId(fromId);
+    const toAccountId = await this.getAccountId(toId);
 
     const { error } = await supabase.from('credit_transactions').insert({
       id: txId,
-      from_account: fromId,
-      to_account: toId,
+      from_account: fromAccountId,
+      to_account: toAccountId,
       amount: amount,
       reason: reason,
       event_id: txId
@@ -68,8 +85,8 @@ export class LedgerService {
 
     await this.dispatcher.emit('CreditsTransferred', fromId, {
       transaction_id: txId,
-      from_account: fromId,
-      to_account: toId,
+      from_account: fromAccountId,
+      to_account: toAccountId,
       amount,
       reason
     }, txId);

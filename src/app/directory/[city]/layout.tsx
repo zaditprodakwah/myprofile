@@ -62,7 +62,7 @@ export default async function CityDirectoryLayout({ children, params }: Props) {
 
   // Fetch Entities in this city
   const { data: entitiesData } = await supabase
-    .from('entities')
+    .from('directory_entities')
     .select('*')
     .eq('city_slug', citySlug);
 
