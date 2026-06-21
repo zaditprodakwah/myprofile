@@ -126,27 +126,27 @@ JOIN public.entity_nodes t ON e.to_entity_id = t.id;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_entity_graph_view_edge_id ON public.entity_graph_view(edge_id);
 
 
--- DOWN
-DROP MATERIALIZED VIEW IF EXISTS public.entity_graph_view;
-DROP TABLE IF EXISTS public.crawl_queue CASCADE;
-DROP TABLE IF EXISTS public.entity_merge_history CASCADE;
-DROP TABLE IF EXISTS public.entity_mentions CASCADE;
-DROP TABLE IF EXISTS public.entity_edges CASCADE;
-DROP TABLE IF EXISTS public.entity_edge_types CASCADE;
-DROP TABLE IF EXISTS public.entity_nodes CASCADE;
-
--- Note: We don't drop event_sequence from job_events in DOWN to avoid data loss if other things rely on it.
-
--- VERIFICATION_SQL
-SELECT EXISTS (
-    SELECT FROM information_schema.tables 
-    WHERE table_schema = 'public' 
-    AND table_name = 'entity_nodes'
-);
-
--- ROLLBACK_VERIFICATION
-SELECT NOT EXISTS (
-    SELECT FROM information_schema.tables 
-    WHERE table_schema = 'public' 
-    AND table_name = 'entity_nodes'
-);
+-- -- DOWN
+-- DROP MATERIALIZED VIEW IF EXISTS public.entity_graph_view;
+-- DROP TABLE IF EXISTS public.crawl_queue CASCADE;
+-- DROP TABLE IF EXISTS public.entity_merge_history CASCADE;
+-- DROP TABLE IF EXISTS public.entity_mentions CASCADE;
+-- DROP TABLE IF EXISTS public.entity_edges CASCADE;
+-- DROP TABLE IF EXISTS public.entity_edge_types CASCADE;
+-- DROP TABLE IF EXISTS public.entity_nodes CASCADE;
+-- 
+-- -- Note: We don't drop event_sequence from job_events in DOWN to avoid data loss if other things rely on it.
+-- 
+-- -- VERIFICATION_SQL
+-- SELECT EXISTS (
+--     SELECT FROM information_schema.tables 
+--     WHERE table_schema = 'public' 
+--     AND table_name = 'entity_nodes'
+-- );
+-- 
+-- -- ROLLBACK_VERIFICATION
+-- SELECT NOT EXISTS (
+--     SELECT FROM information_schema.tables 
+--     WHERE table_schema = 'public' 
+--     AND table_name = 'entity_nodes'
+-- );

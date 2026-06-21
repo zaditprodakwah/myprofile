@@ -38,26 +38,26 @@ CREATE TABLE IF NOT EXISTS public.recommendations (
 CREATE INDEX IF NOT EXISTS idx_recommendations_snapshot_id ON public.recommendations(snapshot_id);
 
 
--- DOWN
-DROP TABLE IF EXISTS public.recommendations CASCADE;
-DROP TABLE IF EXISTS public.scores CASCADE;
-
-ALTER TABLE public.snapshots DROP COLUMN IF EXISTS lighthouse_json;
-ALTER TABLE public.snapshots DROP COLUMN IF EXISTS seo_metrics_json;
-ALTER TABLE public.snapshots DROP COLUMN IF EXISTS accessibility_metrics_json;
-ALTER TABLE public.snapshots DROP COLUMN IF EXISTS performance_metrics_json;
-ALTER TABLE public.snapshots DROP COLUMN IF EXISTS job_id;
-
--- VERIFICATION_SQL
-SELECT EXISTS (
-    SELECT FROM information_schema.tables 
-    WHERE table_schema = 'public' 
-    AND table_name = 'scores'
-);
-
--- ROLLBACK_VERIFICATION
-SELECT NOT EXISTS (
-    SELECT FROM information_schema.tables 
-    WHERE table_schema = 'public' 
-    AND table_name = 'scores'
-);
+-- -- DOWN
+-- DROP TABLE IF EXISTS public.recommendations CASCADE;
+-- DROP TABLE IF EXISTS public.scores CASCADE;
+-- 
+-- ALTER TABLE public.snapshots DROP COLUMN IF EXISTS lighthouse_json;
+-- ALTER TABLE public.snapshots DROP COLUMN IF EXISTS seo_metrics_json;
+-- ALTER TABLE public.snapshots DROP COLUMN IF EXISTS accessibility_metrics_json;
+-- ALTER TABLE public.snapshots DROP COLUMN IF EXISTS performance_metrics_json;
+-- ALTER TABLE public.snapshots DROP COLUMN IF EXISTS job_id;
+-- 
+-- -- VERIFICATION_SQL
+-- SELECT EXISTS (
+--     SELECT FROM information_schema.tables 
+--     WHERE table_schema = 'public' 
+--     AND table_name = 'scores'
+-- );
+-- 
+-- -- ROLLBACK_VERIFICATION
+-- SELECT NOT EXISTS (
+--     SELECT FROM information_schema.tables 
+--     WHERE table_schema = 'public' 
+--     AND table_name = 'scores'
+-- );

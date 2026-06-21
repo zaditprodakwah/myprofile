@@ -84,26 +84,26 @@ CREATE TABLE IF NOT EXISTS public.snapshots (
     captured_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- DOWN
-DROP TABLE IF EXISTS public.snapshots CASCADE;
-DROP TABLE IF EXISTS public.job_logs CASCADE;
-DROP TABLE IF EXISTS public.job_events CASCADE;
-DROP TABLE IF EXISTS public.audit_runs CASCADE;
-DROP TABLE IF EXISTS public.jobs CASCADE;
-DROP TABLE IF EXISTS public.domains CASCADE;
-DROP TABLE IF EXISTS public.organizations CASCADE;
-DROP TABLE IF EXISTS public.entities CASCADE;
-
--- VERIFICATION_SQL
-SELECT EXISTS (
-    SELECT FROM information_schema.tables 
-    WHERE table_schema = 'public' 
-    AND table_name = 'job_events'
-);
-
--- ROLLBACK_VERIFICATION
-SELECT NOT EXISTS (
-    SELECT FROM information_schema.tables 
-    WHERE table_schema = 'public' 
-    AND table_name = 'job_events'
-);
+-- -- DOWN
+-- DROP TABLE IF EXISTS public.snapshots CASCADE;
+-- DROP TABLE IF EXISTS public.job_logs CASCADE;
+-- DROP TABLE IF EXISTS public.job_events CASCADE;
+-- DROP TABLE IF EXISTS public.audit_runs CASCADE;
+-- DROP TABLE IF EXISTS public.jobs CASCADE;
+-- DROP TABLE IF EXISTS public.domains CASCADE;
+-- DROP TABLE IF EXISTS public.organizations CASCADE;
+-- DROP TABLE IF EXISTS public.entities CASCADE;
+-- 
+-- -- VERIFICATION_SQL
+-- SELECT EXISTS (
+--     SELECT FROM information_schema.tables 
+--     WHERE table_schema = 'public' 
+--     AND table_name = 'job_events'
+-- );
+-- 
+-- -- ROLLBACK_VERIFICATION
+-- SELECT NOT EXISTS (
+--     SELECT FROM information_schema.tables 
+--     WHERE table_schema = 'public' 
+--     AND table_name = 'job_events'
+-- );

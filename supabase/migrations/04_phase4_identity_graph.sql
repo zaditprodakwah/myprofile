@@ -61,9 +61,9 @@ CREATE TABLE IF NOT EXISTS public.asset_claims (
 CREATE INDEX IF NOT EXISTS idx_asset_claims_identity ON public.asset_claims(identity_id);
 CREATE INDEX IF NOT EXISTS idx_asset_claims_entity ON public.asset_claims(entity_id);
 
--- DOWN
-DROP TABLE IF EXISTS public.asset_claims CASCADE;
-DROP TABLE IF EXISTS public.subscriptions CASCADE;
-DROP TABLE IF EXISTS public.credit_transactions CASCADE;
-DROP TABLE IF EXISTS public.credit_accounts CASCADE;
-DROP TABLE IF EXISTS public.identity_nodes CASCADE;
+-- -- DOWN
+-- DROP TABLE IF EXISTS public.asset_claims CASCADE;
+-- DROP TABLE IF EXISTS public.subscriptions CASCADE;
+-- DROP TABLE IF EXISTS public.credit_transactions CASCADE;
+-- DROP TABLE IF EXISTS public.credit_accounts CASCADE;
+-- DROP TABLE IF EXISTS public.identity_nodes CASCADE;
