@@ -37,13 +37,41 @@ export class CollectorWorker {
         correlation_id: traceId,
       });
 
-      // 2. Perform Mock Collection (e.g., fetch Lighthouse)
-      const mockLighthouseMetrics = {
-        lcp_ms: 2500 + Math.random() * 2000,
-        cls: 0.1 + Math.random() * 0.2,
-        ttfb_ms: 300 + Math.random() * 600,
-        has_h1: true,
-        missing_alt_ratio: Math.random() * 0.5,
+      // 2. Perform Real Collection via HTTP Fetch
+      this.logger.info(`Fetching URL for performance metrics: ${targetUrl}`);
+      
+      const fetchStart = Date.now();
+      const response = await fetch(targetUrl, { 
+        method: 'GET', 
+        headers: { 'User-Agent': 'PresenceOS-AuditEngine/1.0' },
+        signal: AbortSignal.timeout(10000)
+      }).catch(e => { throw new Error(`Fetch failed: ${e.message}`) });
+      
+      const ttfb_ms = Date.now() - fetchStart;
+      const html = await response.text();
+      
+      const has_h1 = /<h1[\s>]/i.test(html);
+      const has_title = /<title[\s>]/i.test(html);
+      const has_meta_description = /<meta\s+name=["']description["']/i.test(html);
+      
+      const imgTags = html.match(/<img[^>]*>/gi) || [];
+      let missingAltCount = 0;
+      imgTags.forEach(img => {
+        if (!/alt=["'][^"']*["']/i.test(img)) missingAltCount++;
+      });
+      const missing_alt_ratio = imgTags.length > 0 ? missingAltCount / imgTags.length : 0;
+      
+      // Calculate rudimentary metrics based on raw HTML fetch
+      const actualMetrics = {
+        lcp_ms: ttfb_ms + (html.length / 500), // very rough estimation
+        cls: 0.05, // static fallback
+        ttfb_ms: ttfb_ms,
+        has_h1: has_h1,
+        has_title: has_title,
+        has_meta_description: has_meta_description,
+        missing_alt_ratio: missing_alt_ratio,
+        page_size_kb: Math.round(html.length / 1024),
+        status: response.status
       };
 
       // 3. Create initial Snapshot Record
@@ -52,7 +80,7 @@ export class CollectorWorker {
         id: snapshotId,
         domain_id: domainId,
         job_id: jobId,
-        lighthouse_json: mockLighthouseMetrics,
+        lighthouse_json: actualMetrics,
         collected_at: new Date().toISOString()
       }]);
 
@@ -65,7 +93,7 @@ export class CollectorWorker {
         aggregate_type: 'JOB',
         event_name: 'AuditCollected',
         event_version: 1,
-        payload_json: { snapshot_id: snapshotId, lighthouse_metrics: mockLighthouseMetrics },
+        payload_json: { snapshot_id: snapshotId, lighthouse_metrics: actualMetrics },
         metadata_json: {},
         correlation_id: traceId,
       });

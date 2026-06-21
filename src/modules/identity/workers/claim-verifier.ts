@@ -1,5 +1,5 @@
-import { IdentityRepository } from './identity-repository';
-import { IdentityEventDispatcher } from './identity-events';
+import { IdentityRepository } from '../domain/identity-repository';
+import { IdentityEventDispatcher } from '../domain/identity-events';
 import { supabase } from '@/lib/supabase';
 
 export class ClaimVerificationEngine {

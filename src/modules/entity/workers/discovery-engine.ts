@@ -37,10 +37,42 @@ export class DiscoveryEngineWorker {
 
         logger.info(`Crawling ${item.target_url} at depth ${item.depth}`);
 
-        // MOCK CRAWL RESULTS
-        const discoveredEntities = [
-          { url: 'example-partner.com', attributes: { title: 'Partner Inc', is_domain: true } }
-        ];
+        // REAL CRAWL RESULTS via HTTP Fetch
+        const discoveredEntities: { url: string, attributes: Record<string, any> }[] = [];
+        try {
+          const fetchResponse = await fetch(item.target_url, { 
+            method: 'GET',
+            headers: { 'User-Agent': 'PresenceOS-DiscoveryBot/1.0' },
+            signal: AbortSignal.timeout(10000)
+          });
+          const htmlContent = await fetchResponse.text();
+          
+          const aTags = htmlContent.match(/<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/gi) || [];
+          const uniqueLinks = new Set<string>();
+          
+          aTags.forEach(tag => {
+            const match = /href=(["'])(.*?)\1/i.exec(tag);
+            if (match && match[2]) {
+              try {
+                const absoluteUrl = new URL(match[2], item.target_url).href;
+                // Only follow http/https and exclude self
+                if (absoluteUrl.startsWith('http') && !absoluteUrl.includes(item.normalized_url)) {
+                  uniqueLinks.add(absoluteUrl);
+                }
+              } catch (e) {
+                // Ignore invalid URLs
+              }
+            }
+          });
+          
+          // Limit outbound discovery to prevent explosion
+          const topLinks = Array.from(uniqueLinks).slice(0, 15);
+          for (const link of topLinks) {
+            discoveredEntities.push({ url: link, attributes: { is_domain: true, discovered_from: item.target_url } });
+          }
+        } catch (crawlError: any) {
+          logger.error(`Crawling failed for ${item.target_url}`, crawlError);
+        }
 
         // Process discovered entities
         for (const ent of discoveredEntities) {

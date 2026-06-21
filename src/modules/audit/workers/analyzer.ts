@@ -36,9 +36,8 @@ export class AnalyzerEngine {
 
       const seoMetrics = {
         has_h1: !!raw.has_h1,
-        // Mocking others
-        has_meta_description: true,
-        has_title: true,
+        has_meta_description: !!raw.has_meta_description,
+        has_title: !!raw.has_title,
       };
 
       const a11yMetrics = {

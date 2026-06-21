@@ -49,14 +49,21 @@ export class ScoringEngine {
       seoScore = Math.max(0, seoScore);
       accessibilityScore = Math.max(0, accessibilityScore);
       
-      const compositeScore = Math.round((performanceScore + seoScore + accessibilityScore) / 3);
+      // Best Practices Scoring
+      let bestPracticesScore = 100;
+      if (perf.status !== 200) bestPracticesScore -= 50;
+      if (perf.page_size_kb > 2000) bestPracticesScore -= 20;
+      else if (perf.page_size_kb > 1000) bestPracticesScore -= 10;
+      bestPracticesScore = Math.max(0, bestPracticesScore);
+
+      const compositeScore = Math.round((performanceScore + seoScore + accessibilityScore + bestPracticesScore) / 4);
 
       const scoreId = uuidv4();
       const scores = {
         performance_score: performanceScore,
         seo_score: seoScore,
         accessibility_score: accessibilityScore,
-        best_practices_score: 100, // mock
+        best_practices_score: bestPracticesScore,
         composite_score: compositeScore
       };
 
