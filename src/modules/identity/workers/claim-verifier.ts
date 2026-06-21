@@ -21,20 +21,36 @@ export class ClaimVerificationEngine {
     await this.repo.updateClaimStatus(claimId, 'VERIFYING');
 
     // 2. Perform Real Verification
-    // (Stubbed logic for implementation lock compliance. Real logic requires outbound HTTP/DNS requests)
     let isVerified = false;
     let reason = '';
 
     try {
+      const { data: entityData } = await supabase.from('directory_entities').select('website_url').eq('id', claim.entity_id).single();
+      const domain = entityData?.website_url ? new URL(entityData.website_url).hostname : '';
+
+      if (!domain) {
+          throw new Error('Entity has no associated domain');
+      }
+
       if (claim.verification_method === 'DNS_TXT') {
-         // simulated DNS lookup
-         isVerified = true; 
+         // Real DNS lookup via Google DNS-over-HTTPS
+         const dnsRes = await fetch(`https://dns.google/resolve?name=${domain}&type=TXT`);
+         const dnsData = await dnsRes.json();
+         const txtRecords = dnsData.Answer?.map((a: any) => a.data) || [];
+         isVerified = txtRecords.some((txt: string) => txt.includes(`presence-verify=${claim.identity_id}`));
+         if (!isVerified) reason = 'TXT record not found';
       } else if (claim.verification_method === 'HTML_META') {
-         // simulated fetch URL and parse meta
-         isVerified = true;
+         // Real fetch URL and parse meta
+         const res = await fetch(`https://${domain}`, { signal: AbortSignal.timeout(10000) });
+         const html = await res.text();
+         isVerified = html.includes(`<meta name="presence-verify" content="${claim.identity_id}"`);
+         if (!isVerified) reason = 'Meta tag not found';
       } else if (claim.verification_method === 'HTTP_FILE') {
-         // simulated HTTP GET /.well-known/presence-verify.txt
-         isVerified = true;
+         // Real HTTP GET /.well-known/presence-verify.txt
+         const res = await fetch(`https://${domain}/.well-known/presence-verify.txt`, { signal: AbortSignal.timeout(10000) });
+         const text = await res.text();
+         isVerified = text.includes(claim.identity_id);
+         if (!isVerified) reason = 'Verification file not found or incorrect content';
       }
     } catch (e: any) {
       isVerified = false;

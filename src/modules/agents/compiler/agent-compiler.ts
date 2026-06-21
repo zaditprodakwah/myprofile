@@ -6,21 +6,24 @@ export interface CompilerPipeline {
 
 export class AgentCompiler implements CompilerPipeline {
   public compile(prompt: string): Uint8Array {
-    // Phase 5.5 Compiler Stub
-    // 1. Lexer -> Parser -> Semantic Analyzer
-    // 2. Intent Graph -> AST
-    // 3. Execution DAG -> Bytecode
-    
-    // Returning dummy deterministic bytecode
-    return new Uint8Array([0x00, 0x01, 0x02]);
+    // Basic compilation: encodes the raw prompt as bytecode for interpretation
+    return new TextEncoder().encode(prompt);
   }
 
   public decompile(bytecode: Uint8Array): ExecutionDAG {
-    // Decodes bytecode back into a DAG
+    // Decodes bytecode back into a single reason node DAG
+    const decodedPrompt = new TextDecoder().decode(bytecode);
     return {
       id: 'compiled-dag',
       root_node_id: 'node-1',
-      nodes: {}
+      nodes: {
+        'node-1': {
+          id: 'node-1',
+          type: 'REASON',
+          payload: { prompt: decodedPrompt },
+          next_nodes: []
+        }
+      }
     };
   }
 }
