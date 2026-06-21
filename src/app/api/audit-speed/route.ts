@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { JobOrchestrator } from '@/modules/audit/application/job-orchestrator';
 import { CollectorWorker } from '@/modules/audit/workers/collector';
-import { AnalyzerWorker } from '@/modules/audit/workers/analyzer';
+import { AnalyzerEngine } from '@/modules/audit/workers/analyzer';
 import { ScoringEngine } from '@/modules/audit/workers/scoring';
 import { RecommendationEngine } from '@/modules/audit/workers/recommendation';
 
@@ -78,7 +78,7 @@ async function runAudit(url: string) {
 
     // 2. Execute Pipeline
     const collector = new CollectorWorker();
-    const analyzer = new AnalyzerWorker();
+    const analyzer = new AnalyzerEngine();
     const scoring = new ScoringEngine();
     const recommendation = new RecommendationEngine();
 
