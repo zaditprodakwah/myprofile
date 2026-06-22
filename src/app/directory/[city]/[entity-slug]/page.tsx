@@ -50,7 +50,8 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
     trustScore: Number(dbData.trust_score || 4.0),
     verified: dbData.verification_status === 'VERIFIED',
     city: citySlug,
-    created_at: dbData.created_at ? new Date(dbData.created_at) : new Date()
+    created_at: dbData.created_at ? new Date(dbData.created_at) : new Date(),
+    last_scraped: dbData.last_scraped ? new Date(dbData.last_scraped) : null
   };
 
   const cleanWebsiteUrl = (url: string) => {
@@ -153,6 +154,11 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
                         ) : (
                           <span className="bg-amber-50 text-amber-700 border border-amber-100 rounded px-2 py-0.5 text-[8px] font-mono uppercase font-bold shrink-0">
                             Belum Diklaim
+                          </span>
+                        )}
+                        {entity.last_scraped && (
+                          <span className="bg-slate-100 text-slate-600 border border-slate-200 rounded px-2 py-0.5 text-[8px] font-mono uppercase font-bold shrink-0 flex items-center gap-1">
+                            <RefreshCw className="w-2.5 h-2.5" /> Sinkronisasi: {entity.last_scraped.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                           </span>
                         )}
                       </div>

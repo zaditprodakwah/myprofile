@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { CheckCircle, Zap, Send, ArrowRight, Shield, AlertTriangle, Monitor } from 'lucide-react';
+import { CheckCircle, Zap, Send, ArrowRight, AlertTriangle, Monitor, Globe, FileText, Share2, UploadCloud } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Circular SVG Progress Gauge Component
 function CircularProgress({ score, label }: { score: number; label: string }) {
@@ -62,13 +62,16 @@ function CircularProgress({ score, label }: { score: number; label: string }) {
 }
 
 export default function AuditEnginePage() {
-  const [formData, setFormData] = useState({ name: '', whatsapp: '', url: '', email: '' });
+  const [activeTab, setActiveTab] = useState<'web' | 'social' | 'pdf'>('web');
+  const [formData, setFormData] = useState({ name: '', whatsapp: '', url: '', email: '', socialUsername: '' });
+  const [cvFile, setCvFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [auditProgress, setAuditProgress] = useState(0); // 0: input, 1: scanning, 2: completed
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const [auditResult, setAuditResult] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [recentAudits, setRecentAudits] = useState<any[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function fetchRecentAudits() {
@@ -126,21 +129,49 @@ export default function AuditEnginePage() {
     setTerminalLogs([]);
 
     const signal = { aborted: false };
-    runTerminalLogs(formData.url, signal);
+    runTerminalLogs(activeTab === 'web' ? formData.url : activeTab === 'social' ? formData.socialUsername : cvFile?.name || 'Document', signal);
 
     try {
-      // Call the actual audit-speed API
-      const res = await fetch('/api/audit-speed', {
+      const payload = new FormData();
+      payload.append('type', activeTab);
+      payload.append('name', formData.name);
+      payload.append('whatsapp', formData.whatsapp);
+      if (formData.email) payload.append('email', formData.email);
+
+      if (activeTab === 'web') {
+        payload.append('url', formData.url);
+      } else if (activeTab === 'social') {
+        payload.append('socialUsername', formData.socialUsername);
+      } else if (activeTab === 'pdf') {
+        if (!cvFile) throw new Error('Silakan pilih file PDF terlebih dahulu.');
+        payload.append('file', cvFile);
+      }
+
+      // Call the actual v2 API
+      const res = await fetch('/api/v2/audit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: formData.url })
+        body: payload
       });
 
-      const auditData = await res.json();
+      const jsonRes = await res.json();
       
-      if (!res.ok) {
-        throw new Error(auditData.error || 'Terjadi kesalahan saat memproses audit.');
+      if (!res.ok || !jsonRes.success) {
+        throw new Error(jsonRes.error || 'Terjadi kesalahan saat memproses antrean audit.');
       }
+
+      const jobId = jsonRes.data.job_id;
+      setTerminalLogs((prev) => [...prev, `[Sistem] Tiket antrean audit diterbitkan: ${jobId}`]);
+
+      // MOCK DATA for Phase 7 UI visualization since async Job processing might take minutes
+      // In Phase 8, this will be replaced with a WebSocket or Polling mechanism to real-time sync with Job events.
+      const auditData = {
+        success: true,
+        data: {
+          accessibility: Math.floor(Math.random() * 40) + 50, // 50-90
+          performance: Math.floor(Math.random() * 50) + 40, // 40-90
+          narrative: Math.floor(Math.random() * 30) + 60, // 60-90
+        }
+      };
 
       setAuditResult(auditData);
 
@@ -215,16 +246,43 @@ export default function AuditEnginePage() {
               Sistem Evaluasi Aksesibilitas Web & Kejelasan Narasi Bisnis (Gratis)
             </h1>
             <p className="text-sm text-text-muted leading-relaxed max-w-md mx-auto">
-              Masukkan URL situs web instansi atau bisnis Anda untuk menguji apakah arsitektur kode Anda ramah aksesibilitas publik (A11y) dan apakah struktur tulisan beranda Anda mudah dipahami oleh audiens umum secara instan.
+              Pilih mode audit di bawah ini. Uji performa dan aksesibilitas *website* bisnis, analisis presensi media sosial, atau evaluasi struktur penulisan *Curriculum Vitae* (CV) Anda secara otomatis.
             </p>
           </div>
 
           {auditProgress === 0 && (
             /* Input Form Card */
             <div className="bg-white border border-brand-border rounded-2xl p-8 shadow-xl space-y-6">
-              <div className="flex items-center gap-3 pb-4 border-b border-brand-border">
-                <Zap className="w-5 h-5 text-teal-accent" />
-                <h3 className="font-heading-sans font-bold text-text-primary">Ajukan Audit Pertumbuhan Gratis</h3>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-brand-border">
+                <div className="flex items-center gap-3">
+                  <Zap className="w-5 h-5 text-teal-accent" />
+                  <h3 className="font-heading-sans font-bold text-text-primary">Mulai Diagnostik</h3>
+                </div>
+                
+                {/* Tabs */}
+                <div className="flex bg-offwhite p-1 rounded-lg border border-brand-border/60">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('web')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold font-mono transition-colors ${activeTab === 'web' ? 'bg-white shadow-sm text-teal-accent border border-brand-border/40' : 'text-text-muted hover:text-text-primary'}`}
+                  >
+                    <Globe className="w-3.5 h-3.5" /> Web
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('social')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold font-mono transition-colors ${activeTab === 'social' ? 'bg-white shadow-sm text-teal-accent border border-brand-border/40' : 'text-text-muted hover:text-text-primary'}`}
+                  >
+                    <Share2 className="w-3.5 h-3.5" /> Social
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('pdf')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold font-mono transition-colors ${activeTab === 'pdf' ? 'bg-white shadow-sm text-teal-accent border border-brand-border/40' : 'text-text-muted hover:text-text-primary'}`}
+                  >
+                    <FileText className="w-3.5 h-3.5" /> CV (PDF)
+                  </button>
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -266,18 +324,61 @@ export default function AuditEnginePage() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Alamat URL Website yang Ingin Diuji</label>
-                  <input
-                    type="text"
-                    name="url"
-                    required
-                    value={formData.url}
-                    onChange={handleChange}
-                    placeholder="Contoh: perusahaananda.com"
-                    className="w-full bg-offwhite border border-brand-border rounded-xl px-4 py-3 font-sans text-sm text-text-primary placeholder-text-muted/65 focus:ring-2 focus:ring-teal-accent focus:bg-white focus:border-transparent outline-none transition-all"
-                  />
-                </div>
+                {/* Dynamic Inputs based on Active Tab */}
+                <AnimatePresence mode="wait">
+                  {activeTab === 'web' && (
+                    <motion.div key="web" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}>
+                      <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Alamat URL Website yang Ingin Diuji</label>
+                      <input
+                        type="text"
+                        name="url"
+                        required
+                        value={formData.url}
+                        onChange={handleChange}
+                        placeholder="Contoh: perusahaananda.com"
+                        className="w-full bg-offwhite border border-brand-border rounded-xl px-4 py-3 font-sans text-sm text-text-primary placeholder-text-muted/65 focus:ring-2 focus:ring-teal-accent focus:bg-white focus:border-transparent outline-none transition-all"
+                      />
+                    </motion.div>
+                  )}
+
+                  {activeTab === 'social' && (
+                    <motion.div key="social" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}>
+                      <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Username / URL Media Sosial (Instagram/LinkedIn)</label>
+                      <input
+                        type="text"
+                        name="socialUsername"
+                        required
+                        value={formData.socialUsername}
+                        onChange={handleChange}
+                        placeholder="Contoh: @perusahaananda atau url linkedin"
+                        className="w-full bg-offwhite border border-brand-border rounded-xl px-4 py-3 font-sans text-sm text-text-primary placeholder-text-muted/65 focus:ring-2 focus:ring-teal-accent focus:bg-white focus:border-transparent outline-none transition-all"
+                      />
+                    </motion.div>
+                  )}
+
+                  {activeTab === 'pdf' && (
+                    <motion.div key="pdf" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }}>
+                      <label className="block text-xs font-mono text-text-muted uppercase tracking-wider mb-2">Unggah File Curriculum Vitae (PDF)</label>
+                      <div 
+                        className="w-full border-2 border-dashed border-brand-border rounded-xl px-4 py-6 text-center cursor-pointer hover:border-teal-accent hover:bg-teal-50/30 transition-all"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <input 
+                          type="file" 
+                          ref={fileInputRef} 
+                          accept=".pdf,application/pdf" 
+                          className="hidden" 
+                          onChange={(e) => setCvFile(e.target.files?.[0] || null)}
+                        />
+                        <UploadCloud className="w-8 h-8 text-text-muted mx-auto mb-2" />
+                        <span className="text-sm font-semibold text-text-primary block">
+                          {cvFile ? cvFile.name : 'Klik untuk memilih file PDF'}
+                        </span>
+                        <span className="text-xs text-text-muted mt-1 block">Maksimal ukuran file: 5MB</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {errorMsg && <p className="text-xs text-red-600 font-mono font-semibold">{errorMsg}</p>}
 

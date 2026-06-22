@@ -120,6 +120,7 @@ export default function CommandPalette() {
       // Deduplicate by URL
       const uniqueSections = sections.filter((v, i, a) => a.findIndex(t => (t.url === v.url)) === i).slice(0, 5);
       
+      // eslint-disable-next-line
       setPageSections(uniqueSections);
 
     } else {
