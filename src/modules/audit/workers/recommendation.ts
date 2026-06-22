@@ -25,8 +25,10 @@ export class RecommendationEngine {
 
       if (fetchError || !snapshot) throw new Error('Failed to fetch snapshot data');
 
-      const perf = snapshot.performance_metrics_json as any;
-      const seo = snapshot.seo_metrics_json as any;
+      const lighthouse = snapshot.lighthouse_json as any || {};
+      const perf = snapshot.performance_metrics_json as any || lighthouse;
+      const seo = snapshot.seo_metrics_json as any || lighthouse;
+      const slopScore = lighthouse.slop_score || 0;
 
       const recommendations = [];
 
@@ -59,6 +61,22 @@ export class RecommendationEngine {
             'Pastikan hanya ada satu H1 per halaman'
           ],
           rule_id: 'SEO_H1_01'
+        });
+      }
+
+      if (slopScore > 40) {
+        recommendations.push({
+          id: uuidv4(),
+          snapshot_id: snapshotId,
+          category: 'content',
+          severity: slopScore > 70 ? 'high' : 'medium',
+          message: 'Terdeteksi penggunaan bahasa klise AI (AI Slop) yang tinggi',
+          action_items: [
+            'Hapus kata-kata klise AI (misalnya: delve, tapestry, revolutionize)',
+            'Sederhanakan struktur kalimat agar lebih natural',
+            'Fokus pada orisinalitas narasi bisnis dan hindari format kosong'
+          ],
+          rule_id: 'CONTENT_SLOP_01'
         });
       }
 

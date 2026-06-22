@@ -27,8 +27,8 @@ export async function GET(request: Request) {
       console.error('ADMIN_SECRET_KEY env not set. Cron aborted.');
       return new NextResponse('Configuration Error', { status: 500 });
     }
-    const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000');
-    const baseUrl = vercelUrl;
+    const reqUrl = new URL(request.url);
+    const baseUrl = `${reqUrl.protocol}//${reqUrl.host}`;
 
     let totalProcessed = 0;
     

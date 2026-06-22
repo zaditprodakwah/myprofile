@@ -1,2 +1,24 @@
-{}
-
+{
+  "crons": [
+    {
+      "path": "/api/cron/rss",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/worker-db",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/ai-graph",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/worker-ui",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/seo-refresh",
+      "schedule": "0 6 * * *"
+    }
+  ]
+}

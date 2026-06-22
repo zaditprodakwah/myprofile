@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { JobOrchestrator } from '@/modules/audit/application/job-orchestrator';
+import { analyzeSlop } from '@/lib/slop-detector';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -117,6 +118,12 @@ export async function POST(req: NextRequest) {
       scores.impact_narrative = 63;
     }
 
+    // 2.5 Perform Slop Analysis on CV Text
+    const slopData = analyzeSlop(text);
+    if (slopData.slopScore > 40) {
+      scores.impact_narrative = Math.max(0, scores.impact_narrative - (slopData.slopScore * 0.4)); // Reduce score up to 40 points
+    }
+
     // 3. Emit scoring & recommendation events
     await orchestrator.emitEvent({
       job_id: jobId, aggregate_id: jobId, aggregate_type: 'JOB',
@@ -130,6 +137,7 @@ export async function POST(req: NextRequest) {
     if (scores.ats_formatting < 70) recommendations.push('Sederhanakan format CV — hindari tabel, kolom ganda, dan gambar agar mudah dibaca sistem ATS.');
     if (scores.keyword_density < 70) recommendations.push('Tambahkan kata kunci industri yang relevan dengan posisi yang dituju (skill teknis, tools, sertifikasi).');
     if (scores.impact_narrative < 70) recommendations.push('Tulis ulang poin pengalaman dengan kata kerja aktif dan kuantifikasi hasil (contoh: "Meningkatkan sales 25%").');
+    if (slopData.slopScore > 40) recommendations.push('Kurangi penggunaan kata klise AI (AI Slop) dalam deskripsi pengalaman Anda untuk memberi kesan orisinal dan profesional.');
     if (recommendations.length === 0) recommendations.push('CV Anda sudah dalam kondisi baik! Pertimbangkan menyesuaikan dengan setiap posisi yang dilamar.');
 
     await orchestrator.emitEvent({

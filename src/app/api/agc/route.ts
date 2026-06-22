@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
 import { routeLLM } from '@/lib/llm-router';
@@ -12,12 +12,12 @@ export async function POST(request: Request) {
 
     const adminKey = process.env.ADMIN_SECRET_KEY;
     if (!adminKey || secret !== adminKey) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
     const res = await fetch(feedUrl, { cache: 'no-store' });
     if (!res.ok) {
-      return new NextResponse('Failed to fetch RSS feed', { status: 500 });
+      return NextResponse.json({ success: false, message: 'Failed to fetch RSS feed' }, { status: 500 });
     }
     const xmlText = await res.text();
 
@@ -232,6 +232,6 @@ Artikel: ${generatedContent.substring(0, 1500)}`;
     });
   } catch (err) {
     console.error('AGC Router Error:', err);
-    return new NextResponse(err instanceof Error ? err.message : 'Internal Error', { status: 500 });
+    return NextResponse.json({ success: false, message: err instanceof Error ? err.message : 'Internal Error' }, { status: 500 });
   }
 }

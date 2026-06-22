@@ -137,7 +137,7 @@ export default function UnifiedBlogClient({ initialArticles, initialReferences }
     <div className="space-y-12">
       
       {/* 1. Live Market Intelligence Panel - Bento Style Dashboard */}
-      {(activeTab === 'all' || activeTab === 'telemetry') && (
+      {activeTab === 'telemetry' && (
         <MarketTelemetryBlock />
       )}
 

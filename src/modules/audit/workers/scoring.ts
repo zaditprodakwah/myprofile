@@ -25,9 +25,10 @@ export class ScoringEngine {
 
       if (fetchError || !snapshot) throw new Error('Failed to fetch snapshot data');
 
-      const perf = snapshot.performance_metrics_json as any;
-      const seo = snapshot.seo_metrics_json as any;
-      const a11y = snapshot.accessibility_metrics_json as any;
+      const lighthouse = snapshot.lighthouse_json as any || {};
+      const perf = snapshot.performance_metrics_json as any || lighthouse;
+      const seo = snapshot.seo_metrics_json as any || lighthouse;
+      const a11y = snapshot.accessibility_metrics_json as any || lighthouse;
 
       // Rule-based scoring logic
       let performanceScore = 100;

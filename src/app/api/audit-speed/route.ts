@@ -123,7 +123,7 @@ async function runAudit(url: string) {
     // Fetch snapshot — may have been partially created by collector
     const { data: snapshotData } = await supabase
       .from('snapshots')
-      .select('id')
+      .select('id, lighthouse_json')
       .eq('domain_id', domainId)
       .order('collected_at', { ascending: false })
       .limit(1)
@@ -179,10 +179,13 @@ async function runAudit(url: string) {
       .eq('snapshot_id', snapshotId)
       .maybeSingle();
 
+    const slopScore = (snapshotData?.lighthouse_json as any)?.slop_score || 0;
+    const narrativeScore = Math.max(0, 100 - slopScore);
+
     const scores = scoresData
       ? {
           accessibility: scoresData.accessibility_score,
-          narrative: scoresData.composite_score,
+          narrative: narrativeScore,
           performance: scoresData.performance_score,
           bestPractices: scoresData.best_practices_score,
           seo: scoresData.seo_score,

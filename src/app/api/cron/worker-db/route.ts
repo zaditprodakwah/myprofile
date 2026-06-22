@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { routeLLM } from '@/lib/llm-router';
 
 // Worker 2: DB Sweep & Content Optimizer

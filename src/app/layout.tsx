@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
 import CommandPalette from "@/components/CommandPalette";
@@ -165,6 +166,31 @@ export default function RootLayout({
         </SmoothScroll>
         <CommandPalette />
         <MobileQuickNav />
+
+        {/* Analytics & Support Scripts */}
+        <Script
+          src="https://cloud.umami.is/script.js"
+          data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID || ''}
+          strategy="lazyOnload"
+        />
+        <Script id="chatwoot" strategy="lazyOnload">
+          {`
+            (function(d,t) {
+              var BASE_URL="https://app.chatwoot.com";
+              var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+              g.src=BASE_URL+"/packs/js/sdk.js";
+              g.defer = true;
+              g.async = true;
+              s.parentNode.insertBefore(g,s);
+              g.onload=function(){
+                window.chatwootSDK.run({
+                  websiteToken: '${process.env.NEXT_PUBLIC_CHATWOOT_TOKEN || ''}',
+                  baseUrl: BASE_URL
+                })
+              }
+            })(document,"script");
+          `}
+        </Script>
       </body>
     </html>
   );

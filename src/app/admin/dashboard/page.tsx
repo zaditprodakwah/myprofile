@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { cn } from "@/lib/utils";
+import { analyzeSlop } from "@/lib/slop-detector";
 import { 
   Shield, Database, Cpu, Search, Settings, Check, RefreshCw, 
   Save, Send, Plus, Trash2, Edit2, X, 
@@ -229,19 +230,21 @@ export default function AdminDashboardPage() {
     try {
       const { data } = await supabase.from('system_configs').select('*');
       if (data) {
-        const confObj = { ...sysConfigs };
-        data.forEach((item) => {
-          const k = item.key as keyof typeof sysConfigs;
-          if (k in confObj) {
-            confObj[k] = typeof item.value === 'string' ? item.value : JSON.stringify(item.value);
-          }
+        setSysConfigs(prev => {
+          const confObj = { ...prev };
+          data.forEach((item) => {
+            const k = item.key as keyof typeof prev;
+            if (k in confObj) {
+              confObj[k] = typeof item.value === 'string' ? item.value : JSON.stringify(item.value);
+            }
+          });
+          return confObj;
         });
-        setSysConfigs(confObj);
       }
     } catch (err) {
       console.error('Configs fetch error', err);
     }
-  }, [sysConfigs]);
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -2202,6 +2205,18 @@ export default function AdminDashboardPage() {
                                   <td className="p-4 font-mono text-[10px] text-teal-accent">/blog/{art.slug}</td>
                                   <td className="p-4 font-mono text-[10px] max-w-xs truncate" title={art.source_feed}>
                                     {art.source_feed ? 'AGC: ' + art.source_feed : 'Manual / UGC'}
+                                    {(() => {
+                                      const textOnly = art.content.replace(/<[^>]+>/g, ' ');
+                                      const slop = analyzeSlop(textOnly);
+                                      return (
+                                        <div className="mt-1 flex items-center gap-1">
+                                          <span className={cn("px-1 py-0.5 rounded text-[8px]", slop.isHighSignal ? "bg-teal-500/10 text-teal-accent" : "bg-red-500/10 text-red-500")}>
+                                            {slop.isHighSignal ? 'High Signal' : 'Low Signal'}
+                                          </span>
+                                          <span className="text-[8px] text-text-muted">Slop: {slop.slopScore}</span>
+                                        </div>
+                                      );
+                                    })()}
                                   </td>
                                   <td className="p-4 font-mono text-[10px]">
                                     <span className={cn("px-1 py-0.5 rounded text-[8px]", art.is_published ? "bg-teal-accent/5 text-teal-accent border border-teal-accent/15" : "bg-red-500/5 text-red-600 border border-red-500/15")}>

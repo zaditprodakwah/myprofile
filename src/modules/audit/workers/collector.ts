@@ -2,6 +2,7 @@ import { JobOrchestrator } from '../application/job-orchestrator';
 import { supabaseServer } from '@/lib/supabase-server';
 import { v4 as uuidv4 } from 'uuid';
 import { PresenceLogger } from '@/modules/shared/infrastructure/logger';
+import { analyzeSlop } from '@/lib/slop-detector';
 
 export class CollectorWorker {
   private orchestrator: JobOrchestrator;
@@ -131,6 +132,27 @@ export class CollectorWorker {
           status: response.status,
           is_psi_real: false
         };
+      }
+
+      // C. Perform Slop Analysis
+      let slopScore = 0;
+      let isHighSignal = true;
+      try {
+        const textRes = await fetch(targetUrl, { signal: AbortSignal.timeout(5000) });
+        if (textRes.ok) {
+          const rawHtml = await textRes.text();
+          const textOnly = rawHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                                  .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+                                  .replace(/<[^>]+>/g, ' ');
+          const slopData = analyzeSlop(textOnly);
+          slopScore = slopData.slopScore;
+          isHighSignal = slopData.isHighSignal;
+          actualMetrics.slop_score = slopScore;
+          actualMetrics.is_high_signal = isHighSignal;
+          actualMetrics.matched_cliches = slopData.matchedCliches;
+        }
+      } catch (err: any) {
+        this.logger.warn(`Slop analysis text fetch failed: ${err.message}`);
       }
 
       // 2. Create initial Snapshot Record
