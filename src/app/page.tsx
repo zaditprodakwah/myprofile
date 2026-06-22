@@ -10,26 +10,14 @@ import GrowthCalculator from "@/components/GrowthCalculator";
 import RateCardSection from "@/components/RateCardSection";
 
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
-import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats, getFeaturedEntities } from "@/lib/data-server";
+import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats } from "@/lib/data-server";
 
 import IntegratedServicesHub from "@/components/IntegratedServicesHub";
 import dynamic from "next/dynamic";
 import { Metadata } from "next";
 
 // Dynamic Imports with Skeleton Loaders for Heavy/Interactive Components to optimize LCP & TBT
-const MarketTelemetryBlock = dynamic(() => import("@/components/MarketTelemetryBlock"), {
-  loading: () => (
-    <div className="w-full my-12 bg-brand-slate rounded-3xl p-6 md:p-10 border border-brand-mid h-[600px] animate-pulse flex items-center justify-center">
-      <span className="text-white/50 font-mono text-sm">Menginisiasi Telemetri Sistem...</span>
-    </div>
-  )
-});
-
 const AuditTeaser = dynamic(() => import("@/components/AuditTeaser"), {
-  ssr: true
-});
-
-const FeaturedDirectory = dynamic(() => import("@/components/FeaturedDirectory"), {
   ssr: true
 });
 
@@ -54,14 +42,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [content, services, caseStudies, config, latestArticles, liveStats, featuredEntities] = await Promise.all([
+  const [content, services, caseStudies, config, latestArticles, liveStats] = await Promise.all([
     getSiteContent(),
     getServices(),
     getCaseStudies(),
     getSystemConfig(),
     getLatestArticles(3),
-    getLiveStats(),
-    getFeaturedEntities(4)
+    getLiveStats()
   ]);
 
   return (
@@ -78,13 +65,7 @@ export default async function Home() {
         
         <ProcessSection />
         
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          <MarketTelemetryBlock />
-        </div>
-
         <AuditTeaser />
-
-        <FeaturedDirectory entities={featuredEntities} />
 
         <IntegratedServicesHub services={services} />
 
