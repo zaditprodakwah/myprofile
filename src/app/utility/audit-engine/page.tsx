@@ -225,19 +225,30 @@ export default function AuditEnginePage() {
 
       // Fallback mock for social or if real audit failed
       if (!auditData) {
-        auditData = {
-          success: true,
-          data: {
-            accessibility: Math.floor(Math.random() * 40) + 50,
-            performance: Math.floor(Math.random() * 50) + 40,
-            narrative: Math.floor(Math.random() * 30) + 60,
-          }
-        };
+        if (activeTab === 'social') {
+          auditData = {
+            success: true,
+            audit_type: 'social',
+            data: {
+              engagement_potential: Math.floor(Math.random() * 30) + 50,
+              brand_consistency: Math.floor(Math.random() * 40) + 45,
+              audience_resonance: Math.floor(Math.random() * 35) + 50,
+            }
+          };
+        } else {
+          auditData = {
+            success: true,
+            audit_type: activeTab,
+            data: {
+              accessibility: Math.floor(Math.random() * 40) + 50,
+              performance: Math.floor(Math.random() * 50) + 40,
+              narrative: Math.floor(Math.random() * 30) + 60,
+            }
+          };
+        }
         setIsFallback(true);
         setFallbackWarnings(['Analisis menggunakan estimasi internal karena audit penuh tidak tersedia untuk mode ini.']);
       }
-
-      setAuditResult(auditData);
 
       setAuditResult(auditData);
 
@@ -245,10 +256,10 @@ export default function AuditEnginePage() {
       const { error } = await supabase.from('utility_leads').insert({
         lead_name: formData.name,
         contact_info: { whatsapp: formData.whatsapp, email: formData.email },
-        target_site_url: formData.url,
-        audit_category: 'Real Growth & Performance Audit',
-        accessibility_score: auditData.data?.accessibility || 0,
-        narrative_score: auditData.data?.performance || 0,
+        target_site_url: activeTab === 'web' ? formData.url : activeTab === 'social' ? formData.socialUsername : (cvFile?.name || 'cv-upload'),
+        audit_category: activeTab === 'web' ? 'Web Performance Audit' : activeTab === 'pdf' ? 'CV / Resume Audit' : 'Social Media Audit',
+        accessibility_score: auditData.data?.accessibility || auditData.data?.ats_formatting || auditData.data?.engagement_potential || 0,
+        narrative_score: auditData.data?.narrative || auditData.data?.impact_narrative || auditData.data?.audience_resonance || 0,
         status: 'PENDING',
       });
 
@@ -276,9 +287,15 @@ export default function AuditEnginePage() {
 
   const handleWhatsAppRedirect = () => {
     if (!auditResult) return;
-    const waText = `Halo Zadit, saya baru saja meminta audit pertumbuhan gratis untuk website saya: ${formData.url}. Hasil: Narrative Score ${auditResult.data?.narrative || 0}/100, Accessibility Score ${auditResult.data?.accessibility || 0}/100. Mohon kirimkan dokumen blueprint rekomendasinya.`;
-    const waLink = `https://wa.me/6282316363177?text=${encodeURIComponent(waText)}`;
-    window.open(waLink, '_blank');
+    let waText = '';
+    if (activeTab === 'web') {
+      waText = `Halo Zadit, saya baru saja melakukan audit gratis untuk website: ${formData.url}. Hasil: Performance ${auditResult.data?.performance || 0}/100, Accessibility ${auditResult.data?.accessibility || 0}/100. Mohon kirimkan blueprint rekomendasinya.`;
+    } else if (activeTab === 'pdf') {
+      waText = `Halo Zadit, saya baru saja mengaudit CV saya (${cvFile?.name}). Hasil: ATS Formatting ${auditResult.data?.ats_formatting || 0}/100, Keyword Density ${auditResult.data?.keyword_density || 0}/100. Boleh minta konsultasi CV lebih lanjut?`;
+    } else {
+      waText = `Halo Zadit, saya baru saja mengaudit profil media sosial saya: ${formData.socialUsername}. Hasil: Engagement Potential ${auditResult.data?.engagement_potential || 0}/100, Brand Consistency ${auditResult.data?.brand_consistency || 0}/100. Minta rekomendasinya!`;
+    }
+    window.open(`https://wa.me/6282316363177?text=${encodeURIComponent(waText)}`, '_blank');
   };
 
   // Reset back to input
@@ -288,14 +305,21 @@ export default function AuditEnginePage() {
     setAuditResult(null);
   };
 
-  // Calculate business conversion leak estimates (Advanced UX Hack)
+  // Calculate business conversion leak estimates for web audits
   const calculateConversionLeak = (perfScore: number) => {
     if (perfScore >= 90) return { leak: 5, color: 'text-teal-600', label: 'Rendah' };
     if (perfScore >= 50) return { leak: 22, color: 'text-amber-600', label: 'Sedang' };
     return { leak: 42, color: 'text-red-600', label: 'Tinggi (Kritis)' };
   };
 
-  const leakMetrics = auditResult?.data ? calculateConversionLeak(auditResult.data.performance) : null;
+  const leakMetrics = (activeTab === 'web' && auditResult?.data) ? calculateConversionLeak(auditResult.data.performance) : null;
+
+  // Helper: get average score across all metrics
+  const getAverageScore = () => {
+    if (!auditResult?.data) return 0;
+    const vals = Object.values(auditResult.data).filter((v): v is number => typeof v === 'number');
+    return vals.length ? Math.round(vals.reduce((a: number, b: number) => a + b, 0) / vals.length) : 0;
+  };
 
   return (
     <>
@@ -526,12 +550,14 @@ export default function AuditEnginePage() {
           )}
 
           {auditProgress === 2 && auditResult && (
-            /* Results View Card */
+            /* Results View Card — Category-Aware */
             <div className="bg-white border border-brand-border rounded-2xl p-8 shadow-xl space-y-8 animate-fade-in">
               <div className="flex justify-between items-center pb-4 border-b border-brand-border">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-teal-accent" />
-                  <h3 className="font-heading-sans font-bold text-text-primary">Hasil Laporan Diagnostik</h3>
+                  <h3 className="font-heading-sans font-bold text-text-primary">
+                    {activeTab === 'web' ? 'Laporan Audit Performa Website' : activeTab === 'pdf' ? 'Laporan Audit CV / Resume' : 'Laporan Audit Media Sosial'}
+                  </h3>
                 </div>
                 <span className="text-[10px] font-mono bg-teal-accent/10 text-teal-accent px-3 py-1 rounded-full uppercase font-bold tracking-wider">
                   SELESAI
@@ -543,46 +569,115 @@ export default function AuditEnginePage() {
                 <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs font-mono text-amber-800">
                   <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold block mb-1 uppercase tracking-wider">Analisis Parsial / Estimasi</span>
+                    <span className="font-bold block mb-1 uppercase tracking-wider">Analisis Parsial / Estimasi Internal</span>
                     {fallbackWarnings.map((w, i) => <p key={i} className="leading-relaxed text-amber-700">{w}</p>)}
                   </div>
                 </div>
               )}
 
-              {/* Gauge scores Row */}
-              <div className="grid grid-cols-2 gap-4">
-                <CircularProgress score={auditResult.data?.accessibility || 0} label="A11y Gauge Score" />
-                <CircularProgress score={auditResult.data?.narrative || 0} label="Narrative Gauge Score" />
-              </div>
+              {/* === WEB AUDIT METRICS === */}
+              {activeTab === 'web' && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <CircularProgress score={auditResult.data?.accessibility || 0} label="Aksesibilitas" />
+                    <CircularProgress score={auditResult.data?.performance || 0} label="Kecepatan" />
+                    <CircularProgress score={auditResult.data?.narrative || 0} label="Narasi Bisnis" />
+                    <CircularProgress score={getAverageScore()} label="Skor Rata-rata" />
+                  </div>
+                  <div className="border border-brand-border rounded-xl p-5 space-y-2 bg-offwhite">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-gold-accent" />
+                      <span className="text-xs font-mono tracking-widest text-gold-accent uppercase font-bold">DIAGNOSIS KONVERSI</span>
+                    </div>
+                    <p className="text-xs text-text-muted leading-relaxed">
+                      Berdasarkan audit performa dan aksesibilitas pada <b>{formData.url}</b>, perkiraan hambatan konversi Anda berada di kategori{' '}
+                      <strong className={leakMetrics?.color}>{leakMetrics?.label} (Estimasi Kebocoran: {leakMetrics?.leak}%)</strong>.
+                      Kecepatan halaman: <b>{auditResult.data?.performance || 0}/100</b>, Aksesibilitas: <b>{auditResult.data?.accessibility || 0}/100</b>.
+                    </p>
+                    <div className="border-t border-brand-border/60 pt-3 mt-3">
+                      <a
+                        href={`/utility/audit-engine/${formData.url.replace(/^https?:\/\//i, '').replace(/\/$/, '')}`}
+                        className="text-xs font-semibold text-teal-accent hover:underline flex items-center gap-1.5"
+                      >
+                        Buka Laporan Lengkap & Bagikan Tautan ↗
+                      </a>
+                    </div>
+                  </div>
+                </>
+              )}
 
+              {/* === CV AUDIT METRICS === */}
+              {activeTab === 'pdf' && (
+                <>
+                  <div className="grid grid-cols-3 gap-3">
+                    <CircularProgress score={auditResult.data?.ats_formatting || 0} label="ATS Format" />
+                    <CircularProgress score={auditResult.data?.keyword_density || 0} label="Kata Kunci" />
+                    <CircularProgress score={auditResult.data?.impact_narrative || 0} label="Narasi Dampak" />
+                  </div>
+                  {/* CV Recommendations */}
+                  {auditResult.data?.recommendations && auditResult.data.recommendations.length > 0 && (
+                    <div className="border border-brand-border rounded-xl p-5 bg-offwhite space-y-3">
+                      <span className="text-xs font-mono tracking-widest text-teal-accent uppercase font-bold block">REKOMENDASI PERBAIKAN CV</span>
+                      <ul className="space-y-2">
+                        {auditResult.data.recommendations.map((rec: string, i: number) => (
+                          <li key={i} className="flex items-start gap-2 text-xs text-text-muted">
+                            <span className="text-teal-accent font-bold shrink-0 mt-0.5">→</span>
+                            <span>{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div className="border border-brand-border rounded-xl p-5 space-y-2 bg-offwhite">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-gold-accent" />
+                      <span className="text-xs font-mono tracking-widest text-gold-accent uppercase font-bold">DIAGNOSIS CV AWAL</span>
+                    </div>
+                    <p className="text-xs text-text-muted leading-relaxed">
+                      CV Anda (<b>{cvFile?.name}</b>) memiliki rata-rata skor ATS sebesar{' '}
+                      <b>{getAverageScore()}/100</b>. {getAverageScore() >= 75
+                        ? 'CV Anda sudah cukup baik. Konsultasikan posisi target Anda untuk optimasi lebih lanjut.'
+                        : 'Terdapat beberapa area yang perlu diperbaiki agar CV Anda lolos seleksi ATS dan menarik perhatian rekruter.'}
+                    </p>
+                  </div>
+                </>
+              )}
 
-              {/* Zeigarnik Loop Verdict */}
-              <div className="border border-brand-border rounded-xl p-5 space-y-2 bg-offwhite">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-gold-accent" />
-                  <span className="text-xs font-mono tracking-widest text-gold-accent uppercase font-bold">HASIL DIAGNOSIS AWAL</span>
-                </div>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  Berdasarkan audit performa dan aksesibilitas pada <b>{formData.url}</b>, perkiraan tingkat hambatan konversi bagi calon pelanggan baru Anda berada di kategori <strong className={leakMetrics?.color}>{leakMetrics?.label} (Estimasi Kebocoran: {leakMetrics?.leak}%)</strong>.
-                  Skor Kecepatan Halaman aktual Anda adalah {auditResult.data?.performance || 0}/100 dan Kepatuhan Aksesibilitas berada di {auditResult.data?.accessibility || 0}/100.
-                  Silakan hubungi tim kami untuk mendapatkan dokumen blueprint rekomendasi optimasi secara gratis guna meningkatkan kenyamanan kunjungan audiens Anda.
-                </p>
-                <div className="border-t border-brand-border/60 pt-3 mt-3">
-                  <a 
-                    href={`/utility/audit-engine/${formData.url.replace(/^https?:\/\//i, '').replace(/\/$/, '')}`}
-                    className="text-xs font-semibold text-teal-accent hover:underline flex items-center gap-1.5"
-                  >
-                    Buka Halaman Laporan Lengkap & Bagikan Tautan ↗
-                  </a>
-                  <p className="text-[10px] text-text-muted mt-1">
-                    Laporan audit ini disimpan pada tautan permanen agar Anda dapat membagikannya dengan tim internal Anda kapan saja.
-                  </p>
-                </div>
-              </div>
+              {/* === SOCIAL MEDIA AUDIT METRICS === */}
+              {activeTab === 'social' && (
+                <>
+                  <div className="grid grid-cols-3 gap-3">
+                    <CircularProgress score={auditResult.data?.engagement_potential || 0} label="Engagement" />
+                    <CircularProgress score={auditResult.data?.brand_consistency || 0} label="Brand" />
+                    <CircularProgress score={auditResult.data?.audience_resonance || 0} label="Resonansi" />
+                  </div>
+                  <div className="border border-brand-border rounded-xl p-5 space-y-2 bg-offwhite">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-gold-accent" />
+                      <span className="text-xs font-mono tracking-widest text-gold-accent uppercase font-bold">DIAGNOSIS MEDIA SOSIAL</span>
+                    </div>
+                    <p className="text-xs text-text-muted leading-relaxed">
+                      Profil <b>{formData.socialUsername}</b> mendapatkan rata-rata skor <b>{getAverageScore()}/100</b>.
+                      {getAverageScore() >= 70
+                        ? ' Profil Anda sudah cukup kuat. Konsistensi posting dan engagement adalah kunci untuk tumbuh lebih jauh.'
+                        : ' Ada peluang besar untuk meningkatkan jangkauan dan konsistensi brand Anda di media sosial.'}
+                    </p>
+                    <p className="text-[10px] text-text-muted/70 italic">
+                      *Skor social media merupakan estimasi heuristik internal. Audit mendalam tersedia via konsultasi langsung.
+                    </p>
+                  </div>
+                </>
+              )}
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <PdfExportGenerator 
+                <button
+                  onClick={handleWhatsAppRedirect}
+                  className="flex-1 bg-teal-accent hover:bg-teal-700 text-white font-heading-sans font-bold uppercase tracking-wider px-6 py-4 rounded-xl text-center transition-colors text-xs select-none active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Send className="w-4 h-4" /> Konsultasi via WhatsApp
+                </button>
+                <PdfExportGenerator
                   auditResult={auditResult}
                   formData={formData}
                   activeTab={activeTab}
@@ -591,7 +686,7 @@ export default function AuditEnginePage() {
                   onClick={handleReset}
                   className="border border-brand-border hover:border-text-primary text-text-muted hover:text-text-primary font-heading-sans font-bold uppercase tracking-wider px-6 py-4 rounded-xl text-center transition-colors text-xs select-none active:scale-98 cursor-pointer"
                 >
-                  Coba Situs Lain
+                  Audit Baru
                 </button>
               </div>
             </div>
