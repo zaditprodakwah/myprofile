@@ -263,6 +263,7 @@ export default function DirectoryClientContainer({ cities }: DirectoryClientCont
 
       {/* Shared Entity Drawer */}
       <EntityDrawer
+        key={selectedEntity?.id || 'none'}
         entity={selectedEntity}
         onClose={() => setSelectedEntity(null)}
       />

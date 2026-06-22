@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 export default function OperationalDashboard() {
   const [stats, setStats] = useState({ totalClaims: 0, pendingClaims: 0, totalAudits: 0, systemHealth: 'Optimal' });
   const [activities, setActivities] = useState<any[]>([]);
-  const [filteredActivities, setFilteredActivities] = useState<any[]>([]);
   const [activeFilter, setActiveFilter] = useState('All');
   const [loading, setLoading] = useState(true);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
@@ -73,7 +72,6 @@ export default function OperationalDashboard() {
 
         const combined = [...claimsList, ...auditsList].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 10);
         setActivities(combined);
-        setFilteredActivities(combined);
 
       } catch (err) {
         console.error('Failed to load operational dashboard data:', err);
@@ -84,15 +82,16 @@ export default function OperationalDashboard() {
     loadDashboardData();
   }, []);
 
-  // Filter activities list based on metric card click
-  useEffect(() => {
+  // Filter activities list based on metric card click dynamically via useMemo
+  const filteredActivities = React.useMemo(() => {
     if (activeFilter === 'All') {
-      setFilteredActivities(activities);
+      return activities;
     } else if (activeFilter === 'Claims') {
-      setFilteredActivities(activities.filter(a => a.type === 'claim'));
+      return activities.filter(a => a.type === 'claim');
     } else if (activeFilter === 'Audits') {
-      setFilteredActivities(activities.filter(a => a.type === 'audit'));
+      return activities.filter(a => a.type === 'audit');
     }
+    return activities;
   }, [activeFilter, activities]);
 
   // Click activity stream triggers dynamic EntityDrawer fetch
@@ -290,6 +289,7 @@ export default function OperationalDashboard() {
 
       {/* Dynamic Drawer detail */}
       <EntityDrawer
+        key={selectedEntity?.id || 'none'}
         entity={selectedEntity}
         onClose={() => setSelectedEntity(null)}
       />

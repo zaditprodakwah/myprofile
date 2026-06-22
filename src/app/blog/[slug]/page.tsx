@@ -7,6 +7,8 @@ import SocialShare from '@/components/SocialShare';
 import ArticleInteractiveWidgets from '@/components/ArticleInteractiveWidgets';
 import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/seo';
 import { Metadata } from 'next';
+import ReadingProgressBar from "@/components/ReadingProgressBar";
+import BlogViewTracker from "@/components/BlogViewTracker";
 
 interface UnifiedPost {
   id?: string;
@@ -19,6 +21,7 @@ interface UnifiedPost {
   faq_items: Array<{ question: string; answer: string }>;
   published_at?: string;
   categoryLabel?: string;
+  view_count?: number;
 }
 
 function getTitleFromSlug(slug: string): string {
@@ -27,6 +30,24 @@ function getTitleFromSlug(slug: string): string {
     .split('-')
     .map(w => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
+}
+
+function parseHeadings(html: string): { headings: Array<{ id: string; text: string; level: number }>; modifiedHtml: string } {
+  const headings: Array<{ id: string; text: string; level: number }> = [];
+  let headingIndex = 0;
+
+  // Match h2 and h3 tags
+  const modifiedHtml = html.replace(/<h([23])([^>]*)>(.*?)<\/h\1>/gi, (match, levelStr, attrs, content) => {
+    const level = parseInt(levelStr, 10);
+    const text = content.replace(/<[^>]*>?/gm, '').trim();
+    const id = `heading-${headingIndex++}-${text.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    
+    headings.push({ id, text, level });
+    
+    return `<h${level} id="${id}"${attrs}>${content}</h${level}>`;
+  });
+
+  return { headings, modifiedHtml };
 }
 
 export async function generateMetadata(
@@ -137,7 +158,8 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         semantic_keywords: Array.isArray(artData.semantic_keywords) ? artData.semantic_keywords.join(', ') : artData.semantic_keywords || '',
         faq_items: Array.isArray(artData.faq_items) ? artData.faq_items : [],
         published_at: artData.published_at,
-        categoryLabel: 'Artikel AI & Wawasan'
+        categoryLabel: 'Artikel AI & Wawasan',
+        view_count: artData.view_count || 0
       };
 
       // Related articles query
@@ -167,7 +189,8 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           semantic_keywords: Array.isArray(refData.tags) ? refData.tags.join(', ') : '',
           faq_items: [], // reference items don't have default faqs
           published_at: refData.created_at,
-          categoryLabel: refData.category.replace('-', ' ').toUpperCase()
+          categoryLabel: refData.category.replace('-', ' ').toUpperCase(),
+          view_count: refData.view_count || 0
         };
 
         // Related references query
@@ -257,14 +280,17 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   const wordCount = post.content.replace(/<[^>]*>?/gm, '').split(/\s+/).length;
   const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
+  const { headings, modifiedHtml } = parseHeadings(post.content);
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
+      <BlogViewTracker slug={post.slug} type={post.type} />
       <Header />
-      <div className="scroll-progress" />
+      <ReadingProgressBar />
 
       <main className="flex-1 bg-alabaster pt-28 pb-24 px-6 min-h-screen">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
@@ -286,6 +312,9 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
               <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-text-muted">
                 <span>Penulis: Muhammad Khoiruzzadittaqwa</span>
                 <span className="inline-flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-teal-accent" /> {readTime} Menit Baca</span>
+                {post.view_count !== undefined && (
+                  <span>👁 {post.view_count} Dilihat</span>
+                )}
                 {post.published_at && (
                   <span>{new Date(post.published_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 )}
@@ -297,8 +326,9 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             <div 
               id="article-content"
               className="prose max-w-none prose-sm md:prose-base text-text-muted leading-relaxed space-y-6 pt-2 prose-headings:text-text-primary prose-headings:font-heading-sans prose-a:text-teal-accent
+              prose-h2:scroll-mt-24 prose-h3:scroll-mt-24
               [&>p:first-of-type]:text-lg [&>p:first-of-type]:md:text-xl [&>p:first-of-type]:text-text-primary [&>p:first-of-type]:font-medium [&>p:first-of-type]:leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: modifiedHtml }}
             />
 
             {post.original_url && (
@@ -337,6 +367,25 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           </article>
 
           <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+            {headings.length > 0 && (
+              <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-4">
+                <h4 className="text-xs font-mono text-text-primary uppercase tracking-wider">Daftar Isi</h4>
+                <nav className="space-y-2 text-xs">
+                  {headings.map((h) => (
+                    <a
+                      key={h.id}
+                      href={`#${h.id}`}
+                      className={`block text-text-muted hover:text-teal-accent transition-colors ${
+                        h.level === 3 ? 'pl-4 border-l border-brand-border/60 ml-1' : 'font-medium'
+                      }`}
+                    >
+                      {h.text}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            )}
+
             <div className="hidden lg:block bg-white border border-brand-border rounded-2xl p-6 shadow-sm">
               <SocialShare url={fullUrl} title={post.title} />
             </div>

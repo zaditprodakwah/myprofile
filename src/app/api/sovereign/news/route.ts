@@ -34,7 +34,7 @@ export async function GET() {
     try {
       // 1. Try NewsAPI first
       if (newsKey) {
-        const url = `https://newsapi.org/v2/everything?q=seo+digital+marketing+indonesia&language=id&sortBy=publishedAt&pageSize=6&apiKey=${newsKey}`;
+        const url = `https://newsapi.org/v2/everything?q=bisnis+OR+teknologi+OR+digital&language=id&sortBy=publishedAt&pageSize=6&apiKey=${newsKey}`;
         const res = await fetch(url, { signal: abortController.signal });
         if (res.ok) {
           const data = await res.json();

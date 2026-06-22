@@ -31,13 +31,7 @@ export default function EntityDrawer({ entity, onClose }: EntityDrawerProps) {
   const [claimSuccess, setClaimSuccess] = useState(false);
   const [submittingClaim, setSubmittingClaim] = useState(false);
 
-  useEffect(() => {
-    if (entity) {
-      setShowClaimForm(false);
-      setClaimSuccess(false);
-      setClaimData({ name: '', role: '', email: '', whatsapp: '' });
-    }
-  }, [entity]);
+
 
   if (!entity) return null;
 

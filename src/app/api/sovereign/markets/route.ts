@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer } from '@/lib/supabase-server';
 import { getTelemetryCache, setTelemetryCache } from '@/lib/telemetry-cache';
 
 export const revalidate = 21600; // 6 hours edge cache
@@ -9,7 +9,7 @@ export async function GET() {
   const cacheKey = 'markets_telemetry';
 
   try {
-    // 1. Check database cache first
+    // 1. Check database cache first (fresh cache for 6 hours)
     const cachedData = await getTelemetryCache(cacheKey, 6);
     if (cachedData) {
       return new NextResponse(JSON.stringify({ success: true, data: cachedData, source: 'DB Cache' }), {
@@ -25,7 +25,7 @@ export async function GET() {
     let isFresh = true;
     let payload: any[] = [];
 
-    const { data: configs } = await supabase
+    const { data: configs } = await supabaseServer
       .from('system_configs')
       .select('key, value')
       .eq('key', 'sovereign_emergency_lock')
@@ -33,17 +33,21 @@ export async function GET() {
 
     const isEmergencyLock = configs?.value === 'true' || configs?.value === true;
 
-    // Load stale data to calculate relative price changes
+    // Load stale data to calculate relative price changes for fallback/continuity
     const staleData = await getTelemetryCache(cacheKey, 99999);
 
     if (!isEmergencyLock) {
       const abortController = new AbortController();
-      const timeoutId = setTimeout(() => abortController.abort(), 6000);
+      const timeoutId = setTimeout(() => abortController.abort(), 8000);
 
       try {
         const geckoKey = process.env.COINGECKO_API_KEY;
-        
-        // Fetch Crypto (5 coins: BTC, ETH, SOL, BNB, XRP)
+        const fmpKey = process.env.FMP_API_KEY;
+        const polygonKey = process.env.POLYGON_API_KEY;
+        const finnhubKey = process.env.FINNHUB_API_KEY;
+        const alphaKey = process.env.ALPHA_VANTAGE_API_KEY;
+
+        // Fetch Crypto (CoinGecko)
         const cryptoRes = await fetch(
           `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple&vs_currencies=usd&include_24hr_change=true`,
           {
@@ -57,16 +61,89 @@ export async function GET() {
           signal: abortController.signal
         }).then(r => r.ok ? r.json() : null).catch(() => null);
 
+        // 3. Apple (AAPL) - Finnhub (replacing legacy FMP)
+        let aaplPrice = 175.50;
+        let aaplChange = 0.45;
+        let hasFinnhubApple = false;
+        if (finnhubKey) {
+          try {
+            const finnRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=AAPL&token=${finnhubKey}`, { signal: abortController.signal })
+              .then(r => r.ok ? r.json() : null);
+            if (finnRes && finnRes.c) {
+              aaplPrice = finnRes.c;
+              hasFinnhubApple = true;
+              aaplChange = finnRes.dp || 0;
+            }
+          } catch (e) {
+            console.warn('Finnhub AAPL fetch failed:', e);
+          }
+        }
+
+        // 4. Microsoft (MSFT) - Polygon.io
+        let msftPrice = 415.20;
+        let msftChange = -0.32;
+        let hasPolygon = false;
+        if (polygonKey) {
+          try {
+            const polyRes = await fetch(`https://api.polygon.io/v2/aggs/ticker/MSFT/prev?adjusted=true&apiKey=${polygonKey}`, { signal: abortController.signal })
+              .then(r => r.ok ? r.json() : null);
+            if (polyRes && polyRes.results && polyRes.results[0]) {
+              msftPrice = polyRes.results[0].c;
+              hasPolygon = true;
+              const open = polyRes.results[0].o || msftPrice;
+              msftChange = parseFloat((((msftPrice - open) / open) * 100).toFixed(2));
+            }
+          } catch (e) {
+            console.warn('Polygon MSFT fetch failed:', e);
+          }
+        }
+
+        // 5. Nvidia (NVDA) - Finnhub
+        let nvdaPrice = 875.12;
+        let nvdaChange = 1.85;
+        let hasFinnhub = false;
+        if (finnhubKey) {
+          try {
+            const finnRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=NVDA&token=${finnhubKey}`, { signal: abortController.signal })
+              .then(r => r.ok ? r.json() : null);
+            if (finnRes && finnRes.c) {
+              nvdaPrice = finnRes.c;
+              hasFinnhub = true;
+              nvdaChange = finnRes.dp || 0;
+            }
+          } catch (e) {
+            console.warn('Finnhub NVDA fetch failed:', e);
+          }
+        }
+
+        // 6. Alphabet/Google (GOOGL) - Alpha Vantage
+        let googlPrice = 172.50;
+        let googlChange = -0.12;
+        let hasAlpha = false;
+        if (alphaKey) {
+          try {
+            const alphaRes = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=GOOGL&apikey=${alphaKey}`, { signal: abortController.signal })
+              .then(r => r.ok ? r.json() : null);
+            const quote = alphaRes?.['Global Quote'];
+            if (quote && quote['05. price']) {
+              googlPrice = parseFloat(quote['05. price']);
+              hasAlpha = true;
+              const changePctStr = quote['10. change percent'] || '0%';
+              googlChange = parseFloat(changePctStr.replace('%', '')) || 0;
+            }
+          } catch (e) {
+            console.warn('Alpha Vantage GOOGL fetch failed:', e);
+          }
+        }
+
         clearTimeout(timeoutId);
 
-        // Process Crypto
+        // Process Cryptocurrencies
         if (cryptoRes) {
           const coins = [
             { id: 'bitcoin', symbol: 'BTC/USD', name: 'Bitcoin', impact: 'Likuiditas digital global mempengaruhi iklim investasi alternatif.' },
             { id: 'ethereum', symbol: 'ETH/USD', name: 'Ethereum', impact: 'Biaya komputasi smart contract global mendikte infrastruktur Web3.' },
-            { id: 'solana', symbol: 'SOL/USD', name: 'Solana', impact: 'Efisiensi transaksi DeFi mempengaruhi adopsi aplikasi desentralisasi.' },
-            { id: 'binancecoin', symbol: 'BNB/USD', name: 'BNB', impact: 'Aktivitas ekosistem Binance Smart Chain mempengaruhi biaya perdagangan token.' },
-            { id: 'ripple', symbol: 'XRP/USD', name: 'Ripple', impact: 'Likuiditas pembayaran lintas batas instan mempengaruhi kecepatan settlement devisa.' }
+            { id: 'solana', symbol: 'SOL/USD', name: 'Solana', impact: 'Efisiensi transaksi DeFi mempengaruhi adopsi aplikasi desentralisasi.' }
           ];
 
           for (const coin of coins) {
@@ -82,23 +159,53 @@ export async function GET() {
           }
         }
 
-        // Process FX
+        // Process Tech Stocks
+        payload.push({
+          symbol: 'AAPL/USD',
+          price: parseFloat(aaplPrice.toFixed(2)),
+          change: parseFloat(aaplChange.toFixed(2)),
+          source: hasFinnhubApple ? 'Finnhub API' : 'Dynamic Fallback',
+          impact: 'Kapitalisasi pasar raksasa teknologi konsumen mendikte rantai pasok perangkat keras global.'
+        });
+
+        payload.push({
+          symbol: 'MSFT/USD',
+          price: parseFloat(msftPrice.toFixed(2)),
+          change: parseFloat(msftChange.toFixed(2)),
+          source: hasPolygon ? 'Polygon API' : 'Dynamic Fallback',
+          impact: 'Adopsi infrastruktur cloud enterprise & lisensi AI mendikte efisiensi korporat dunia.'
+        });
+
+        payload.push({
+          symbol: 'NVDA/USD',
+          price: parseFloat(nvdaPrice.toFixed(2)),
+          change: parseFloat(nvdaChange.toFixed(2)),
+          source: hasFinnhub ? 'Finnhub API' : 'Dynamic Fallback',
+          impact: 'Ketersediaan akselerator komputasi AI mendikte batas kecepatan pengembangan model LLM global.'
+        });
+
+        payload.push({
+          symbol: 'GOOGL/USD',
+          price: parseFloat(googlPrice.toFixed(2)),
+          change: parseFloat(googlChange.toFixed(2)),
+          source: hasAlpha ? 'Alpha Vantage' : 'Dynamic Fallback',
+          impact: 'Arus lalu lintas pencarian organik & belanja iklan digital global mendikte margin bisnis B2B.'
+        });
+
+        // Process Foreign Exchanges
         if (fxRes && fxRes.rates && fxRes.rates.IDR) {
           const rates = fxRes.rates;
           const usdIdr = rates.IDR;
           const eurIdr = rates.IDR / (rates.EUR || 1);
           const sgdIdr = rates.IDR / (rates.SGD || 1);
-          const cnyIdr = rates.IDR / (rates.CNY || 1);
 
           const currencies = [
             { symbol: 'USD/IDR', price: usdIdr, impact: 'Nilai tukar rupiah mendikte margin impor & biaya server cloud luar negeri.' },
             { symbol: 'EUR/IDR', price: eurIdr, impact: 'Hubungan dagang Uni Eropa mempengaruhi biaya impor mesin presisi & lisensi paten.' },
-            { symbol: 'SGD/IDR', price: sgdIdr, impact: 'Pusat finansial Asia Tenggara mendikte arus modal ventura regional.' },
-            { symbol: 'CNY/IDR', price: cnyIdr, impact: 'Mitra dagang manufaktur terbesar mempengaruhi biaya bahan baku industri lokal.' }
+            { symbol: 'SGD/IDR', price: sgdIdr, impact: 'Pusat finansial Asia Tenggara mendikte arus modal ventura regional.' }
           ];
 
           for (const cur of currencies) {
-            // Calculate change relative to stale cache if available
             let change = 0;
             if (staleData) {
               const prev = staleData.find((item: any) => item.symbol === cur.symbol);
@@ -107,7 +214,6 @@ export async function GET() {
               }
             }
             if (change === 0) {
-              // Simulated small realistic drift
               change = parseFloat((Math.random() * 0.1 - 0.05).toFixed(2));
             }
 
@@ -142,14 +248,11 @@ export async function GET() {
       } else {
         payload = [
           { symbol: 'BTC/USD', price: 65200, change: 1.25, source: 'CoinGecko Fallback', impact: 'Likuiditas digital global mempengaruhi iklim investasi alternatif.' },
-          { symbol: 'ETH/USD', price: 3450, change: -0.85, source: 'CoinGecko Fallback', impact: 'Biaya komputasi smart contract global mendikte infrastruktur Web3.' },
-          { symbol: 'SOL/USD', price: 142.5, change: 3.12, source: 'CoinGecko Fallback', impact: 'Efisiensi transaksi DeFi mempengaruhi adopsi aplikasi desentralisasi.' },
-          { symbol: 'BNB/USD', price: 575.2, change: 0.15, source: 'CoinGecko Fallback', impact: 'Aktivitas ekosistem Binance Smart Chain mempengaruhi biaya perdagangan token.' },
-          { symbol: 'XRP/USD', price: 0.48, change: -1.1, source: 'CoinGecko Fallback', impact: 'Likuiditas pembayaran lintas batas instan mempengaruhi kecepatan settlement devisa.' },
-          { symbol: 'USD/IDR', price: 16320, change: 0.12, source: 'ExchangeRate Fallback', impact: 'Nilai tukar rupiah mendikte margin impor & biaya server cloud luar negeri.' },
-          { symbol: 'EUR/IDR', price: 17480, change: -0.05, source: 'ExchangeRate Fallback', impact: 'Hubungan dagang Uni Eropa mempengaruhi biaya impor mesin presisi & lisensi paten.' },
-          { symbol: 'SGD/IDR', price: 12050, change: 0.08, source: 'ExchangeRate Fallback', impact: 'Pusat finansial Asia Tenggara mendikte arus modal ventura regional.' },
-          { symbol: 'CNY/IDR', price: 2248, change: -0.02, source: 'ExchangeRate Fallback', impact: 'Mitra dagang manufaktur terbesar mempengaruhi biaya bahan baku industri lokal.' }
+          { symbol: 'AAPL/USD', price: 175.50, change: 0.45, source: 'FMP Fallback', impact: 'Kapitalisasi pasar raksasa teknologi konsumen mendikte rantai pasok perangkat keras global.' },
+          { symbol: 'MSFT/USD', price: 415.20, change: -0.32, source: 'Polygon Fallback', impact: 'Adopsi infrastruktur cloud enterprise & lisensi AI mendikte efisiensi korporat dunia.' },
+          { symbol: 'NVDA/USD', price: 875.12, change: 1.85, source: 'Finnhub Fallback', impact: 'Ketersediaan akselerator komputasi AI mendikte batas kecepatan pengembangan model LLM global.' },
+          { symbol: 'GOOGL/USD', price: 172.50, change: -0.12, source: 'Alpha Vantage Fallback', impact: 'Arus lalu lintas pencarian organik & belanja iklan digital global mendikte margin bisnis B2B.' },
+          { symbol: 'USD/IDR', price: 16320, change: 0.12, source: 'ExchangeRate Fallback', impact: 'Nilai tukar rupiah mendikte margin impor & biaya server cloud luar negeri.' }
         ];
       }
     }

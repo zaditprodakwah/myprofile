@@ -1,6 +1,6 @@
 import { AuditState, AuditStateMachine } from '../domain/state-machine';
 import { BaseEvent } from '../events/contracts';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 /**
  * JobOrchestrator manages the lifecycle of a Job, which is distinct from an AuditRun.

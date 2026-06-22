@@ -27,8 +27,8 @@ INSERT INTO reference_items (title, slug, category, summary, content, tags, sour
    'bps-macroeconomic-gdp-inflation-tracker',
    'market-benchmark',
    'Panduan membaca data pertumbuhan ekonomi riil dan indeks harga konsumen Indonesia dari portal resmi BPS.',
-   '<h3>Menerjemahkan GDP Domestik Menjadi Anggaran B2B</h3><p>Badan Pusat Statistik (BPS) merilis data PDB dan Inflasi secara berkala. Pertumbuhan PDB yang stabil di atas 5% menunjukkan daya beli korporasi yang kuat, memicu ekspansi iklan digital.</p><h4>Poin Kunci Riset Pasar:</h4><ul><li><strong>Sektor Tumbuh:</strong> Selaraskan penawaran SEO Anda ke sektor dengan pertumbuhan PDB tertinggi (misal: Logistik, Agritech, Layanan Kesehatan).</li><li><strong>Mitigasi Inflasi:</strong> Pastikan copywriting menekankan penghematan biaya operasional saat inflasi naik.</li></ul>',
+   '<h3>Menerjemahkan GDP Domestik Menjadi Anggaran B2B</h3><p>Badan Pusat Statistik (BPS) merilis data PDB dan Inflasi secara berkala. Pertumbuhan PDB yang stabil di atas 5% menunjukkan daya beli korporasi yang kuat, memicu ekspansi anggaran iklan digital.</p><h4>Poin Kunci Riset Pasar:</h4><ul><li><strong>Sektor Tumbuh:</strong> Selaraskan penawaran SEO Anda ke sektor dengan pertumbuhan PDB tertinggi (misal: Logistik, Agritech, Layanan Kesehatan).</li><li><strong>Mitigasi Inflasi:</strong> Pastikan copywriting menekankan penghematan biaya operasional saat inflasi naik.</li></ul>',
    ARRAY['BPS','Indonesia GDP','Inflation','Market Intel'],
    'Badan Pusat Statistik Indonesia',
    'https://www.bps.go.id')
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, content = EXCLUDED.content, summary = EXCLUDED.summary, tags = EXCLUDED.tags;
+ ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, content = EXCLUDED.content, summary = EXCLUDED.summary, tags = EXCLUDED.tags;

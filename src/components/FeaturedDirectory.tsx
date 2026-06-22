@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ShieldCheck, MapPin, Building2, ArrowRight } from 'lucide-react';
 import { Entity } from '@/lib/types';
+import Image from 'next/image';
 
 interface Props {
   entities: Entity[];
@@ -19,7 +20,7 @@ export default function FeaturedDirectory({ entities }: Props) {
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
           <div className="space-y-4 max-w-2xl">
             <span className="text-xs font-mono tracking-widest text-teal-accent uppercase block">
-              // Ekosistem Direktori B2B
+              {"// Ekosistem Direktori B2B"}
             </span>
             <h2 className="text-3xl md:text-4xl font-heading-serif font-bold text-text-primary tracking-tight">
               Mitra Lokal <span className="gradient-text-teal">Terverifikasi</span>
@@ -51,10 +52,9 @@ export default function FeaturedDirectory({ entities }: Props) {
                 <div className="flex justify-between items-start">
                   <div className="w-12 h-12 bg-white rounded-xl border border-brand-border flex items-center justify-center overflow-hidden">
                     {entity.logo_url ? (
-                      <img 
+                      <Image 
                         src={entity.logo_url} 
                         alt={`Logo ${entity.name}`} 
-                        loading="lazy" 
                         className="w-full h-full object-cover" 
                         width={48} 
                         height={48} 

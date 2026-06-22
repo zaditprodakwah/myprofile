@@ -282,6 +282,7 @@ export default function CityDirectoryPage() {
       </main>
 
       <EntityDrawer
+        key={selectedEntity?.id || 'none'}
         entity={selectedEntity}
         onClose={() => setSelectedEntity(null)}
       />

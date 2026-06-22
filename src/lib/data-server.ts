@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabaseServer as supabase } from './supabase-server';
 import { unstable_cache } from 'next/cache';
 import { Service, CaseStudy, City, Entity, Article, ReferenceItem } from './types';
 

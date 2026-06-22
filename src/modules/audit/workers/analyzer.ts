@@ -1,5 +1,5 @@
 import { JobOrchestrator } from '../application/job-orchestrator';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { PresenceLogger } from '@/modules/shared/infrastructure/logger';
 
 export class AnalyzerEngine {

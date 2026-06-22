@@ -21,7 +21,9 @@ export default function CommandPalette() {
     // Detect OS for inclusive shortcut helper
     if (typeof window !== 'undefined' && window.navigator) {
       const isMac = /Mac|iPod|iPhone|iPad/.test(window.navigator.userAgent);
-      setShortcutText(isMac ? '⌘K' : 'Ctrl + K');
+      if (isMac) {
+        setTimeout(() => setShortcutText('⌘K'), 0);
+      }
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,7 +52,6 @@ export default function CommandPalette() {
   // Fetch results when query changes
   useEffect(() => {
     if (query.trim().length === 0) {
-      setResults([]);
       return;
     }
 
@@ -98,7 +99,7 @@ export default function CommandPalette() {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
-      setQuery('');
+      setTimeout(() => setQuery(''), 0);
     }
   }, [isOpen]);
 
@@ -142,7 +143,13 @@ export default function CommandPalette() {
             type="text"
             placeholder="Cari layanan, halaman, atau wilayah..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setQuery(val);
+              if (val.trim().length === 0) {
+                setResults([]);
+              }
+            }}
             onKeyDown={handleKeyDown}
             className="w-full bg-transparent font-sans text-sm text-text-primary placeholder-text-muted/65 outline-none"
           />
