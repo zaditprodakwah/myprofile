@@ -11,12 +11,19 @@ export default function CommandPalette() {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [shortcutText, setShortcutText] = useState('Ctrl + K');
   
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Keyboard shortcut listener for Cmd+K / Ctrl+K
+  // Keyboard shortcut listener & OS detection
   useEffect(() => {
+    // Detect OS for inclusive shortcut helper
+    if (typeof window !== 'undefined' && window.navigator) {
+      const isMac = /Mac|iPod|iPhone|iPad/.test(window.navigator.userAgent);
+      setShortcutText(isMac ? '⌘K' : 'Ctrl + K');
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
@@ -26,8 +33,18 @@ export default function CommandPalette() {
         setIsOpen(false);
       }
     };
+
+    const handleCustomToggle = () => {
+      setIsOpen((prev) => !prev);
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('toggle-command-palette', handleCustomToggle);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('toggle-command-palette', handleCustomToggle);
+    };
   }, []);
 
   // Fetch results when query changes
@@ -40,7 +57,6 @@ export default function CommandPalette() {
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        // Query Supabase for matching directory entities
         const { data, error } = await supabase
           .from('directory_entities')
           .select('name, slug, city_slug, entity_type')
@@ -56,10 +72,9 @@ export default function CommandPalette() {
           url: `/directory/${item.city_slug}/${item.slug}`
         }));
 
-        // Navigation actions suggestions
         const navActions = [
-          { type: 'action', title: 'Audit Performa Website', subtitle: 'Jalankan analisis Core Web Vitals', url: '/utility/audit-engine' },
-          { type: 'action', title: 'Eksplorasi Direktori Wilayah', subtitle: 'Lihat data entitas regional', url: '/directory' },
+          { type: 'action', title: 'Audit Performa Website', subtitle: 'Jalankan analisis kecepatan & SEO gratis', url: '/utility/audit-engine' },
+          { type: 'action', title: 'Eksplorasi Direktori Wilayah', subtitle: 'Lihat data entitas bisnis regional', url: '/directory' },
           { type: 'action', title: 'Dashboard Operasional', subtitle: 'Monitor aktivitas sistem terbaru', url: '/app' },
           { type: 'action', title: 'Pengaturan Sistem', subtitle: 'Preferensi visual', url: '/settings' },
         ].filter(act => act.title.toLowerCase().includes(query.toLowerCase()));
@@ -125,7 +140,7 @@ export default function CommandPalette() {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Cari entitas, halaman, atau pintasan aksi..."
+            placeholder="Cari layanan, halaman, atau wilayah..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -144,7 +159,7 @@ export default function CommandPalette() {
           {query.trim().length === 0 ? (
             /* Default Shortcuts */
             <div className="p-3 space-y-2">
-              <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider px-2">Aksi Pintasan Cepat</p>
+              <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider px-2">Pintasan Navigasi</p>
               <div className="space-y-1">
                 {[
                   { title: 'Buka Audit Website', url: '/utility/audit-engine', desc: 'Scan performa halaman B2B', icon: Monitor },
@@ -167,15 +182,15 @@ export default function CommandPalette() {
                       </div>
                     </div>
                     <span className="text-[9px] font-mono text-text-muted tracking-wider bg-offwhite px-2 py-0.5 rounded border border-brand-border opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
-                      Enter <CornerDownLeft className="w-2.5 h-2.5" />
+                      Pilih <CornerDownLeft className="w-2.5 h-2.5" />
                     </span>
                   </div>
                 ))}
               </div>
             </div>
           ) : loading ? (
-            <div className="text-center py-8 text-xs font-mono text-text-muted">
-              Mencari database sistem...
+            <div className="text-center py-8 text-xs font-mono text-text-muted animate-pulse">
+              Mencari database...
             </div>
           ) : results.length === 0 ? (
             <div className="text-center py-8 text-xs font-mono text-text-muted">
@@ -218,9 +233,10 @@ export default function CommandPalette() {
             <span>Enter Pilih</span>
             <span>Esc Keluar</span>
           </div>
-          <span>Pintasan Global: Cmd + K</span>
+          <span>Pintasan: {shortcutText}</span>
         </div>
       </div>
     </div>
   );
 }
+

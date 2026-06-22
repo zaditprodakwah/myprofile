@@ -386,19 +386,19 @@ export default function AuditEnginePage() {
                   <span className="text-xs font-mono tracking-widest text-gold-accent uppercase font-bold">HASIL DIAGNOSIS AWAL</span>
                 </div>
                 <p className="text-xs text-text-muted leading-relaxed">
-                  Berdasarkan audit PageSpeed Insights (Google Lighthouse) pada <b>{formData.url}</b>, tingkat potensi kebocoran konversi pelanggan baru Anda berada di level <strong className={leakMetrics?.color}>{leakMetrics?.label} (Perkiraan Leak: {leakMetrics?.leak}%)</strong>.
-                  Skor Performa aktual Anda adalah {auditResult.data?.performance || 0}/100 dan Aksesibilitas di angka {auditResult.data?.accessibility || 0}/100.
-                  Hubungi Zadit untuk mendapatkan dokumen blueprint rekomendasi teknis komprehensif secara gratis agar tidak kehilangan audiens lebih banyak.
+                  Berdasarkan audit performa dan aksesibilitas pada <b>{formData.url}</b>, perkiraan tingkat hambatan konversi bagi calon pelanggan baru Anda berada di kategori <strong className={leakMetrics?.color}>{leakMetrics?.label} (Estimasi Kebocoran: {leakMetrics?.leak}%)</strong>.
+                  Skor Kecepatan Halaman aktual Anda adalah {auditResult.data?.performance || 0}/100 dan Kepatuhan Aksesibilitas berada di {auditResult.data?.accessibility || 0}/100.
+                  Silakan hubungi tim kami untuk mendapatkan dokumen blueprint rekomendasi optimasi secara gratis guna meningkatkan kenyamanan kunjungan audiens Anda.
                 </p>
                 <div className="border-t border-brand-border/60 pt-3 mt-3">
                   <a 
                     href={`/utility/audit-engine/${formData.url.replace(/^https?:\/\//i, '').replace(/\/$/, '')}`}
                     className="text-xs font-semibold text-teal-accent hover:underline flex items-center gap-1.5"
                   >
-                    Buka Halaman Laporan Permanen (Shareable SEO Report Page) ↗
+                    Buka Halaman Laporan Lengkap & Bagikan Tautan ↗
                   </a>
                   <p className="text-[10px] text-text-muted mt-1">
-                    Laporan audit performa ini diarsipkan pada URL publik permanen agar ramah terhadap perayapan sitemap mesin pencari.
+                    Laporan audit ini disimpan pada tautan permanen agar Anda dapat membagikannya dengan tim internal Anda kapan saja.
                   </p>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Search } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -39,6 +39,10 @@ export default function Header() {
     }
     getAvailability();
   }, []);
+
+  const triggerSearch = () => {
+    window.dispatchEvent(new CustomEvent('toggle-command-palette'));
+  };
 
   return (
     <header
@@ -84,6 +88,16 @@ export default function Header() {
 
         {/* Desktop Right CTA */}
         <div className="hidden md:flex items-center gap-3">
+          {/* Search Trigger (Inclusive & Accessible) */}
+          <button
+            onClick={triggerSearch}
+            className="p-2.5 rounded-xl border border-brand-border hover:bg-offwhite text-text-muted hover:text-text-primary transition-all duration-150 flex items-center gap-2 text-[10px] font-mono tracking-wider uppercase"
+            aria-label="Cari entitas atau halaman"
+          >
+            <Search className="w-4 h-4" />
+            Cari
+          </button>
+
           {/* Live availability badge */}
           <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-accent/5 border border-teal-accent/15 rounded-full">
             <span
@@ -106,15 +120,26 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Mobile menu trigger */}
-        <motion.button
-          onClick={() => setIsOpen(!isOpen)}
-          whileTap={{ scale: 0.94 }}
-          className="md:hidden text-text-primary hover:text-teal-accent transition-colors duration-150 ease-out"
-          aria-label="Toggle navigation menu"
-        >
-          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </motion.button>
+        {/* Mobile menu triggers */}
+        <div className="flex md:hidden items-center gap-2">
+          {/* Mobile Search Button */}
+          <button
+            onClick={triggerSearch}
+            className="p-2 rounded-lg text-text-muted hover:text-text-primary bg-offwhite border border-brand-border"
+            aria-label="Cari"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+          
+          <motion.button
+            onClick={() => setIsOpen(!isOpen)}
+            whileTap={{ scale: 0.94 }}
+            className="text-text-primary hover:text-teal-accent transition-colors duration-150 ease-out p-1"
+            aria-label="Toggle navigation menu"
+          >
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </motion.button>
+        </div>
       </div>
 
       {/* Mobile Drawer */}
@@ -138,6 +163,16 @@ export default function Header() {
                 <span className="text-text-muted/40">→</span>
               </Link>
             ))}
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                triggerSearch();
+              }}
+              className="w-full text-left text-sm font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase py-4 transition-colors duration-150 ease-out border-b border-brand-border/50 flex items-center justify-between"
+            >
+              Cari Platform
+              <Search className="w-4 h-4 text-text-muted/40" />
+            </button>
             <Link
               href="/#partnership"
               onClick={() => setIsOpen(false)}

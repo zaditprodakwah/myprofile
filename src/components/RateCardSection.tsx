@@ -721,7 +721,7 @@ export default function RateCardSection({ packagesJson, whatsappNumber = '628231
         </div>
 
         {/* 2. PERSISTENT PRICING PACKAGES */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-16 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-16 items-stretch">
           {packages.map((pkg) => {
             const isFeatured = pkg.id === 'growth';
             return (

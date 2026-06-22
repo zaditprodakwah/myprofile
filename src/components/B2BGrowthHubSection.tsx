@@ -41,7 +41,7 @@ function SpotlightBentoCard({ children, delay = 0 }: SpotlightBentoCardProps) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bento-card relative bg-white border border-brand-border rounded-[2rem] p-8 flex flex-col justify-between hover:shadow-2xl transition-all duration-500 group h-96 overflow-hidden"
+      className="bento-card relative bg-white border border-brand-border rounded-[2rem] p-8 flex flex-col justify-between hover:shadow-2xl transition-all duration-500 group min-h-[24rem] h-full overflow-hidden"
       style={{ '--x': '50%', '--y': '50%' } as React.CSSProperties}
     >
       {/* Glow border mask */}

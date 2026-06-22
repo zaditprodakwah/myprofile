@@ -369,9 +369,9 @@ export default function HeroSection({
                 { label: 'PROFIL TERINDEKS', icon: Users, val: liveStats?.totalDirectories ? `${liveStats.totalDirectories} Entitas` : 'Optimal', color: 'text-teal-accent' },
                 { label: 'KECEPATAN MUAT HALAMAN', icon: Check, val: lcpScore ? `${lcpScore.toFixed(2)}s` : '< 1.8s', color: 'text-teal-accent' },
               ].map(({ label, icon: Icon, val, color }) => (
-                <div key={label} className="flex justify-between items-center text-xs">
-                  <span className="text-text-muted font-mono text-[10px] tracking-wider">{label}</span>
-                  <span className={`font-mono text-[10px] ${color} flex items-center gap-1.5`}>
+                <div key={label} className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs gap-1 sm:gap-4 border-b border-brand-border/30 pb-2 last:border-0 last:pb-0">
+                  <span className="text-text-muted font-mono text-[9px] sm:text-[10px] tracking-wider truncate">{label}</span>
+                  <span className={`font-mono text-[10px] ${color} flex items-center gap-1.5 shrink-0`}>
                     <Icon className="w-3 h-3" />
                     {val}
                   </span>
