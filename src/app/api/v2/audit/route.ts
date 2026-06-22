@@ -44,9 +44,18 @@ export async function POST(req: NextRequest) {
     }
 
     const jobId = uuidv4();
-    const orchestrator = new JobOrchestrator();
+    // Create the job row BEFORE emitting events (FK requirement)
+    const { supabaseServer } = await import('@/lib/supabase-server');
+    const { error: jobError } = await supabaseServer
+      .from('jobs')
+      .insert([{ id: jobId, target_type: source.toUpperCase(), target_id: null }]);
+
+    if (jobError) {
+      throw new Error(`Gagal mendaftarkan antrean audit: ${jobError.message}`);
+    }
 
     // Trigger the orchestration event
+    const orchestrator = new JobOrchestrator();
     await orchestrator.emitEvent({
       job_id: jobId,
       aggregate_id: jobId,

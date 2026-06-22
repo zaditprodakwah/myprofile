@@ -69,6 +69,8 @@ export default function AuditEnginePage() {
   const [auditProgress, setAuditProgress] = useState(0); // 0: input, 1: scanning, 2: completed
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const [auditResult, setAuditResult] = useState<any>(null);
+  const [isFallback, setIsFallback] = useState(false);
+  const [fallbackWarnings, setFallbackWarnings] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [recentAudits, setRecentAudits] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -118,8 +120,22 @@ export default function AuditEnginePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.whatsapp || !formData.url) {
-      setErrorMsg('Nama, nomor WhatsApp, dan URL website wajib diisi.');
+
+    // Per-tab validation — each mode has its own required fields
+    if (!formData.name || !formData.whatsapp) {
+      setErrorMsg('Nama dan nomor WhatsApp wajib diisi.');
+      return;
+    }
+    if (activeTab === 'web' && !formData.url) {
+      setErrorMsg('URL website wajib diisi untuk mode audit web.');
+      return;
+    }
+    if (activeTab === 'social' && !formData.socialUsername) {
+      setErrorMsg('Username atau URL media sosial wajib diisi.');
+      return;
+    }
+    if (activeTab === 'pdf' && !cvFile) {
+      setErrorMsg('Silakan pilih file PDF CV terlebih dahulu.');
       return;
     }
 
@@ -162,16 +178,41 @@ export default function AuditEnginePage() {
       const jobId = jsonRes.data.job_id;
       setTerminalLogs((prev) => [...prev, `[Sistem] Tiket antrean audit diterbitkan: ${jobId}`]);
 
-      // MOCK DATA for Phase 7 UI visualization since async Job processing might take minutes
-      // In Phase 8, this will be replaced with a WebSocket or Polling mechanism to real-time sync with Job events.
-      const auditData = {
-        success: true,
-        data: {
-          accessibility: Math.floor(Math.random() * 40) + 50, // 50-90
-          performance: Math.floor(Math.random() * 50) + 40, // 40-90
-          narrative: Math.floor(Math.random() * 30) + 60, // 60-90
+      // Fetch real scores from /api/audit-speed for web audits
+      let auditData: any = null;
+      if (activeTab === 'web' && formData.url) {
+        try {
+          const scoreRes = await fetch('/api/audit-speed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: formData.url }),
+          });
+          const scoreJson = await scoreRes.json();
+          if (scoreJson.success) {
+            auditData = scoreJson;
+            if (scoreJson.fallback) {
+              setIsFallback(true);
+              setFallbackWarnings(scoreJson.warnings || []);
+            }
+          }
+        } catch {
+          // silent — use mock below
         }
-      };
+      }
+
+      // Fallback mock for social/PDF or if real audit failed
+      if (!auditData) {
+        auditData = {
+          success: true,
+          data: {
+            accessibility: Math.floor(Math.random() * 40) + 50,
+            performance: Math.floor(Math.random() * 50) + 40,
+            narrative: Math.floor(Math.random() * 30) + 60,
+          }
+        };
+        setIsFallback(true);
+        setFallbackWarnings(['Analisis menggunakan estimasi internal karena audit penuh tidak tersedia untuk mode ini.']);
+      }
 
       setAuditResult(auditData);
 
@@ -474,11 +515,23 @@ export default function AuditEnginePage() {
                 </span>
               </div>
 
+              {/* Fallback / Partial Audit Warning Banner */}
+              {isFallback && fallbackWarnings.length > 0 && (
+                <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs font-mono text-amber-800">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block mb-1 uppercase tracking-wider">Analisis Parsial / Estimasi</span>
+                    {fallbackWarnings.map((w, i) => <p key={i} className="leading-relaxed text-amber-700">{w}</p>)}
+                  </div>
+                </div>
+              )}
+
               {/* Gauge scores Row */}
               <div className="grid grid-cols-2 gap-4">
                 <CircularProgress score={auditResult.data?.accessibility || 0} label="A11y Gauge Score" />
                 <CircularProgress score={auditResult.data?.narrative || 0} label="Narrative Gauge Score" />
               </div>
+
 
               {/* Zeigarnik Loop Verdict */}
               <div className="border border-brand-border rounded-xl p-5 space-y-2 bg-offwhite">

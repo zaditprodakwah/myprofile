@@ -57,14 +57,28 @@ async function runAudit(url: string) {
     targetUrl = 'https://' + targetUrl;
   }
 
+  const hostname = new URL(targetUrl).hostname;
   const jobId = uuidv4();
+  // We create a real domain record to satisfy the FK constraint on snapshots.domain_id
   const domainId = uuidv4();
+  const orchestrator = new JobOrchestrator();
+  const warnings: string[] = [];
 
   try {
-    // 1. Initialize Job
-    await supabase.from('jobs').insert([{ id: jobId, target_type: 'DOMAIN', target_id: domainId }]);
-    
-    const orchestrator = new JobOrchestrator();
+    // 1. Ensure a domain record exists so snapshot FK is satisfied
+    await supabase.from('domains').upsert(
+      [{ id: domainId, domain_name: hostname }],
+      { onConflict: 'domain_name', ignoreDuplicates: false }
+    );
+
+    // 2. Create the Job row BEFORE emitting any event (FK requirement)
+    const { error: jobInsertError } = await supabase
+      .from('jobs')
+      .insert([{ id: jobId, target_type: 'DOMAIN', target_id: domainId }]);
+
+    if (jobInsertError) throw new Error(`Failed to create job record: ${jobInsertError.message}`);
+
+    // 3. Emit AuditRequested event (now job row exists)
     await orchestrator.emitEvent({
       job_id: jobId,
       aggregate_id: jobId,
@@ -76,39 +90,62 @@ async function runAudit(url: string) {
       correlation_id: jobId,
     });
 
-    // 2. Execute Pipeline
+    // 4. Execute Pipeline — each stage is isolated; failure = warning, not crash
     const collector = new CollectorWorker();
     const analyzer = new AnalyzerEngine();
     const scoring = new ScoringEngine();
     const recommendation = new RecommendationEngine();
 
-    await collector.execute(jobId, domainId, targetUrl);
+    try {
+      await collector.execute(jobId, domainId, targetUrl);
+    } catch (collectorErr: any) {
+      warnings.push(`Collector partial failure: ${collectorErr.message}`);
+      console.warn('[AuditPipeline] Collector error (non-fatal):', collectorErr.message);
+    }
 
-    // Get snapshot ID
-    const { data: snapshotData, error: snapError } = await supabase
+    // Fetch snapshot — may have been partially created by collector
+    const { data: snapshotData } = await supabase
       .from('snapshots')
       .select('id')
-      .eq('job_id', jobId)
-      .order('captured_at', { ascending: false })
+      .eq('domain_id', domainId)
+      .order('collected_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (snapError || !snapshotData) throw new Error('Snapshot not found after collection');
+    if (!snapshotData) {
+      // Collector failed entirely — return graceful fallback score
+      warnings.push('Tidak dapat terhubung ke website target. Menggunakan estimasi bawaan.');
+      await orchestrator.emitEvent({
+        job_id: jobId, aggregate_id: jobId, aggregate_type: 'JOB',
+        event_name: 'AuditFailed', event_version: 1,
+        payload_json: { reason: 'COLLECTOR_FAILED', warnings },
+        metadata_json: {}, correlation_id: jobId,
+      });
+      return NextResponse.json({
+        success: true,
+        fallback: true,
+        warnings,
+        data: { accessibility: 50, narrative: 50, performance: 50, bestPractices: 50, seo: 50 },
+        message: 'Audit menggunakan estimasi bawaan karena website tidak dapat dijangkau.',
+      });
+    }
+
     const snapshotId = snapshotData.id;
 
-    await analyzer.execute(jobId, snapshotId, jobId);
-    await scoring.execute(jobId, snapshotId, jobId);
-    await recommendation.execute(jobId, snapshotId, jobId);
+    try { await analyzer.execute(jobId, snapshotId, jobId); }
+    catch (e: any) { warnings.push(`Analyzer partial: ${e.message}`); }
+
+    try { await scoring.execute(jobId, snapshotId, jobId); }
+    catch (e: any) { warnings.push(`Scoring partial: ${e.message}`); }
+
+    try { await recommendation.execute(jobId, snapshotId, jobId); }
+    catch (e: any) { warnings.push(`Recommendation partial: ${e.message}`); }
 
     await orchestrator.emitEvent({
-        job_id: jobId,
-        aggregate_id: jobId,
-        aggregate_type: 'JOB',
-        event_name: 'AuditCompleted',
-        event_version: 1,
-        payload_json: { snapshot_id: snapshotId },
-        metadata_json: {},
-        correlation_id: jobId,
+      job_id: jobId, aggregate_id: jobId, aggregate_type: 'JOB',
+      event_name: 'AuditCompleted', event_version: 1,
+      payload_json: { snapshot_id: snapshotId, warnings },
+      metadata_json: {}, correlation_id: jobId,
     });
 
     // Fetch final scores
@@ -116,24 +153,28 @@ async function runAudit(url: string) {
       .from('scores')
       .select('*')
       .eq('snapshot_id', snapshotId)
-      .single();
+      .maybeSingle();
 
-    if (scoresData) {
-      return NextResponse.json({
-        success: true,
-        data: {
+    const scores = scoresData
+      ? {
           accessibility: scoresData.accessibility_score,
           narrative: scoresData.composite_score,
           performance: scoresData.performance_score,
           bestPractices: scoresData.best_practices_score,
-          seo: scoresData.seo_score
+          seo: scoresData.seo_score,
         }
-      });
-    }
+      : { accessibility: 50, narrative: 50, performance: 50, bestPractices: 50, seo: 50 };
 
-    throw new Error('Scores were not generated properly');
+    return NextResponse.json({
+      success: true,
+      fallback: !scoresData,
+      warnings: warnings.length > 0 ? warnings : undefined,
+      data: scores,
+      message: warnings.length > 0 ? 'Audit selesai dengan sebagian komponen menggunakan estimasi.' : undefined,
+    });
+
   } catch (error) {
-    console.error('Audit Pipeline Error:', error);
+    console.error('[AuditPipeline] Fatal error:', error);
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
   }
 }
