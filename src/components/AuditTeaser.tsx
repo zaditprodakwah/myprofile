@@ -74,13 +74,13 @@ export default function AuditTeaser() {
 
         <div className="flex flex-wrap justify-center gap-6 mt-8 opacity-70">
           <div className="flex items-center gap-2 text-xs font-mono">
-            <Search className="w-4 h-4 text-gold-accent" /> SEO Analysis
+            <Search className="w-4 h-4 text-gold-accent" /> Analisis SEO
           </div>
           <div className="flex items-center gap-2 text-xs font-mono">
-            <Gauge className="w-4 h-4 text-emerald-400" /> PageSpeed Score
+            <Gauge className="w-4 h-4 text-emerald-400" /> Metrik Kecepatan
           </div>
           <div className="flex items-center gap-2 text-xs font-mono">
-            <Zap className="w-4 h-4 text-blue-400" /> Accessibility Check
+            <Zap className="w-4 h-4 text-blue-400" /> Cek Aksesibilitas
           </div>
         </div>
 

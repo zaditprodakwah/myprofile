@@ -1066,30 +1066,6 @@ export default function RateCardSection({ packagesJson, whatsappNumber = '628231
 
       </div>
 
-      {/* Persistent Sticky CTA (Desktop & Mobile) */}
-      <div className="fixed bottom-6 left-6 right-6 md:left-auto md:right-8 z-[90] pointer-events-none flex justify-center md:justify-end">
-        <div className="pointer-events-auto bg-brand-slate text-white border border-white/10 rounded-full px-5 py-3 flex items-center gap-4 shadow-2xl backdrop-blur-md max-w-sm w-full sm:w-auto">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-glow opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-accent"></span>
-            </span>
-            <div className="font-mono text-[9px] leading-tight">
-              <span className="block text-teal-glow uppercase font-bold">READY TO SCALE</span>
-              <span className="block text-white/50 lowercase">slots: 2 editorial team sisa</span>
-            </div>
-          </div>
-          <a
-            href={`https://wa.me/${whatsappNumber}?text=Halo%20Zadit%2C%20saya%20ingin%20berkonsultasi%20mengenai%20proyek%20pemasaran%2Fweb.`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-teal-accent hover:bg-teal-glow text-white font-mono text-[9px] uppercase tracking-wider font-bold px-4 py-2 rounded-full transition-all flex items-center gap-1 flex-shrink-0"
-          >
-            <span>Hubungi Zadit</span>
-            <Phone className="w-2.5 h-2.5" />
-          </a>
-        </div>
-      </div>
     </section>
   );
 }

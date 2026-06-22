@@ -113,7 +113,7 @@ export default function B2BGrowthHubSection() {
               <div className="flex flex-wrap gap-2 pt-2">
                 <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Cirebon</span>
                 <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Jakarta Selatan</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">pSEO Maps</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Peta Wilayah</span>
               </div>
             </div>
             <Link 
@@ -140,9 +140,9 @@ export default function B2BGrowthHubSection() {
                 Uji langsung kecepatan website dan struktur aksesibilitas halaman Anda secara instan menggunakan standardisasi Google Lighthouse. Temukan celah kebocoran leads.
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">LCP Analyzer</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Lighthouse API</span>
-                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Leads Capture</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Kecepatan Muat</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Cek Aksesibilitas</span>
+                <span className="text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-md text-text-muted border border-brand-border">Optimasi Konversi</span>
               </div>
             </div>
             <Link 
