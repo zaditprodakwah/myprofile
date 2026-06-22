@@ -12,6 +12,7 @@ export default function CommandPalette() {
   const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [shortcutText, setShortcutText] = useState('Ctrl + K');
+  const [pageSections, setPageSections] = useState<any[]>([]);
   
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -75,9 +76,7 @@ export default function CommandPalette() {
 
         const navActions = [
           { type: 'action', title: 'Audit Performa Website', subtitle: 'Jalankan analisis kecepatan & SEO gratis', url: '/utility/audit-engine' },
-          { type: 'action', title: 'Eksplorasi Direktori Wilayah', subtitle: 'Lihat data entitas bisnis regional', url: '/directory' },
-          { type: 'action', title: 'Dashboard Operasional', subtitle: 'Monitor aktivitas sistem terbaru', url: '/app' },
-          { type: 'action', title: 'Pengaturan Sistem', subtitle: 'Preferensi visual', url: '/settings' },
+          { type: 'action', title: 'Eksplorasi Direktori Wilayah', subtitle: 'Lihat data entitas bisnis regional', url: '/directory' }
         ].filter(act => act.title.toLowerCase().includes(query.toLowerCase()));
 
         setResults([...navActions, ...entityResults]);
@@ -92,11 +91,37 @@ export default function CommandPalette() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Focus input when open
+  // Focus input when open & gather page sections
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 80);
       document.body.style.overflow = 'hidden';
+
+      // Gather sections for dynamic jump-links
+      const sections = Array.from(document.querySelectorAll('h2[id], section[id], div[id]'))
+        .filter(el => {
+          const id = el.getAttribute('id');
+          // Filter out generic next.js ids
+          return id && !['__next', 'root'].includes(id) && el.textContent;
+        })
+        .map(el => {
+          const title = el.tagName.startsWith('H') 
+            ? el.textContent?.trim() 
+            : el.getAttribute('aria-label') || el.id.replace(/-/g, ' ');
+            
+          return {
+            title: title ? title.charAt(0).toUpperCase() + title.slice(1) : 'Bagian Halaman',
+            url: `#${el.id}`,
+            desc: `Lompat ke bagian ${el.id.replace(/-/g, ' ')}`,
+            icon: BookOpen
+          };
+        });
+      
+      // Deduplicate by URL
+      const uniqueSections = sections.filter((v, i, a) => a.findIndex(t => (t.url === v.url)) === i).slice(0, 5);
+      
+      setPageSections(uniqueSections);
+
     } else {
       document.body.style.overflow = '';
       setTimeout(() => setQuery(''), 0);
@@ -169,11 +194,10 @@ export default function CommandPalette() {
               <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider px-2">Pintasan Navigasi</p>
               <div className="space-y-1">
                 {[
-                  { title: 'Buka Audit Website', url: '/utility/audit-engine', desc: 'Scan performa halaman B2B', icon: Monitor },
-                  { title: 'Eksplorasi Direktori', url: '/directory', desc: 'Lihat ekosistem digital regional', icon: Building },
-                  { title: 'Monitor Dashboard', url: '/app', desc: 'Log aktivitas antrean sistem', icon: BookOpen },
-                  { title: 'Pengaturan', url: '/settings', desc: 'Preferensi visual', icon: Settings }
-                ].map((item, idx) => (
+                  ...pageSections,
+                  { title: 'Audit Website', url: '/utility/audit-engine', desc: 'Scan performa halaman B2B', icon: Monitor },
+                  { title: 'Eksplorasi Direktori', url: '/directory', desc: 'Lihat ekosistem digital regional', icon: Building }
+                ].slice(0, 6).map((item, idx) => (
                   <div
                     key={idx}
                     onClick={() => handleSelect(item.url)}

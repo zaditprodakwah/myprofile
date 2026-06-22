@@ -25,7 +25,7 @@ export default function AuditTeaser() {
     <section className="py-16 md:py-24 bg-brand-slate text-white border-b border-brand-mid/40 relative overflow-hidden">
       {/* Dynamic Background */}
       <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
-      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-teal-accent/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-gradient-to-bl from-teal-accent/5 to-transparent rounded-full pointer-events-none" />
       
       <div className="max-w-4xl mx-auto px-6 relative z-10 text-center space-y-8">
         
@@ -49,8 +49,8 @@ export default function AuditTeaser() {
         </div>
 
         <form onSubmit={handleAudit} className="relative max-w-2xl mx-auto mt-8 group">
-          <div className="absolute inset-0 bg-teal-accent/20 blur-xl rounded-2xl group-hover:bg-teal-accent/30 transition-all duration-500 opacity-50"></div>
-          <div className="relative flex flex-col md:flex-row gap-2 bg-brand-mid border border-white/20 p-2 rounded-2xl shadow-2xl">
+          <div className="absolute inset-0 bg-teal-accent/5 rounded-2xl group-hover:bg-teal-accent/10 transition-all duration-500"></div>
+          <div className="relative flex flex-col md:flex-row gap-2 bg-brand-mid border border-white/20 p-2 rounded-2xl shadow-xl">
             <div className="flex-1 flex items-center gap-3 px-4 py-3 bg-brand-slate rounded-xl border border-white/10 focus-within:border-teal-accent/50 transition-colors">
               <Globe className="w-5 h-5 text-white/40" />
               <input 

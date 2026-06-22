@@ -340,7 +340,7 @@ export default function HeroSection({
           >
             <div className="flex justify-between items-center pb-3 border-b border-slate-200/50">
               <span className="text-[10px] font-mono text-text-primary font-bold uppercase tracking-widest">
-                Status Sistem Real-time
+                Kinerja Infrastruktur Digital
               </span>
               <span className={cn(
                 "flex items-center gap-1.5 text-[9px] font-mono px-2.5 py-1 rounded-full border",
@@ -358,11 +358,11 @@ export default function HeroSection({
 
             <div className="space-y-3">
               {[
-                { label: 'INTEGRASI DATA PUBLIK', icon: Database, val: 'SINKRONISASI AKTIF', color: 'text-teal-accent' },
-                { label: 'AUTOMASI DIREKTORI B2B', icon: Globe, val: 'RUTIN DIPERBARUI', color: 'text-teal-accent' },
-                { label: 'ANTREAN AUDIT WEB', icon: Zap, val: liveStats?.totalAudits ? `${liveStats.totalAudits} Kueri` : 'Aktif', color: 'text-teal-accent' },
-                { label: 'PROFIL TERINDEKS', icon: Users, val: liveStats?.totalDirectories ? `${liveStats.totalDirectories} Entitas` : 'Optimal', color: 'text-teal-accent' },
-                { label: 'KECEPATAN MUAT HALAMAN', icon: Check, val: lcpScore ? `${lcpScore.toFixed(2)}s` : '< 1.8s', color: 'text-teal-accent' },
+                { label: 'INTEGRASI OTOMATIS B2B', icon: Database, val: 'SINKRONISASI AKTIF', color: 'text-teal-accent' },
+                { label: 'COVERAGE DIREKTORI LOKAL', icon: Globe, val: 'RUTIN DIPERBARUI', color: 'text-teal-accent' },
+                { label: 'SISTEM AUDIT AKTIF', icon: Zap, val: liveStats?.totalAudits ? `${liveStats.totalAudits} Sesi` : 'Aktif', color: 'text-teal-accent' },
+                { label: 'ENTITAS TERVERIFIKASI', icon: Users, val: liveStats?.totalDirectories ? `${liveStats.totalDirectories} Profil` : 'Optimal', color: 'text-teal-accent' },
+                { label: 'KECEPATAN MUAT OPTIMAL', icon: Check, val: lcpScore ? `${lcpScore.toFixed(2)}s` : '< 1.8s', color: 'text-teal-accent' },
               ].map(({ label, icon: Icon, val, color }) => (
                 <div key={label} className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs gap-1 sm:gap-4 border-b border-brand-border/30 pb-2 last:border-0 last:pb-0">
                   <span className="text-text-muted font-mono text-[9px] sm:text-[10px] tracking-wider truncate">{label}</span>

@@ -2,7 +2,6 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import ProcessSection from "@/components/ProcessSection";
 import CaseStudiesSection from "@/components/CaseStudiesSection";
-import ServicesGrid from "@/components/ServicesGrid";
 import LatestInsights from "@/components/LatestInsights";
 import PartnershipForm from "@/components/PartnershipForm";
 import SidebarNav from "@/components/SidebarNav";
@@ -13,14 +12,14 @@ import RateCardSection from "@/components/RateCardSection";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats, getFeaturedEntities } from "@/lib/data-server";
 
-import B2BGrowthHubSection from "@/components/B2BGrowthHubSection";
+import IntegratedServicesHub from "@/components/IntegratedServicesHub";
 import dynamic from "next/dynamic";
 import { Metadata } from "next";
 
 // Dynamic Imports with Skeleton Loaders for Heavy/Interactive Components to optimize LCP & TBT
-const SovereignTrustBentoBlock = dynamic(() => import("@/components/sovereign/SovereignTrustBentoBlock"), {
+const MarketTelemetryBlock = dynamic(() => import("@/components/MarketTelemetryBlock"), {
   loading: () => (
-    <div className="w-full my-12 bg-black rounded-3xl p-6 md:p-10 border border-white/5 h-[600px] animate-pulse flex items-center justify-center">
+    <div className="w-full my-12 bg-brand-slate rounded-3xl p-6 md:p-10 border border-brand-mid h-[600px] animate-pulse flex items-center justify-center">
       <span className="text-white/50 font-mono text-sm">Menginisiasi Telemetri Sistem...</span>
     </div>
   )
@@ -77,20 +76,20 @@ export default async function Home() {
           liveStats={liveStats}
         />
         
-        <B2BGrowthHubSection />
+        <ProcessSection />
         
-        <div className="max-w-6xl mx-auto px-6">
-          <SovereignTrustBentoBlock />
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          <MarketTelemetryBlock />
         </div>
 
         <AuditTeaser />
 
         <FeaturedDirectory entities={featuredEntities} />
 
-        <ProcessSection />
+        <IntegratedServicesHub services={services} />
+
         <CaseStudiesSection caseStudies={caseStudies} />
         <TestimonialsCarousel caseStudies={caseStudies} />
-        <ServicesGrid services={services} />
         
         <RateCardSection 
           packagesJson={config.pricing_packages as string} 
