@@ -75,9 +75,12 @@ export class JobOrchestrator {
       case 'AuditValidated': return AuditState.VALIDATING; // Translates internally to ready for discovery
       case 'DiscoveryCompleted': return AuditState.DISCOVERING;
       case 'AuditStarted': return AuditState.AUDITING;
-      case 'AuditCollected': return AuditState.COLLECTING;
-      case 'SnapshotNormalized': return AuditState.NORMALIZING;
-      case 'ScoreComputed': return AuditState.SCORING;
+      case 'AuditCollected': 
+      case 'CollectionCompleted': return AuditState.COLLECTING;
+      case 'SnapshotNormalized': 
+      case 'AnalysisCompleted': return AuditState.NORMALIZING;
+      case 'ScoreComputed': 
+      case 'ScoringCompleted': return AuditState.SCORING;
       case 'SnapshotCreated': return AuditState.PERSISTING;
       case 'RecommendationGenerated': return AuditState.RECOMMENDING; // Mapped to RECOMMENDING for Phase 2
       case 'DirectoryPublished': return AuditState.PUBLISHING;

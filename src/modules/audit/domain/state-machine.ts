@@ -23,7 +23,7 @@ export interface TransitionContext {
 }
 
 export const ALLOWED_TRANSITIONS: Record<AuditState, AuditState[]> = {
-  [AuditState.QUEUED]: [AuditState.VALIDATING, AuditState.CANCELLED, AuditState.EXPIRED],
+  [AuditState.QUEUED]: [AuditState.VALIDATING, AuditState.CANCELLED, AuditState.EXPIRED, AuditState.FAILED],
   [AuditState.VALIDATING]: [AuditState.DISCOVERING, AuditState.FAILED],
   [AuditState.DISCOVERING]: [AuditState.AUDITING, AuditState.FAILED],
   [AuditState.AUDITING]: [AuditState.COLLECTING, AuditState.FAILED],

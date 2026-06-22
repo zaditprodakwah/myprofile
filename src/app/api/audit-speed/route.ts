@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { v4 as uuidv4 } from 'uuid';
 import { JobOrchestrator } from '@/modules/audit/application/job-orchestrator';
 import { CollectorWorker } from '@/modules/audit/workers/collector';
 import { AnalyzerEngine } from '@/modules/audit/workers/analyzer';
 import { ScoringEngine } from '@/modules/audit/workers/scoring';
 import { RecommendationEngine } from '@/modules/audit/workers/recommendation';
+import { DirectorySyncWorker } from '@/modules/audit/workers/directory-sync';
 
 export async function POST(request: Request) {
   try {
@@ -60,16 +61,32 @@ async function runAudit(url: string) {
   const hostname = new URL(targetUrl).hostname;
   const jobId = uuidv4();
   // We create a real domain record to satisfy the FK constraint on snapshots.domain_id
-  const domainId = uuidv4();
+  let domainId = uuidv4();
   const orchestrator = new JobOrchestrator();
   const warnings: string[] = [];
 
   try {
     // 1. Ensure a domain record exists so snapshot FK is satisfied
-    await supabase.from('domains').upsert(
-      [{ id: domainId, domain_name: hostname }],
-      { onConflict: 'domain_name', ignoreDuplicates: false }
-    );
+    let { data: existingDomain } = await supabase
+      .from('domains')
+      .select('id')
+      .eq('domain_name', hostname)
+      .maybeSingle();
+
+    if (!existingDomain) {
+      const { data: newDomain, error: domainError } = await supabase
+        .from('domains')
+        .insert([{ id: domainId, domain_name: hostname }])
+        .select('id')
+        .single();
+
+      if (domainError || !newDomain) {
+        throw new Error(`Failed to create domain record: ${domainError?.message}`);
+      }
+      domainId = newDomain.id;
+    } else {
+      domainId = existingDomain.id;
+    }
 
     // 2. Create the Job row BEFORE emitting any event (FK requirement)
     const { error: jobInsertError } = await supabase
@@ -147,6 +164,13 @@ async function runAudit(url: string) {
       payload_json: { snapshot_id: snapshotId, warnings },
       metadata_json: {}, correlation_id: jobId,
     });
+
+    try {
+      const directorySync = new DirectorySyncWorker();
+      await directorySync.execute(jobId, domainId, snapshotId, jobId);
+    } catch (e: any) {
+      warnings.push(`DirectorySync partial: ${e.message}`);
+    }
 
     // Fetch final scores
     const { data: scoresData } = await supabase

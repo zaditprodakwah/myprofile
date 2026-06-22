@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { CheckCircle, Zap, Send, ArrowRight, AlertTriangle, Monitor, Globe, FileText, Share2, UploadCloud } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
+import PdfExportGenerator from '@/components/PdfExportGenerator';
 
 // Circular SVG Progress Gauge Component
 function CircularProgress({ score, label }: { score: number; label: string }) {
@@ -94,28 +95,10 @@ export default function AuditEnginePage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Run terminal logs simulation during API call
-  const runTerminalLogs = (targetUrl: string, signal: { aborted: boolean }) => {
-    const logs = [
-      `Membaca struktur alamat website ${targetUrl}...`,
-      `Menguji aksesibilitas kontras elemen UI...`,
-      `Menganalisis kerapian struktur 200 kata pertama...`,
-      `Menyusun draf visualisasi metrik...`
-    ];
-
-    let currentIndex = 0;
-    
-    const addNextLog = () => {
-      if (signal.aborted) return;
-      if (currentIndex < logs.length) {
-        const timestamp = new Date().toLocaleTimeString().split(' ')[0];
-        setTerminalLogs((prev) => [...prev, `[${timestamp}] ${logs[currentIndex]}`]);
-        currentIndex++;
-        setTimeout(addNextLog, 1600);
-      }
-    };
-
-    addNextLog();
+  // Terminal logging utility
+  const addTerminalLog = (message: string) => {
+    const timestamp = new Date().toLocaleTimeString().split(' ')[0];
+    setTerminalLogs((prev) => [...prev, `[${timestamp}] ${message}`]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -144,8 +127,10 @@ export default function AuditEnginePage() {
     setErrorMsg('');
     setTerminalLogs([]);
 
-    const signal = { aborted: false };
-    runTerminalLogs(activeTab === 'web' ? formData.url : activeTab === 'social' ? formData.socialUsername : cvFile?.name || 'Document', signal);
+    const targetName = activeTab === 'web' ? formData.url : activeTab === 'social' ? formData.socialUsername : cvFile?.name || 'Document';
+    addTerminalLog(`Menginisiasi antrean audit untuk: ${targetName}...`);
+
+    let realtimeChannel: any = null;
 
     try {
       const payload = new FormData();
@@ -176,7 +161,29 @@ export default function AuditEnginePage() {
       }
 
       const jobId = jsonRes.data.job_id;
-      setTerminalLogs((prev) => [...prev, `[Sistem] Tiket antrean audit diterbitkan: ${jobId}`]);
+      addTerminalLog(`Tiket antrean audit diterbitkan: ${jobId}`);
+
+      // Subscribe to Realtime Supabase channel for this specific job
+      realtimeChannel = supabase.channel(`job_${jobId}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'job_events', filter: `job_id=eq.${jobId}` },
+          (payload) => {
+            const ev = payload.new.event_name;
+            let msg = `Memproses event: ${ev}`;
+            if (ev === 'CollectionCompleted') msg = '✅ Data mentah berhasil dikumpulkan (Collector selesai)';
+            if (ev === 'AnalysisCompleted') msg = '🧠 Analisis heuristik dan semantik selesai';
+            if (ev === 'ScoringCompleted') msg = '📊 Kalkulasi skor komposit berhasil dicatat';
+            if (ev === 'RecommendationGenerated') msg = '💡 Menyusun draf rekomendasi prioritas...';
+            if (ev === 'AuditFailed') msg = '⚠️ Terjadi kegagalan parsial pada sistem (Fallback mode)';
+            addTerminalLog(msg);
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            addTerminalLog('Terhubung ke saluran real-time. Menunggu status pekerja...');
+          }
+        });
 
       // Fetch real scores from /api/audit-speed for web audits
       let auditData: any = null;
@@ -198,9 +205,25 @@ export default function AuditEnginePage() {
         } catch {
           // silent — use mock below
         }
+      } else if (activeTab === 'pdf' && cvFile) {
+        try {
+          const cvPayload = new FormData();
+          cvPayload.append('file', cvFile);
+          cvPayload.append('jobId', jobId);
+          const scoreRes = await fetch('/api/audit-cv', {
+            method: 'POST',
+            body: cvPayload,
+          });
+          const scoreJson = await scoreRes.json();
+          if (scoreJson.success) {
+            auditData = scoreJson;
+          }
+        } catch {
+          // silent — use mock below
+        }
       }
 
-      // Fallback mock for social/PDF or if real audit failed
+      // Fallback mock for social or if real audit failed
       if (!auditData) {
         auditData = {
           success: true,
@@ -213,6 +236,8 @@ export default function AuditEnginePage() {
         setIsFallback(true);
         setFallbackWarnings(['Analisis menggunakan estimasi internal karena audit penuh tidak tersedia untuk mode ini.']);
       }
+
+      setAuditResult(auditData);
 
       setAuditResult(auditData);
 
@@ -232,22 +257,20 @@ export default function AuditEnginePage() {
       }
 
       // Complete progress
-      signal.aborted = true;
-      const timestamp = new Date().toLocaleTimeString().split(' ')[0];
-      setTerminalLogs((prev) => [
-        ...prev, 
-        `[${timestamp}] ANALISIS SELESAI. LAPORAN REKOMENDASI SIAP DITAMPILKAN...`
-      ]);
+      addTerminalLog('ANALISIS SELESAI. LAPORAN REKOMENDASI SIAP DITAMPILKAN...');
 
       setTimeout(() => {
         setAuditProgress(2); // show result view
       }, 1000);
 
     } catch (err: any) {
-      signal.aborted = true;
-      setErrorMsg(err.message || 'Koneksi API gagal. Sila periksa kembali URL Anda.');
+      setErrorMsg(err.message || 'Koneksi API gagal. Sila periksa kembali input Anda.');
       setAuditProgress(0); // return to form on error
+    } finally {
       setIsSubmitting(false);
+      if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
+      }
     }
   };
 
@@ -559,12 +582,11 @@ export default function AuditEnginePage() {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button
-                  onClick={handleWhatsAppRedirect}
-                  className="flex-1 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans font-bold uppercase tracking-wider py-4 rounded-xl text-center transition-all shadow-sm text-xs flex items-center justify-center gap-2 select-none active:scale-98 cursor-pointer"
-                >
-                  Ambil Dokumen Rekomendasi & Hubungi Zadit <Send className="w-3.5 h-3.5" />
-                </button>
+                <PdfExportGenerator 
+                  auditResult={auditResult}
+                  formData={formData}
+                  activeTab={activeTab}
+                />
                 <button
                   onClick={handleReset}
                   className="border border-brand-border hover:border-text-primary text-text-muted hover:text-text-primary font-heading-sans font-bold uppercase tracking-wider px-6 py-4 rounded-xl text-center transition-colors text-xs select-none active:scale-98 cursor-pointer"
