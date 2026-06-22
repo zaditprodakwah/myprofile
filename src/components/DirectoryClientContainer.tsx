@@ -109,7 +109,7 @@ export default function DirectoryClientContainer({ cities }: DirectoryClientCont
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
             <input
               type="text"
-              placeholder="Cari entitas bisnis nasional..."
+              placeholder="contoh: Agensi Kreatif Makassar atau UMKM Kuliner Bandung"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-offwhite border border-brand-border rounded-xl font-sans text-xs text-text-primary placeholder-text-muted/65 focus:ring-1 focus:ring-teal-accent focus:bg-white outline-none transition-all"
@@ -213,7 +213,7 @@ export default function DirectoryClientContainer({ cities }: DirectoryClientCont
                     <div className="flex justify-between items-center pt-3 border-t border-brand-border mt-3">
                       <span className="text-[8px] font-mono text-text-muted">SCORE: {ent.trustScore}/5.0</span>
                       <span className="text-[10px] font-semibold text-teal-accent flex items-center gap-0.5">
-                        Detail <ArrowRight className="w-3 h-3" />
+                        Lihat Laporan Kredibilitas <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
                   </div>

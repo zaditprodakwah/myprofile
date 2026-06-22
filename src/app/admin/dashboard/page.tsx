@@ -126,7 +126,7 @@ export default function AdminDashboardPage() {
   const [showEntityForm, setShowEntityForm] = useState(false);
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null);
   const [entityForm, setEntityForm] = useState({
-    city_slug: '', entity_type: 'service', name: '', slug: '', tagline: '', description: '', contact_phone: '', contact_email: '', website_url: '', logo_url: '', address: '', google_maps_url: '', verification_status: 'unverified', trust_score: 0.0, affiliate_url: ''
+    city_slug: '', entity_type: 'service' as Entity['entity_type'], name: '', slug: '', tagline: '', description: '', contact_phone: '', contact_email: '', website_url: '', logo_url: '', address: '', google_maps_url: '', verification_status: 'unverified' as Entity['verification_status'], trust_score: 0.0, affiliate_url: '', place_id: ''
   });
 
   const [showArticleForm, setShowArticleForm] = useState(false);
@@ -459,6 +459,43 @@ export default function AdminDashboardPage() {
   };
 
   // ENTITIES CRUD
+  const [isEnriching, setIsEnriching] = useState<string | null>(null);
+
+  const handleTriggerEnrich = async (entityId: string, placeId: string, name: string, citySlug: string) => {
+    setIsEnriching(entityId);
+    try {
+      let url = `/api/sovereign/places?entityId=${entityId}`;
+      if (placeId) {
+        url += `&placeId=${encodeURIComponent(placeId)}`;
+      } else {
+        url += `&query=${encodeURIComponent(name + ' ' + citySlug)}`;
+      }
+      const res = await fetch(url);
+      const resData = await res.json();
+      if (res.ok && resData.success) {
+        triggerMessage('Enrichment Google Places berhasil!');
+        // Update form state if currently editing
+        if (editingEntity && editingEntity.id === entityId) {
+          setEntityForm(prev => ({
+            ...prev,
+            place_id: resData.data.placeId || prev.place_id,
+            address: resData.data.address || prev.address,
+            contact_phone: resData.data.phone || prev.contact_phone,
+            website_url: resData.data.website || prev.website_url,
+            trust_score: resData.data.rating || prev.trust_score,
+          }));
+        }
+        await fetchDirectory();
+      } else {
+        throw new Error(resData.error || 'Gagal melakukan enrichment');
+      }
+    } catch (err) {
+      triggerMessage((err as Error).message || 'Gagal melakukan enrichment', 'error');
+    } finally {
+      setIsEnriching(null);
+    }
+  };
+
   const handleEntitySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -479,7 +516,8 @@ export default function AdminDashboardPage() {
         google_maps_url: entityForm.google_maps_url || null,
         verification_status: entityForm.verification_status as Entity['verification_status'],
         trust_score: Number(entityForm.trust_score),
-        affiliate_url: entityForm.affiliate_url || null
+        affiliate_url: entityForm.affiliate_url || null,
+        place_id: entityForm.place_id || null
       };
 
       if (editingEntity) {
@@ -493,7 +531,7 @@ export default function AdminDashboardPage() {
       }
 
       setEntityForm({
-        city_slug: '', entity_type: 'service', name: '', slug: '', tagline: '', description: '', contact_phone: '', contact_email: '', website_url: '', logo_url: '', address: '', google_maps_url: '', verification_status: 'unverified', trust_score: 0.0, affiliate_url: ''
+        city_slug: '', entity_type: 'service' as Entity['entity_type'], name: '', slug: '', tagline: '', description: '', contact_phone: '', contact_email: '', website_url: '', logo_url: '', address: '', google_maps_url: '', verification_status: 'unverified' as Entity['verification_status'], trust_score: 0.0, affiliate_url: '', place_id: ''
       });
       setEditingEntity(null);
       setShowEntityForm(false);
@@ -520,7 +558,8 @@ export default function AdminDashboardPage() {
       google_maps_url: ent.google_maps_url || '',
       verification_status: ent.verification_status,
       trust_score: ent.trust_score,
-      affiliate_url: ent.affiliate_url || ''
+      affiliate_url: ent.affiliate_url || '',
+      place_id: ent.place_id || ''
     });
     setShowEntityForm(true);
   };
@@ -561,7 +600,8 @@ export default function AdminDashboardPage() {
         google_maps_url: item.google_maps_url || null,
         verification_status: item.verification_status || 'unverified',
         trust_score: Number(item.trust_score || 0.0),
-        affiliate_url: item.affiliate_url || null
+        affiliate_url: item.affiliate_url || null,
+        place_id: item.place_id || null
       }));
 
       const { error } = await supabase.from('directory_entities').insert(cleanPayloads);
@@ -1702,7 +1742,7 @@ export default function AdminDashboardPage() {
                             <select
                               required
                               value={entityForm.entity_type}
-                              onChange={(e) => setEntityForm({ ...entityForm, entity_type: e.target.value })}
+                              onChange={(e) => setEntityForm({ ...entityForm, entity_type: e.target.value as Entity['entity_type'] })}
                               className="w-full bg-white border border-brand-border rounded-xl px-3 py-2 text-xs"
                             >
                               <option value="service">Service (Layanan)</option>
@@ -1826,7 +1866,7 @@ export default function AdminDashboardPage() {
                               <label className="block text-[10px] font-mono text-text-muted uppercase mb-1">Status Verifikasi</label>
                               <select
                                 value={entityForm.verification_status}
-                                onChange={(e) => setEntityForm({ ...entityForm, verification_status: e.target.value })}
+                                onChange={(e) => setEntityForm({ ...entityForm, verification_status: e.target.value as Entity['verification_status'] })}
                                 className="w-full bg-white border border-brand-border rounded-xl px-3 py-2 text-xs"
                               >
                                 <option value="unverified">Unverified (Belum Klaim)</option>
@@ -1843,6 +1883,41 @@ export default function AdminDashboardPage() {
                               onChange={(e) => setEntityForm({ ...entityForm, affiliate_url: e.target.value })}
                               className="w-full bg-white border border-brand-border rounded-xl px-3 py-2 text-xs"
                             />
+                          </div>
+                          <div className="col-span-2 border-t border-brand-border/40 pt-4 mt-2">
+                            <label className="block text-[10px] font-mono text-text-muted uppercase mb-1">Google Place ID (Opsional)</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={entityForm.place_id}
+                                onChange={(e) => setEntityForm({ ...entityForm, place_id: e.target.value })}
+                                className="flex-grow bg-white border border-brand-border rounded-xl px-3 py-2 text-xs font-mono"
+                                placeholder="ChIJa12345abcdef..."
+                              />
+                              {editingEntity && (
+                                <button
+                                  type="button"
+                                  disabled={isEnriching === editingEntity.id}
+                                  onClick={() => handleTriggerEnrich(editingEntity.id, entityForm.place_id, entityForm.name, entityForm.city_slug)}
+                                  className="bg-gold-accent hover:bg-gold-accent/80 text-text-primary text-[10px] font-mono uppercase px-3 py-2 rounded-xl font-bold flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
+                                >
+                                  {isEnriching === editingEntity.id ? (
+                                    <>
+                                      <RefreshCw className="w-3 h-3 animate-spin" />
+                                      Enriching...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <RefreshCw className="w-3 h-3" />
+                                      Enrich via Google API
+                                    </>
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-text-muted mt-1 leading-relaxed">
+                              Jika Place ID dikosongkan, pencarian teks menggunakan `Nama + Kota` akan dicoba terlebih dahulu untuk mencari profil yang cocok secara otomatis.
+                            </p>
                           </div>
                         </div>
 
@@ -2611,7 +2686,7 @@ export default function AdminDashboardPage() {
                                   const res = await fetch('/api/scraper/outscraper', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ query: gmapsQuery, webhookUrl: 'https://muhzadit.vercel.app/app/webhook' })
+                                    body: JSON.stringify({ query: gmapsQuery, webhookUrl: window.location.origin + '/app/webhook' })
                                   });
                                   const data = await res.json();
                                   setGmapsScrapeResult(JSON.stringify(data, null, 2));

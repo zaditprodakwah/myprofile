@@ -119,17 +119,17 @@ export default function Footer() {
             </a>
           </div>
 
-          {/* Site Map Column */}
+          {/* Quick Nav Column */}
           <div className="md:col-span-3 space-y-4">
             <h4 className="text-[10px] font-mono tracking-widest text-text-inverse/40 uppercase border-b border-brand-mid pb-2">
-              PETA SITUS
+              NAVIGASI CEPAT
             </h4>
             <ul className="space-y-2.5">
               {[
-                { href: '/#hero', label: 'Overview' },
-                { href: '/#process', label: 'Metodologi' },
-                { href: '/#case-studies', label: 'Studi Kasus' },
-                { href: '/#services', label: 'Spesialisasi' },
+                { href: '/', label: 'Beranda Utama' },
+                { href: '/directory', label: 'Direktori Regional' },
+                { href: '/blog', label: 'Artikel & Insight' },
+                { href: '/utility/audit-engine', label: 'Audit SEO & Performa' },
                 { href: '/#partnership', label: 'Mulai Kemitraan' },
               ].map(({ href, label }) => (
                 <li key={href}>
@@ -144,42 +144,28 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Tools & Services Column */}
+          {/* Newsletter / Lead Capture Column */}
           <div className="md:col-span-4 space-y-4">
             <h4 className="text-[10px] font-mono tracking-widest text-text-inverse/40 uppercase border-b border-brand-mid pb-2">
-              ALAT & LAYANAN
+              DAPATKAN INSIGHT PERTUMBUHAN
             </h4>
-            <ul className="space-y-2.5">
-              {[
-                { href: '/blog', label: 'Growth Hub & Telemetri' },
-                { href: '/directory', label: 'Direktori Bisnis Wilayah' },
-                { href: '/utility/audit-engine', label: 'Audit Kecepatan Website' },
-                { href: '/utility/fact-checker', label: 'B2B Fact-Checker Engine' },
-                { href: '/utility/video-auditor', label: 'YouTube Video Auditor' },
-                { href: 'https://kontak.link/muhzadit', label: 'Kontak.Link', external: true },
-              ].map(({ href, label, external }) => (
-                <li key={href}>
-                  {external ? (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-text-inverse/55 hover:text-teal-accent transition-colors inline-flex items-center gap-1 hover-underline"
-                    >
-                      {label}
-                      <ArrowUpRight className="w-2.5 h-2.5 opacity-50" />
-                    </a>
-                  ) : (
-                    <Link
-                      href={href}
-                      className="text-xs text-text-inverse/55 hover:text-teal-accent transition-colors hover-underline"
-                    >
-                      {label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <p className="text-xs text-text-inverse/55 leading-relaxed">
+              Kamu sudah punya produk bagus. Yang kurang: orang yang tepat belum menemukannya. Berlangganan insight taktis kami.
+            </p>
+            <form className="flex flex-col gap-2" onSubmit={(e) => e.preventDefault()}>
+              <input 
+                type="email" 
+                placeholder="contoh: founder@startup.com" 
+                className="w-full bg-brand-mid/50 border border-brand-mid/80 rounded-xl px-4 py-2.5 text-xs text-text-inverse placeholder-text-inverse/30 focus:outline-none focus:border-teal-accent transition-colors"
+                required
+              />
+              <button 
+                type="submit"
+                className="bg-teal-accent hover:bg-teal-600 text-white font-heading-sans font-bold text-[10px] uppercase tracking-wider py-2.5 rounded-xl transition-all w-full flex justify-center items-center gap-2"
+              >
+                Kirimkan Insight Strategis
+              </button>
+            </form>
           </div>
         </div>
 

@@ -42,10 +42,10 @@ export default function VideoAuditorPage() {
         setVideo(data.data);
       } else {
         setVideo(null);
-        setError(data.error || 'Gagal mengaudit video YouTube.');
+        setError(data.error || 'Sistem kami tidak dapat menganalisis video tersebut. Pastikan tautan YouTube valid.');
       }
     } catch (err) {
-      setError('Terjadi kesalahan koneksi saat mengaudit.');
+      setError('Koneksi terputus. Silakan periksa jaringan Anda dan coba lagi.');
     } finally {
       setLoading(false);
     }
@@ -93,7 +93,7 @@ export default function VideoAuditorPage() {
               <input
                 type="url"
                 required
-                placeholder="Masukkan link video YouTube Anda (Contoh: https://www.youtube.com/watch?v=...)"
+                placeholder="contoh: https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 className="w-full bg-offwhite border border-brand-border rounded-xl pl-12 pr-4 py-3.5 text-xs text-text-primary focus:ring-2 focus:ring-red-500 outline-none font-sans"
@@ -104,14 +104,15 @@ export default function VideoAuditorPage() {
               disabled={loading}
               className="bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase font-bold py-3.5 px-8 rounded-xl cursor-pointer transition-colors shrink-0 disabled:opacity-50"
             >
-              {loading ? 'Mengaudit...' : 'Audit Video'}
+              {loading ? 'Mengaudit...' : 'Uji Skor SEO Video Anda →'}
             </button>
           </form>
 
           {/* Error Panel */}
           {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded-xl font-mono">
-              {error}
+            <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 text-xs rounded-xl font-sans flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -246,8 +247,12 @@ export default function VideoAuditorPage() {
               </motion.div>
             );
           })() : audited ? (
-            <div className="bg-white border border-brand-border rounded-2xl p-12 text-center text-text-muted text-sm shadow-xs">
-              Koneksi gagal atau video tidak dapat ditemukan. Pastikan URL video YouTube Anda publik dan valid.
+            <div className="bg-white border border-brand-border rounded-2xl p-12 text-center text-text-muted text-sm shadow-xs space-y-3">
+              <AlertCircle className="w-10 h-10 text-red-500 mx-auto" />
+              <h4 className="font-heading-sans font-bold text-text-primary">Gagal Menghubungi Server YouTube</h4>
+              <p className="text-xs max-w-md mx-auto leading-relaxed">
+                Kami tidak dapat memuat data video tersebut. Pastikan link video YouTube Anda sudah benar, status visibilitas video adalah publik (bukan privat atau tidak publik), dan Anda memiliki koneksi internet aktif. Coba gunakan format standar: <strong>https://www.youtube.com/watch?v=dQw4w9WgXcQ</strong>.
+              </p>
             </div>
           ) : null}
 

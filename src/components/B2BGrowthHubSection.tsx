@@ -36,28 +36,29 @@ function SpotlightBentoCard({ children, delay = 0 }: SpotlightBentoCardProps) {
       variants={cardVariants}
       initial="hidden"
       whileInView="visible"
+      whileHover={{ scale: 1.01 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ delay }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bento-card relative bg-white border border-brand-border rounded-[2rem] p-8 flex flex-col justify-between hover:shadow-2xl transition-all duration-500 group min-h-[24rem] h-full overflow-hidden"
+      className="bento-card relative bg-white border border-brand-border rounded-[2rem] p-8 flex flex-col justify-between hover:shadow-xl hover:border-brand-border/80 transition-all duration-300 group min-h-[24rem] h-full overflow-hidden"
       style={{ '--x': '50%', '--y': '50%' } as React.CSSProperties}
     >
       {/* Glow border mask */}
       <div
-        className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+        className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
-          background: 'radial-gradient(350px circle at var(--x) var(--y), rgba(13,148,136,0.15), transparent 80%)',
+          background: 'radial-gradient(350px circle at var(--x) var(--y), rgba(13,148,136,0.09), transparent 80%)',
         }}
       />
       
       {/* Inner glowing border */}
       <div
-        className="absolute inset-x-0 top-0 h-px rounded-t-[2rem] transition-opacity duration-500 pointer-events-none"
+        className="absolute inset-x-0 top-0 h-px rounded-t-[2rem] transition-opacity duration-300 pointer-events-none"
         style={{
           opacity: isHovered ? 1 : 0,
-          background: 'linear-gradient(to right, transparent, rgba(13,148,136,0.4), transparent)',
+          background: 'linear-gradient(to right, transparent, rgba(13,148,136,0.25), transparent)',
         }}
       />
 
@@ -98,7 +99,7 @@ export default function B2BGrowthHubSection() {
           <SpotlightBentoCard delay={0}>
             <div className="space-y-5 relative z-10">
               <motion.div 
-                whileHover={{ y: -3, scale: 1.05 }}
+                whileHover={{ y: -1, scale: 1.02 }}
                 className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent shadow-sm"
               >
                 <MapPin className="w-6 h-6" />
@@ -127,7 +128,7 @@ export default function B2BGrowthHubSection() {
           <SpotlightBentoCard delay={0.1}>
             <div className="space-y-5 relative z-10">
               <motion.div 
-                whileHover={{ y: -3, scale: 1.05 }}
+                whileHover={{ y: -1, scale: 1.02 }}
                 className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent shadow-sm"
               >
                 <Gauge className="w-6 h-6" />
@@ -156,7 +157,7 @@ export default function B2BGrowthHubSection() {
           <SpotlightBentoCard delay={0.2}>
             <div className="space-y-5 relative z-10">
               <motion.div 
-                whileHover={{ y: -3, scale: 1.05 }}
+                whileHover={{ y: -1, scale: 1.02 }}
                 className="w-12 h-12 rounded-2xl bg-teal-accent/10 border border-teal-accent/20 flex items-center justify-center text-teal-accent shadow-sm"
               >
                 <Database className="w-6 h-6" />

@@ -64,6 +64,9 @@ export interface Entity {
   verification_status: 'unverified' | 'claimed' | 'verified';
   trust_score: number;
   affiliate_url?: string;
+  place_id?: string;
+  popular_times?: any[];
+  last_scraped?: string;
   claim_token?: string;
   raw_metadata?: Record<string, unknown> | null;
   created_at?: string;

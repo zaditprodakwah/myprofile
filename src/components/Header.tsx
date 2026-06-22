@@ -7,10 +7,11 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/directory', label: 'Direktori B2B' },
-  { href: '/blog', label: 'Growth Hub & Telemetri' },
-  { href: '/utility/audit-engine', label: 'Audit Kecepatan & SEO' },
+  { href: '/', label: 'Beranda' },
+  { href: '/directory', label: 'Direktori' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/utility/audit-engine', label: 'Audit' },
+  { href: '/#partnership', label: 'Kontak' },
 ];
 
 export default function Header() {

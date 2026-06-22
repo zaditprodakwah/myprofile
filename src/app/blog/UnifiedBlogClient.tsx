@@ -428,40 +428,48 @@ export default function UnifiedBlogClient({ initialArticles, initialReferences }
               <Link
                 key={item.id}
                 href={item.url}
-                className="bg-white border border-brand-border rounded-2xl p-6 md:p-8 hover:border-teal-accent hover:shadow-md transition-all duration-300 flex flex-col justify-between group h-64 shadow-xs"
+                className="block outline-none"
               >
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full border border-brand-border text-text-primary uppercase">
-                      {item.icon}
-                      {item.label}
-                    </span>
-                    <span className="text-[9px] font-mono text-text-muted flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-teal-accent" /> {formatDate(item.publishedAt)}
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-lg md:text-xl font-heading-sans font-bold text-text-primary group-hover:text-teal-accent transition-colors leading-snug line-clamp-2">
-                    {item.title}
-                  </h3>
-                  
-                  <p className="text-xs text-text-muted leading-relaxed line-clamp-2">
-                    {item.summary}
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center pt-4 border-t border-brand-border mt-4">
-                  <div className="flex gap-1.5 overflow-hidden">
-                    {item.tags.slice(0, 3).map((tag: string) => (
-                      <span key={tag} className="text-[9px] font-mono bg-alabaster px-2 py-0.5 rounded text-text-muted border border-brand-border/30">
-                        #{tag}
+                <article 
+                  itemScope 
+                  itemType="https://schema.org/BlogPosting"
+                  className="bg-white border border-brand-border rounded-2xl p-6 md:p-8 hover:border-teal-accent hover:shadow-md transition-all duration-300 flex flex-col justify-between group h-64 shadow-xs"
+                >
+                  <meta itemProp="datePublished" content={item.publishedAt || ''} />
+                  <meta itemProp="url" content={`https://presenceos.zadit.id${item.url}`} />
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full border border-brand-border text-text-primary uppercase">
+                        {item.icon}
+                        {item.label}
                       </span>
-                    ))}
+                      <span className="text-[9px] font-mono text-text-muted flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-teal-accent" /> {formatDate(item.publishedAt)}
+                      </span>
+                    </div>
+                    
+                    <h3 itemProp="headline" className="text-lg md:text-xl font-heading-sans font-bold text-text-primary group-hover:text-teal-accent transition-colors leading-snug line-clamp-2">
+                      {item.title}
+                    </h3>
+                    
+                    <p itemProp="description" className="text-xs text-text-muted leading-relaxed line-clamp-2">
+                      {item.summary}
+                    </p>
                   </div>
-                  <span className="text-xs font-semibold text-teal-accent group-hover:underline flex items-center gap-1 shrink-0">
-                    Akses Konten <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </div>
+
+                  <div className="flex justify-between items-center pt-4 border-t border-brand-border mt-4">
+                    <div className="flex gap-1.5 overflow-hidden">
+                      {item.tags.slice(0, 3).map((tag: string) => (
+                        <span key={tag} className="text-[9px] font-mono bg-alabaster px-2 py-0.5 rounded text-text-muted border border-brand-border/30">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-xs font-semibold text-teal-accent group-hover:underline flex items-center gap-1 shrink-0">
+                      Akses Konten <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </article>
               </Link>
             ))}
 

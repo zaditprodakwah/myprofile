@@ -28,11 +28,11 @@ export default function FactCheckerPage() {
       } else {
         setResults([]);
         if (!data.success) {
-          setError(data.error || 'Gagal mencari klaim cek fakta.');
+          setError(data.error || 'Aduh, sistem kami gagal terhubung dengan basis data. Coba beberapa saat lagi, ya.');
         }
       }
     } catch (err: any) {
-      setError('Terjadi kesalahan koneksi.');
+      setError('Koneksi terputus atau server sedang sibuk. Silakan coba lagi nanti.');
     } finally {
       setLoading(false);
     }
@@ -89,7 +89,7 @@ export default function FactCheckerPage() {
               <Search className="w-5 h-5 text-text-muted absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Masukkan klaim, berita, atau topik (Contoh: vaksin, pemilu, AI)..."
+                placeholder="contoh: hoaks bantuan sosial, klaim kesehatan, atau berita pemilu"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full bg-offwhite border border-brand-border rounded-xl pl-12 pr-4 py-3.5 text-xs text-text-primary focus:ring-2 focus:ring-teal-accent outline-none font-sans"
@@ -106,8 +106,9 @@ export default function FactCheckerPage() {
 
           {/* Error Panel */}
           {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded-xl font-mono">
-              {error}
+            <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 text-xs rounded-xl font-sans flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -180,8 +181,14 @@ export default function FactCheckerPage() {
                 </div>
               </div>
             ) : searched ? (
-              <div className="bg-white border border-brand-border rounded-2xl p-12 text-center text-text-muted text-sm shadow-xs">
-                Tidak menemukan data cek fakta yang cocok dengan "{query}". Silakan coba klaim atau kata kunci lain.
+              <div className="bg-white border border-brand-border rounded-2xl p-12 text-center flex flex-col items-center gap-3 text-text-muted text-sm shadow-xs">
+                <AlertTriangle className="w-8 h-8 text-gold-accent opacity-60" />
+                <p>
+                  Belum ada rekam jejak untuk klaim <strong>"{query}"</strong> di database verifikasi publik.
+                </p>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-text-muted/60">
+                  Coba kata kunci yang lebih spesifik atau tokoh yang berbeda.
+                </span>
               </div>
             ) : null}
           </div>

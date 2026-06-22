@@ -52,10 +52,40 @@ export async function GET(request: Request) {
       }
     }
 
-    // 2. DB Sweep: Remove broken links or clean up old data if necessary
-    // Here you would implement link checking if needed
+    // 2. Directory Entity Refresh (Stale > 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const { data: staleEntities } = await supabase
+      .from('directory_entities')
+      .select('id, place_id')
+      .not('place_id', 'is', null)
+      .lt('last_scraped', thirtyDaysAgo.toISOString())
+      .limit(5);
 
-    return NextResponse.json({ success: true, message: `Worker-DB Executed. Enriched ${enriched} articles.` });
+    let entitiesRefreshed = 0;
+
+    if (staleEntities && staleEntities.length > 0) {
+      const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+      const host = request.headers.get('host') || 'localhost:3000';
+      const baseUrl = `${protocol}://${host}`;
+
+      for (const entity of staleEntities) {
+        try {
+          const res = await fetch(`${baseUrl}/api/sovereign/places?placeId=${entity.place_id}&entityId=${entity.id}`);
+          if (res.ok) {
+            entitiesRefreshed++;
+          }
+        } catch (e) {
+          console.error('Failed to refresh entity', entity.id);
+        }
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: `Worker-DB Executed. Enriched ${enriched} articles. Refreshed ${entitiesRefreshed} directory entities.` 
+    });
   } catch (err) {
     console.error('Cron Worker-DB Error:', err);
     return new NextResponse('Internal Error', { status: 500 });

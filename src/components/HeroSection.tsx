@@ -104,8 +104,8 @@ const TRUST_BADGES = [
 ];
 
 export default function HeroSection({
-  headline = "Code doesn't scale without story. Story doesn't convert without data. Data doesn't persuade without execution.",
-  subheading = "Zadit membantu Anda, UMKM, instansi swasta, hingga lembaga publik merancang situs web berkecepatan tinggi, mengelola blog informatif, menyusun slide presentasi premium, dan menganalisis data untuk mengunci pertumbuhan bisnis yang dapat diprediksi secara transparan.",
+  headline = "Tingkatkan Visibilitas Bisnismu dengan Sistem Web Cepat & Arsitektur SEO B2B Terukur.",
+  subheading = "Zadit membantu UMKM, agensi, dan perusahaan B2B merancang platform digital yang cepat, aman, dan mendatangkan prospek klien secara konsisten tanpa gimik marketing.",
   whatsappNumber = "6282316363177",
   availabilityStatus = "AVAILABLE",
   liveStats,
@@ -174,10 +174,7 @@ export default function HeroSection({
       >
         {/* Grid texture */}
         <div className="absolute inset-0 grid-bg opacity-100" />
-        {/* Teal orb top-right */}
-        <div className="absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full bg-teal-accent/[0.055] blur-[90px]" />
-        {/* Gold orb bottom-left */}
-        <div className="absolute -bottom-24 -left-24 w-[380px] h-[380px] rounded-full bg-gold-accent/[0.04] blur-[80px]" />
+        {/* Minimalist no-slop background */}
         {/* Fine radial vignette */}
         <div
           className="absolute inset-0"
@@ -221,17 +218,17 @@ export default function HeroSection({
           </motion.div>
 
           {/* Hero H1: Staggered word reveal */}
-          <h1 className="text-4xl md:text-5xl lg:text-[3.4rem] font-heading-serif font-bold tracking-tight text-text-primary leading-[1.12]">
+          <h1 className="text-4xl md:text-5xl lg:text-[3.2rem] font-heading-serif font-bold tracking-tight text-text-primary leading-[1.12]">
             {headlineWords.map((word, i) => (
               <motion.span
                 key={i}
                 initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 0.55, delay: 0.2 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                className="inline-block mr-3"
+                className="inline-block mr-2"
               >
                 {/* Highlight key words */}
-                {['Konversi.', 'Dominasi.'].includes(word) ? (
+                {['Visibilitas', 'Cepat', '&', 'Terukur.'].includes(word) ? (
                   <span className="gradient-text-teal">{word}</span>
                 ) : word}
               </motion.span>
@@ -261,16 +258,14 @@ export default function HeroSection({
               rel="noopener noreferrer"
               className="relative inline-flex items-center justify-center gap-2 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans font-bold uppercase tracking-wider px-8 py-4 rounded-xl text-xs text-center transition-colors duration-300 shadow-md shadow-teal-accent/20 shimmer select-none group"
             >
-              <span>Jadwalkan Konsultasi Gratis</span>
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
+              <span>Mulai Konsultasi Strategi via WhatsApp →</span>
             </MagneticButton>
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/utility/audit-engine"
               className="inline-flex items-center justify-center gap-2 border border-brand-border hover:border-teal-accent text-text-primary hover:text-teal-accent font-heading-sans font-bold uppercase tracking-wider px-8 py-4 rounded-xl text-xs bg-white transition-all duration-300 shadow-xs select-none group card-hover-lift"
             >
-              <span>Diagnostik Situs Gratis</span>
-              <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform duration-200" />
+              <span>Uji Performansi Situs Web Anda →</span>
             </a>
           </motion.div>
 
