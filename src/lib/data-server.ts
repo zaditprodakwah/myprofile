@@ -373,6 +373,50 @@ export const getEntities = unstable_cache(
   { revalidate: 60 } // fast cache recovery
 );
 
+export const getFeaturedEntities = unstable_cache(
+  async (limitCount: number = 4): Promise<Entity[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('directory_entities')
+        .select('*')
+        .eq('verification_status', 'verified')
+        .order('trust_score', { ascending: false })
+        .limit(limitCount);
+      if (error || !data || data.length === 0) {
+        return fallbackEntities.filter(e => e.verification_status === 'verified').slice(0, limitCount);
+      }
+      return data.map((d: unknown) => {
+        const item = d as Record<string, unknown>;
+        return {
+          id: String(item.id || ''),
+          city_id: item.city_id ? String(item.city_id) : undefined,
+          city_slug: String(item.city_slug || ''),
+          entity_type: (item.entity_type || 'service') as Entity['entity_type'],
+          name: String(item.name || ''),
+          slug: String(item.slug || ''),
+          tagline: String(item.tagline || ''),
+          description: String(item.description || ''),
+          contact_phone: String(item.contact_phone || ''),
+          contact_email: String(item.contact_email || ''),
+          website_url: String(item.website_url || ''),
+          logo_url: String(item.logo_url || ''),
+          address: String(item.address || ''),
+          google_maps_url: String(item.google_maps_url || ''),
+          verification_status: (item.verification_status || 'unverified') as Entity['verification_status'],
+          trust_score: Number(item.trust_score || 0),
+          affiliate_url: String(item.affiliate_url || ''),
+          claim_token: String(item.claim_token || ''),
+          raw_metadata: (item.raw_metadata || {}) as Record<string, unknown>
+        };
+      }) as Entity[];
+    } catch {
+      return fallbackEntities.filter(e => e.verification_status === 'verified').slice(0, limitCount);
+    }
+  },
+  ['entities_featured_cache'],
+  { revalidate: 3600 }
+);
+
 export const getSystemConfig = unstable_cache(
   async (): Promise<Record<string, unknown>> => {
     const fallbackConfigs: Record<string, unknown> = {
