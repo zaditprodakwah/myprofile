@@ -6,18 +6,11 @@ export const runtime = 'edge';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-
-    // Get search parameters
     const title = searchParams.get('title') || 'Zadit Growth Engine';
-    const subtitle = searchParams.get('subtitle') || 'Full-Stack Growth Architect & Tech Consultant';
+    const subtitle = searchParams.get('subtitle') || 'Full-Stack Growth Architect';
     const type = searchParams.get('type') || 'home';
 
-    // Type badge or category icon mapping
-    let badgeText = 'PORTFOLIO';
-    if (type === 'blog') badgeText = 'BLOG ARTICLE';
-    else if (type === 'directory') badgeText = 'DIRECTORY LISTING';
-    else if (type === 'reference') badgeText = 'REFERENCE DATABASE';
-
+    // Premium OLED Black theme styling with dynamic radial background
     return new ImageResponse(
       (
         <div
@@ -28,122 +21,104 @@ export async function GET(request: NextRequest) {
             flexDirection: 'column',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
-            backgroundColor: '#0f1923',
+            backgroundColor: '#050505',
+            backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(20, 184, 166, 0.15), transparent 60%), radial-gradient(circle at 20% 80%, rgba(217, 119, 6, 0.08), transparent 50%)',
             padding: '80px',
+            fontFamily: 'sans-serif',
           }}
         >
-          {/* Top Row: Badge & Branding */}
+          {/* Top Brand Strip */}
           <div
             style={{
               display: 'flex',
-              justifyContent: 'space-between',
               alignItems: 'center',
-              width: '100%',
+              gap: '16px',
             }}
           >
             <div
               style={{
-                fontSize: '14px',
-                fontWeight: 700,
-                color: '#00c8a0',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                border: '1px solid #00c8a040',
-                padding: '6px 16px',
-                borderRadius: '4px',
-                backgroundColor: '#00c8a010',
+                borderRadius: '12px',
+                backgroundColor: '#0d9488',
+                color: '#f8fafc',
+                padding: '10px 20px',
+                fontSize: '28px',
+                fontWeight: 900,
               }}
             >
-              {badgeText}
+              Z
             </div>
             <div
               style={{
-                fontSize: '20px',
-                fontWeight: 800,
-                color: '#ffffff',
-                letterSpacing: '1px',
                 display: 'flex',
+                flexDirection: 'column',
               }}
             >
-              <span>muhzadit</span><span style={{ color: '#00c8a0' }}>.app</span>
+              <span style={{ fontSize: '20px', color: '#f1f5f9', fontWeight: 700, letterSpacing: '-0.05em' }}>
+                Zadit Growth Engine
+              </span>
+              <span style={{ fontSize: '12px', color: '#0d9488', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                {type}
+              </span>
             </div>
           </div>
 
-          {/* Main Title & Subtitle */}
+          {/* Main Content Area */}
           <div
             style={{
               display: 'flex',
               flexDirection: 'column',
-              width: '100%',
-              marginTop: '40px',
-              marginBottom: '40px',
+              gap: '24px',
+              maxWidth: '900px',
             }}
           >
-            <div
+            <h1
               style={{
-                fontSize: title.length > 50 ? '48px' : '64px',
-                fontWeight: 800,
+                fontSize: '64px',
+                fontWeight: 900,
                 color: '#ffffff',
-                lineHeight: 1.2,
-                letterSpacing: '-1px',
-                marginBottom: '20px',
+                lineHeight: 1.1,
+                letterSpacing: '-0.04em',
+                margin: 0,
               }}
             >
               {title}
-            </div>
-            <div
+            </h1>
+            <p
               style={{
                 fontSize: '24px',
                 color: '#94a3b8',
-                fontWeight: 400,
                 lineHeight: 1.4,
-                maxWidth: '900px',
+                margin: 0,
               }}
             >
               {subtitle}
-            </div>
+            </p>
           </div>
 
-          {/* Footer branding */}
+          {/* Footer Metadata */}
           <div
             style={{
               display: 'flex',
+              width: '100%',
               justifyContent: 'space-between',
               alignItems: 'center',
-              width: '100%',
-              borderTop: '1px solid #33415530',
-              paddingTop: '30px',
+              borderTop: '1px solid rgba(255,255,255,0.1)',
+              paddingTop: '32px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div
-                style={{
-                  width: '12px',
-                  height: '12px',
-                  borderRadius: '50%',
-                  backgroundColor: '#00c8a0',
-                  marginRight: '12px',
-                }}
-              />
-              <span
-                style={{
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  color: '#e2e8f0',
-                }}
-              >
-                Muhammad Khoiruzzadittaqwa
-              </span>
+            <div style={{ display: 'flex', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>ARCHITECT</span>
+                <span style={{ fontSize: '14px', color: '#e2e8f0', fontWeight: 600 }}>M. K. Zadittaqwa</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>STATUS</span>
+                <span style={{ fontSize: '14px', color: '#0d9488', fontWeight: 600 }}>VERIFIED CONSOLE</span>
+              </div>
             </div>
-            <div
-              style={{
-                fontSize: '16px',
-                color: '#64748b',
-                fontWeight: 500,
-              }}
-            >
-              zadit.growth.engine
-            </div>
+            <span style={{ fontSize: '13px', color: '#64748b', fontFamily: 'monospace' }}>
+              muhzadit.vercel.app
+            </span>
           </div>
         </div>
       ),
@@ -153,8 +128,7 @@ export async function GET(request: NextRequest) {
       }
     );
   } catch (e: any) {
-    console.error(`OG image generation error: ${e.message}`);
-    return new Response(`Failed to generate the image`, {
+    return new Response(`Failed to generate the image: ${e.message}`, {
       status: 500,
     });
   }

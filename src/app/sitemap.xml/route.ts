@@ -13,56 +13,26 @@ interface SitemapEntry {
 }
 
 export async function GET() {
-  const entries: SitemapEntry[] = [
-    {
-      loc: `${SITE_URL}`,
-      lastmod: new Date().toISOString().split('T')[0],
-      changefreq: 'daily',
-      priority: '1.0',
-      imageUrl: `${SITE_URL}/api/og?type=home`,
-      imageTitle: 'Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect'
-    },
-    {
-      loc: `${SITE_URL}/utility/audit-engine`,
-      lastmod: new Date().toISOString().split('T')[0],
-      changefreq: 'weekly',
-      priority: '0.8',
-      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Audit Kecepatan Website')}&type=home&subtitle=${encodeURIComponent('Audit SEO dan performa web gratis')}`,
-      imageTitle: 'Audit Kecepatan Website Gratis'
-    },
-    {
-      loc: `${SITE_URL}/directory`,
-      lastmod: new Date().toISOString().split('T')[0],
-      changefreq: 'weekly',
-      priority: '0.8',
-      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Direktori Wilayah')}&type=directory`,
-      imageTitle: 'Direktori Bisnis & Layanan Lokal'
-    },
-    {
-      loc: `${SITE_URL}/blog`,
-      lastmod: new Date().toISOString().split('T')[0],
-      changefreq: 'weekly',
-      priority: '0.8',
-      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Zadit Growth Blog')}&type=blog`,
-      imageTitle: 'Zadit Growth Blog'
-    },
-    {
-      loc: `${SITE_URL}/utility/fact-checker`,
-      lastmod: new Date().toISOString().split('T')[0],
-      changefreq: 'weekly',
-      priority: '0.8',
-      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Google Fact-Checker')}&type=home&subtitle=${encodeURIComponent('Validasi klaim informasi lewat Google Fact Check API')}`,
-      imageTitle: 'Google Fact-Checker - Validasi Klaim Berita'
-    },
-    {
-      loc: `${SITE_URL}/utility/video-auditor`,
-      lastmod: new Date().toISOString().split('T')[0],
-      changefreq: 'weekly',
-      priority: '0.8',
-      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('YouTube Video & Channel Auditor')}&type=home&subtitle=${encodeURIComponent('Audit video & channel YouTube dengan YouTube Data API v3')}`,
-      imageTitle: 'YouTube Video & Channel Auditor'
+  const entries: SitemapEntry[] = [];
+  const allDates: string[] = [];
+
+  // Helper to extract clean YYYY-MM-DD
+  const formatToDate = (dateStr?: string | null): string => {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      return d.toISOString().split('T')[0];
+    } catch {
+      return '';
     }
-  ];
+  };
+
+  let articlesEntries: SitemapEntry[] = [];
+  let citiesEntries: SitemapEntry[] = [];
+  let entitiesEntries: SitemapEntry[] = [];
+  let referencesEntries: SitemapEntry[] = [];
+  let auditLeadsEntries: SitemapEntry[] = [];
 
   try {
     // 1. Fetch articles
@@ -73,10 +43,13 @@ export async function GET() {
 
     if (articles) {
       articles.forEach(art => {
-        const lastmodDate = art.updated_at || art.published_at || new Date().toISOString();
-        entries.push({
+        const rawDate = art.updated_at || art.published_at;
+        const formatted = formatToDate(rawDate);
+        if (formatted) allDates.push(formatted);
+        
+        articlesEntries.push({
           loc: `${SITE_URL}/blog/${art.slug}`,
-          lastmod: lastmodDate.split('T')[0],
+          lastmod: formatted || '2026-06-23',
           changefreq: 'weekly',
           priority: '0.8',
           imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(art.title)}&type=blog`,
@@ -92,10 +65,12 @@ export async function GET() {
 
     if (cities) {
       cities.forEach(city => {
-        const lastmodDate = city.created_at || new Date().toISOString();
-        entries.push({
+        const formatted = formatToDate(city.created_at);
+        if (formatted) allDates.push(formatted);
+        
+        citiesEntries.push({
           loc: `${SITE_URL}/directory/${city.slug}`,
-          lastmod: lastmodDate.split('T')[0],
+          lastmod: formatted || '2026-06-23',
           changefreq: 'weekly',
           priority: '0.8',
           imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(`Konsultan Digital & Web di ${city.name}`)}&type=directory`,
@@ -111,10 +86,12 @@ export async function GET() {
 
     if (entities) {
       entities.forEach(ent => {
-        const lastmodDate = ent.created_at || new Date().toISOString();
-        entries.push({
+        const formatted = formatToDate(ent.created_at);
+        if (formatted) allDates.push(formatted);
+        
+        entitiesEntries.push({
           loc: `${SITE_URL}/directory/${ent.city_slug}/${ent.slug}`,
-          lastmod: lastmodDate.split('T')[0],
+          lastmod: formatted || '2026-06-23',
           changefreq: 'weekly',
           priority: '0.8',
           imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(ent.name)}&type=directory`,
@@ -131,10 +108,13 @@ export async function GET() {
 
     if (references) {
       references.forEach(ref => {
-        const lastmodDate = ref.updated_at || ref.created_at || new Date().toISOString();
-        entries.push({
+        const rawDate = ref.updated_at || ref.created_at;
+        const formatted = formatToDate(rawDate);
+        if (formatted) allDates.push(formatted);
+        
+        referencesEntries.push({
           loc: `${SITE_URL}/blog/${ref.slug}`,
-          lastmod: lastmodDate.split('T')[0],
+          lastmod: formatted || '2026-06-23',
           changefreq: 'weekly',
           priority: '0.8',
           imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(ref.title)}&type=reference`,
@@ -156,10 +136,12 @@ export async function GET() {
           const cleanDomain = lead.target_site_url.replace(/^https?:\/\//i, '').replace(/\/$/, '').trim();
           if (cleanDomain && !uniqueDomains.has(cleanDomain)) {
             uniqueDomains.add(cleanDomain);
-            const lastmodDate = lead.created_at || new Date().toISOString();
-            entries.push({
+            const formatted = formatToDate(lead.created_at);
+            if (formatted) allDates.push(formatted);
+            
+            auditLeadsEntries.push({
               loc: `${SITE_URL}/utility/audit-engine/${cleanDomain}`,
-              lastmod: lastmodDate.split('T')[0],
+              lastmod: formatted || '2026-06-23',
               changefreq: 'weekly',
               priority: '0.6',
               imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent(`Laporan Audit ${cleanDomain}`)}&type=reference`,
@@ -173,6 +155,77 @@ export async function GET() {
   } catch (err) {
     console.error('Failed to fetch dynamic paths for sitemap', err);
   }
+
+  // Calculate the latest date among all items, fallback to a stable date
+  let latestDate = '2026-06-23';
+  if (allDates.length > 0) {
+    const sorted = [...allDates].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    if (sorted[0]) {
+      latestDate = sorted[0];
+    }
+  }
+
+  // Static Index Pages (which now dynamically inherit the latest modification date of any sub-item)
+  const staticEntries: SitemapEntry[] = [
+    {
+      loc: `${SITE_URL}`,
+      lastmod: latestDate,
+      changefreq: 'daily',
+      priority: '1.0',
+      imageUrl: `${SITE_URL}/api/og?type=home`,
+      imageTitle: 'Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect'
+    },
+    {
+      loc: `${SITE_URL}/utility/audit-engine`,
+      lastmod: latestDate,
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Audit Kecepatan Website')}&type=home&subtitle=${encodeURIComponent('Audit SEO dan performa web gratis')}`,
+      imageTitle: 'Audit Kecepatan Website Gratis'
+    },
+    {
+      loc: `${SITE_URL}/directory`,
+      lastmod: latestDate,
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Direktori Wilayah')}&type=directory`,
+      imageTitle: 'Direktori Bisnis & Layanan Lokal'
+    },
+    {
+      loc: `${SITE_URL}/blog`,
+      lastmod: latestDate,
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Zadit Growth Blog')}&type=blog`,
+      imageTitle: 'Zadit Growth Blog'
+    },
+    {
+      loc: `${SITE_URL}/utility/fact-checker`,
+      lastmod: latestDate,
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('Google Fact-Checker')}&type=home&subtitle=${encodeURIComponent('Validasi klaim informasi lewat Google Fact Check API')}`,
+      imageTitle: 'Google Fact-Checker - Validasi Klaim Berita'
+    },
+    {
+      loc: `${SITE_URL}/utility/video-auditor`,
+      lastmod: latestDate,
+      changefreq: 'weekly',
+      priority: '0.8',
+      imageUrl: `${SITE_URL}/api/og?title=${encodeURIComponent('YouTube Video & Channel Auditor')}&type=home&subtitle=${encodeURIComponent('Audit video & channel YouTube dengan YouTube Data API v3')}`,
+      imageTitle: 'YouTube Video & Channel Auditor'
+    }
+  ];
+
+  // Combine static and dynamic lists
+  entries.push(
+    ...staticEntries,
+    ...articlesEntries,
+    ...citiesEntries,
+    ...entitiesEntries,
+    ...referencesEntries,
+    ...auditLeadsEntries
+  );
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"

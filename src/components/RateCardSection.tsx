@@ -721,7 +721,7 @@ export default function RateCardSection({ packagesJson, whatsappNumber = '628231
         </div>
 
         {/* 2. PERSISTENT PRICING PACKAGES */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-16 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6 mb-16 items-stretch">
           {packages.map((pkg) => {
             const isFeatured = pkg.id === 'growth';
             return (
@@ -747,7 +747,7 @@ export default function RateCardSection({ packagesJson, whatsappNumber = '628231
                 <div className="space-y-3 pt-1">
                   <div>
                     <h3 className="font-heading-sans font-black text-sm text-text-primary tracking-tight leading-tight">{pkg.name}</h3>
-                    <p className="text-[10px] text-text-muted mt-0.5 leading-relaxed line-clamp-3 font-sans h-[42px]">{pkg.description}</p>
+                    <p className="text-[10px] text-text-muted mt-0.5 leading-relaxed font-sans min-h-[42px] h-auto">{pkg.description}</p>
                   </div>
 
                   <div className="py-1.5 border-y border-brand-border/50 font-mono">
@@ -781,14 +781,14 @@ export default function RateCardSection({ packagesJson, whatsappNumber = '628231
                 </div>
 
                 <div className="space-y-2.5 pt-4 border-t border-brand-border/50 mt-4">
-                  <div className="grid grid-cols-2 gap-1 text-[9px] font-mono text-text-muted">
-                    <div>
+                  <div className="flex flex-col gap-1 font-mono text-[9px] text-text-muted">
+                    <div className="flex justify-between items-center gap-2">
                       <span>REVISI:</span>
-                      <span className="block text-text-primary font-bold truncate">{pkg.revisions}</span>
+                      <span className="text-text-primary font-bold truncate max-w-[140px]">{pkg.revisions}</span>
                     </div>
-                    <div>
+                    <div className="flex justify-between items-center gap-2">
                       <span>DUKUNGAN:</span>
-                      <span className="block text-text-primary font-bold truncate">{pkg.support.split(' ')[0]}</span>
+                      <span className="text-text-primary font-bold truncate max-w-[140px]">{pkg.support}</span>
                     </div>
                   </div>
 

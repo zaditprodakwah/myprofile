@@ -90,90 +90,96 @@ export default function IntegratedServicesHub({ services }: IntegratedServicesHu
             return (
               <div 
                 key={item.id} 
-                className={`border rounded-2xl overflow-hidden transition-all duration-300 ${
+                className={`rounded-[2rem] p-1.5 bg-black/5 dark:bg-white/5 border border-brand-border/80 transition-all duration-300 ${
                   isOpen 
-                    ? 'bg-white border-teal-accent/30 shadow-lg' 
-                    : 'bg-white/60 border-brand-border hover:border-teal-accent/20 hover:bg-white'
+                    ? 'ring-1 ring-teal-accent/20 shadow-md' 
+                    : 'hover:border-teal-accent/20'
                 }`}
               >
-                <button
-                  onClick={() => toggleAccordion(index)}
-                  className="w-full flex items-center justify-between p-5 md:p-6 text-left focus:outline-none"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
-                      isOpen ? 'bg-teal-accent/10 text-teal-accent' : 'bg-brand-slate/5 text-text-muted'
-                    }`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className={`text-lg md:text-xl font-heading-sans font-bold transition-colors ${
-                        isOpen ? 'text-teal-accent' : 'text-text-primary'
+                <div className={`rounded-[calc(2rem-0.375rem)] overflow-hidden transition-all duration-300 ${
+                  isOpen 
+                    ? 'bg-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]' 
+                    : 'bg-white/60 hover:bg-white'
+                }`}>
+                  <button
+                    onClick={() => toggleAccordion(index)}
+                    className="w-full flex items-center justify-between p-5 md:p-6 text-left focus:outline-none"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                        isOpen ? 'bg-teal-accent/10 text-teal-accent' : 'bg-brand-slate/5 text-text-muted'
                       }`}>
-                        {item.title}
-                      </h3>
-                      {item.isTool && (
-                        <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider bg-offwhite px-2 py-0.5 rounded border border-brand-border mt-1 inline-block">
-                          Utilitas B2B
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
-                    isOpen ? 'border-teal-accent bg-teal-accent/10 text-teal-accent rotate-180' : 'border-brand-border text-text-muted hover:border-teal-accent'
-                  }`}>
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
-                </button>
-
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: 'easeInOut' }}
-                      className="overflow-hidden"
-                    >
-                      <div className="p-6 pt-0 border-t border-brand-border/40 ml-4 mr-4 mt-2">
-                        <p className="text-sm text-text-muted leading-relaxed mb-6 mt-4">
-                          {item.description}
-                        </p>
-                        
-                        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-4">
-                          <div className="flex flex-wrap gap-2">
-                            {item.tags?.map((tag: string) => (
-                              <span
-                                key={tag}
-                                className="bg-offwhite border border-brand-border text-text-muted font-mono text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                          
-                          {(item as any).cta ? (
-                            <Link 
-                              href={(item as any).cta.url}
-                              className="inline-flex flex-shrink-0 items-center justify-center gap-2 px-5 py-2.5 bg-teal-accent text-brand-slate font-bold rounded-xl hover:bg-teal-accent/90 transition-all text-xs"
-                            >
-                              {(item as any).cta.text} <ArrowRight className="w-3.5 h-3.5" />
-                            </Link>
-                          ) : (
-                            <a
-                              href="https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20dengan%20layanan%20terkait."
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex flex-shrink-0 items-center justify-center gap-2 px-5 py-2.5 border border-teal-accent text-teal-accent font-bold rounded-xl hover:bg-teal-accent/5 transition-all text-xs"
-                            >
-                              Konsultasi Layanan <ArrowRight className="w-3.5 h-3.5" />
-                            </a>
-                          )}
-                        </div>
+                        <Icon className="w-5 h-5" />
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <div>
+                        <h3 className={`text-lg md:text-xl font-heading-sans font-bold transition-colors ${
+                          isOpen ? 'text-teal-accent' : 'text-text-primary'
+                        }`}>
+                          {item.title}
+                        </h3>
+                        {item.isTool && (
+                          <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider bg-offwhite px-2 py-0.5 rounded border border-brand-border mt-1 inline-block">
+                            Utilitas B2B
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
+                      isOpen ? 'border-teal-accent bg-teal-accent/10 text-teal-accent rotate-180' : 'border-brand-border text-text-muted hover:border-teal-accent'
+                    }`}>
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </button>
+
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                      >
+                        <div className="p-6 pt-0 border-t border-brand-border/40 ml-4 mr-4 mt-2">
+                          <p className="text-sm text-text-muted leading-relaxed mb-6 mt-4">
+                            {item.description}
+                          </p>
+                          
+                          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-4">
+                            <div className="flex flex-wrap gap-2">
+                              {item.tags?.map((tag: string) => (
+                                <span
+                                  key={tag}
+                                  className="bg-offwhite border border-brand-border text-text-muted font-mono text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                            
+                            {(item as any).cta ? (
+                              <Link 
+                                href={(item as any).cta.url}
+                                className="inline-flex flex-shrink-0 items-center justify-center gap-2 px-5 py-2.5 bg-teal-accent text-brand-slate font-bold rounded-xl hover:bg-teal-accent/90 transition-all text-xs"
+                              >
+                                {(item as any).cta.text} <ArrowRight className="w-3.5 h-3.5" />
+                              </Link>
+                            ) : (
+                              <a
+                                href="https://wa.me/6282316363177?text=Halo%20Zadit%2C%20saya%20tertarik%20dengan%20layanan%20terkait."
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex flex-shrink-0 items-center justify-center gap-2 px-5 py-2.5 border border-teal-accent text-teal-accent font-bold rounded-xl hover:bg-teal-accent/5 transition-all text-xs"
+                              >
+                                Konsultasi Layanan <ArrowRight className="w-3.5 h-3.5" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             );
           })}

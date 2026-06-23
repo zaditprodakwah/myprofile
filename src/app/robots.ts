@@ -26,11 +26,38 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/admin/"],
       },
       {
+        userAgent: "Google-Extended",
+        allow: "/",
+        disallow: ["/api/", "/admin/"],
+      },
+      {
+        userAgent: "Applebot-Extended",
+        allow: "/",
+        disallow: ["/api/", "/admin/"],
+      },
+      {
+        userAgent: "Anthropic-AI",
+        allow: "/",
+        disallow: ["/api/", "/admin/"],
+      },
+      {
         userAgent: "SemrushBot",
         disallow: "/",
       },
       {
         userAgent: "AhrefsBot",
+        disallow: "/",
+      },
+      {
+        userAgent: "MJ12bot",
+        disallow: "/",
+      },
+      {
+        userAgent: "DotBot",
+        disallow: "/",
+      },
+      {
+        userAgent: "PetalBot",
         disallow: "/",
       }
     ],

@@ -223,7 +223,7 @@ export default function HeroSection({
               <motion.span
                 key={i}
                 initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'none' }}
                 transition={{ duration: 0.55, delay: 0.2 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
                 className="inline-block mr-2"
               >
@@ -256,16 +256,22 @@ export default function HeroSection({
               href={waLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative inline-flex items-center justify-center gap-2 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans font-bold uppercase tracking-wider px-8 py-4 rounded-xl text-xs text-center transition-colors duration-300 shadow-md shadow-teal-accent/20 shimmer select-none group"
+              className="relative inline-flex items-center justify-center gap-4 bg-teal-accent hover:bg-brand-slate text-text-inverse font-heading-sans font-bold uppercase tracking-wider pl-8 pr-4 py-3 rounded-xl text-xs text-center transition-all duration-300 shadow-md shadow-teal-accent/20 shimmer select-none group"
             >
-              <span>Mulai Konsultasi Strategi via WhatsApp →</span>
+              <span>Mulai Konsultasi Strategi</span>
+              <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-base select-none shrink-0 group-hover:translate-x-1 group-hover:-translate-y-[1px] transition-transform duration-300">
+                →
+              </span>
             </MagneticButton>
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/utility/audit-engine"
-              className="inline-flex items-center justify-center gap-2 border border-brand-border hover:border-teal-accent text-text-primary hover:text-teal-accent font-heading-sans font-bold uppercase tracking-wider px-8 py-4 rounded-xl text-xs bg-white transition-all duration-300 shadow-xs select-none group card-hover-lift"
+              className="inline-flex items-center justify-center gap-4 border border-brand-border hover:border-teal-accent text-text-primary hover:text-teal-accent font-heading-sans font-bold uppercase tracking-wider pl-8 pr-4 py-3 rounded-xl text-xs bg-white transition-all duration-300 shadow-xs select-none group card-hover-lift animate-fade-in"
             >
-              <span>Uji Performansi Situs Web Anda →</span>
+              <span>Uji Performansi Situs Web Anda</span>
+              <span className="w-8 h-8 rounded-full bg-offwhite flex items-center justify-center text-text-primary border border-brand-border group-hover:border-teal-accent group-hover:text-teal-accent group-hover:translate-x-1 group-hover:-translate-y-[1px] transition-transform duration-300">
+                →
+              </span>
             </a>
           </motion.div>
 

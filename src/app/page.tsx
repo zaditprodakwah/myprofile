@@ -3,13 +3,9 @@ import HeroSection from "@/components/HeroSection";
 import ProcessSection from "@/components/ProcessSection";
 import CaseStudiesSection from "@/components/CaseStudiesSection";
 import LatestInsights from "@/components/LatestInsights";
-import PartnershipForm from "@/components/PartnershipForm";
 import SidebarNav from "@/components/SidebarNav";
 import Footer from "@/components/Footer";
-import GrowthCalculator from "@/components/GrowthCalculator";
-import RateCardSection from "@/components/RateCardSection";
 
-import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats } from "@/lib/data-server";
 
 import IntegratedServicesHub from "@/components/IntegratedServicesHub";
@@ -17,14 +13,18 @@ import dynamic from "next/dynamic";
 import { Metadata } from "next";
 
 // Dynamic Imports with Skeleton Loaders for Heavy/Interactive Components to optimize LCP & TBT
-const AuditTeaser = dynamic(() => import("@/components/AuditTeaser"), {
-  ssr: true
-});
+const AuditTeaser = dynamic(() => import("@/components/AuditTeaser"), { ssr: true });
+const TestimonialsCarousel = dynamic(() => import("@/components/TestimonialsCarousel"), { ssr: true });
+const GrowthCalculator = dynamic(() => import("@/components/GrowthCalculator"), { ssr: true });
+const PartnershipForm = dynamic(() => import("@/components/PartnershipForm"), { ssr: true });
+const RateCardSection = dynamic(() => import("@/components/RateCardSection"), { ssr: true });
 
 export const revalidate = 3600; // Revalidate page hourly (ISR)
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhzadit.vercel.app';
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent("Muhammad Khoiruzzadittaqwa")}&subtitle=${encodeURIComponent("Full-Stack Growth Architect & B2B Hub")}&type=home`;
+  
   return {
     title: "Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect & B2B Hub",
     description: "Zadit adalah Full-Stack Growth Architect. Kami menyediakan layanan Audit SEO, Direktori B2B, Sovereign Data Telemetry, dan pengembangan sistem web modern.",
@@ -36,7 +36,21 @@ export async function generateMetadata(): Promise<Metadata> {
       description: "Platform intelijen bisnis dan pertumbuhan digital B2B. Akses direktori terverifikasi, audit web, dan data makroekonomi secara real-time.",
       url: siteUrl,
       type: "website",
-      siteName: "Zadit Profile"
+      siteName: "Zadit Profile",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: "Muhammad Khoiruzzadittaqwa - Full-Stack Growth Architect"
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Muhammad Khoiruzzadittaqwa | Full-Stack Growth Architect & B2B Hub",
+      description: "Platform intelijen bisnis dan pertumbuhan digital B2B.",
+      images: [ogImageUrl]
     }
   };
 }

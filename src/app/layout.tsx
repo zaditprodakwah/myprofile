@@ -88,59 +88,85 @@ export const metadata: Metadata = {
   },
 };
 
-const personSchema = {
+const graphSchema = {
   "@context": "https://schema.org",
-  "@type": "ProfilePage",
-  "mainEntity": {
-    "@type": "Person",
-    "name": "Muhammad Khoiruzzadittaqwa",
-    "alternateName": ["Zadit", "Aditt", "Muhzadit"],
-    "jobTitle": "Full-Stack Growth Architect",
-    "description": "Spesialis SEO teknikal, copywriting konversi, dan strategi digital marketing dengan pengalaman 10+ tahun sejak 2015.",
-    "url": SITE_URL,
-    "image": `${SITE_URL}/api/og?type=home`,
-    "knowsAbout": [
-      "SEO Teknikal", "AEO", "GEO", "Copywriting",
-      "Digital Marketing", "Brand Strategy", "Content Marketing",
-      "Administrative Management", "Broadcasting"
-    ],
-    "hasCredential": [
-      {
-        "@type": "EducationalOccupationalCredential",
-        "name": "Fullstack Digital Marketing",
-        "credentialCategory": "certificate",
-        "recognizedBy": { "@type": "Organization", "name": "MySkill.id" }
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      "url": SITE_URL,
+      "name": "Zadit Growth Portfolio",
+      "description": "Portofolio & Growth Engine Muhammad Khoiruzzadittaqwa (Zadit) - Full-Stack Growth Architect. Spesialis SEO teknikal, copywriting konversi, dan rekayasa web terukur.",
+      "publisher": {
+        "@id": `${SITE_URL}/#person`
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${SITE_URL}/blog?q={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
       }
-    ],
-    "sameAs": [
-      "https://github.com/muhzadit",
-      "https://www.linkedin.com/in/muhzadit",
-      "https://www.instagram.com/muhzadit",
-      "https://wa.me/6282316363177",
-      "https://kontak.link/muhzadit",
-      "https://id.wikipedia.org/wiki/Pemasaran_digital"
-    ],
-    "worksFor": {
-      "@type": "Organization",
-      "name": "Al-Bahjah Foundation",
-      "url": "https://albahjah.or.id"
-    }
-  }
-};
-
-const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Zadit Growth Portfolio",
-  "url": SITE_URL,
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": `${SITE_URL}/blog?q={search_term_string}`
     },
-    "query-input": "required name=search_term_string"
-  }
+    {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#person`,
+      "name": "Muhammad Khoiruzzadittaqwa",
+      "alternateName": ["Zadit", "Aditt", "Muhzadit"],
+      "jobTitle": "Full-Stack Growth Architect",
+      "description": "Spesialis SEO teknikal, copywriting konversi, dan strategi digital marketing dengan pengalaman 10+ tahun sejak 2015.",
+      "url": SITE_URL,
+      "image": `${SITE_URL}/api/og?type=home`,
+      "knowsAbout": [
+        "SEO Teknikal", "AEO", "GEO", "Copywriting",
+        "Digital Marketing", "Brand Strategy", "Content Marketing",
+        "Administrative Management", "Broadcasting"
+      ],
+      "hasCredential": [
+        {
+          "@type": "EducationalOccupationalCredential",
+          "name": "Fullstack Digital Marketing",
+          "credentialCategory": "certificate",
+          "recognizedBy": { "@type": "Organization", "name": "MySkill.id" }
+        }
+      ],
+      "sameAs": [
+        "https://github.com/muhzadit",
+        "https://www.linkedin.com/in/muhzadit",
+        "https://www.instagram.com/muhzadit",
+        "https://wa.me/6282316363177",
+        "https://kontak.link/muhzadit",
+        "https://id.wikipedia.org/wiki/Pemasaran_digital"
+      ],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Al-Bahjah Foundation",
+        "url": "https://albahjah.or.id"
+      }
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": `${SITE_URL}/#service`,
+      "name": "Zadit Growth Architect (NaikDigital)",
+      "url": SITE_URL,
+      "logo": `${SITE_URL}/logo.png`,
+      "image": `${SITE_URL}/api/og?type=home`,
+      "description": "Layanan konsultasi SEO teknikal, copywriting konversi, strategi B2B digital marketing oleh Muhammad Khoiruzzadittaqwa.",
+      "telephone": "+6282316363177",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Cirebon",
+        "addressRegion": "Jawa Barat",
+        "addressCountry": "ID"
+      },
+      "founder": {
+        "@id": `${SITE_URL}/#person`
+      },
+      "areaServed": ["ID", "SG"]
+    }
+  ]
 };
 
 export default function RootLayout({
@@ -156,11 +182,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-alabaster text-text-primary font-sans">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(graphSchema) }}
         />
         <SmoothScroll>
           {children}

@@ -56,7 +56,7 @@ export default function Header() {
       <div className="w-full max-w-6xl mx-auto px-6 flex justify-between items-center">
 
         {/* Monogram Logo */}
-        <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
+        <Link href="/" className="flex items-center gap-3 group flex-shrink-0 rounded-xl focus-visible:ring-2 focus-visible:ring-teal-accent focus-visible:outline-none">
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
@@ -80,7 +80,7 @@ export default function Header() {
             <Link
               key={href}
               href={href}
-              className="text-[10px] font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors duration-150 ease-out relative hover-underline"
+              className="text-[10px] font-mono tracking-wider text-text-muted hover:text-teal-accent uppercase transition-colors duration-150 ease-out relative hover-underline rounded focus-visible:ring-2 focus-visible:ring-teal-accent focus-visible:outline-none"
             >
               {label}
             </Link>
@@ -92,7 +92,7 @@ export default function Header() {
           {/* Search Trigger (Inclusive & Accessible) */}
           <button
             onClick={triggerSearch}
-            className="p-2.5 rounded-xl border border-brand-border hover:bg-offwhite text-text-muted hover:text-text-primary transition-all duration-150 flex items-center gap-2 text-[10px] font-mono tracking-wider uppercase"
+            className="p-2.5 rounded-xl border border-brand-border hover:bg-offwhite text-text-muted hover:text-text-primary transition-all duration-150 flex items-center gap-2 text-[10px] font-mono tracking-wider uppercase focus-visible:ring-2 focus-visible:ring-teal-accent focus-visible:outline-none"
             aria-label="Cari entitas atau halaman"
           >
             <Search className="w-4 h-4" />
@@ -115,7 +115,7 @@ export default function Header() {
 
           <Link
             href="/#partnership"
-            className="bg-teal-accent hover:bg-brand-slate text-text-inverse text-[10px] font-heading-sans font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all duration-150 ease-out shadow-sm shadow-teal-accent/20"
+            className="bg-teal-accent hover:bg-brand-slate text-text-inverse text-[10px] font-heading-sans font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all duration-150 ease-out shadow-sm shadow-teal-accent/20 focus-visible:ring-2 focus-visible:ring-teal-accent focus-visible:outline-none"
           >
             Konsultasi
           </Link>
@@ -135,8 +135,9 @@ export default function Header() {
           <motion.button
             onClick={() => setIsOpen(!isOpen)}
             whileTap={{ scale: 0.94 }}
-            className="text-text-primary hover:text-teal-accent transition-colors duration-150 ease-out p-1"
+            className="text-text-primary hover:text-teal-accent transition-colors duration-150 ease-out p-1 rounded focus-visible:ring-2 focus-visible:ring-teal-accent focus-visible:outline-none"
             aria-label="Toggle navigation menu"
+            aria-expanded={isOpen}
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </motion.button>
