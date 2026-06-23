@@ -44,6 +44,7 @@ export interface City {
   longitude: number;
   target_niche?: string;
   created_at?: string;
+  entityCount?: number;
 }
 
 export interface Entity {

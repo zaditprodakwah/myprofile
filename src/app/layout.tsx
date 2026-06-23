@@ -5,6 +5,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import CommandPalette from "@/components/CommandPalette";
 import MobileQuickNav from "@/components/MobileQuickNav";
 import "./globals.css";
+import { GlobalUI } from "@/components/GlobalUI";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -166,6 +167,7 @@ export default function RootLayout({
         </SmoothScroll>
         <CommandPalette />
         <MobileQuickNav />
+        <GlobalUI />
 
         {/* Analytics & Support Scripts */}
         <Script

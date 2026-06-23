@@ -239,8 +239,11 @@ export default function DirectoryClientContainer({ cities }: DirectoryClientCont
                   <MapPin className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h3 className="font-heading-sans font-bold text-lg text-text-primary group-hover:text-teal-accent transition-colors">
-                    {city.name}
+                  <h3 className="font-heading-sans font-bold text-lg text-text-primary group-hover:text-teal-accent transition-colors flex justify-between items-center">
+                    <span>{city.name}</span>
+                    <span className="bg-teal-50 text-teal-700 border border-teal-100 rounded px-2 py-0.5 text-[9px] font-mono font-bold shrink-0">
+                      {city.entityCount || 0} Entitas
+                    </span>
                   </h3>
                   {city.target_niche && (
                     <p className="text-[10px] font-mono text-gold-accent mt-0.5">{city.target_niche}</p>

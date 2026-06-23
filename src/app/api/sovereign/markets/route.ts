@@ -57,7 +57,7 @@ export async function GET() {
         ).then(r => r.ok ? r.json() : null).catch(() => null);
 
         // Fetch FX (USD base)
-        const fxRes = await fetch(`https://api.exchangerate-api.com/v4/latest/USD`, {
+        const fxRes = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json`, {
           signal: abortController.signal
         }).then(r => r.ok ? r.json() : null).catch(() => null);
 
@@ -193,11 +193,11 @@ export async function GET() {
         });
 
         // Process Foreign Exchanges
-        if (fxRes && fxRes.rates && fxRes.rates.IDR) {
-          const rates = fxRes.rates;
-          const usdIdr = rates.IDR;
-          const eurIdr = rates.IDR / (rates.EUR || 1);
-          const sgdIdr = rates.IDR / (rates.SGD || 1);
+        if (fxRes && fxRes.usd && fxRes.usd.idr) {
+          const rates = fxRes.usd;
+          const usdIdr = rates.idr;
+          const eurIdr = rates.idr / (rates.eur || 1);
+          const sgdIdr = rates.idr / (rates.sgd || 1);
 
           const currencies = [
             { symbol: 'USD/IDR', price: usdIdr, impact: 'Nilai tukar rupiah mendikte margin impor & biaya server cloud luar negeri.' },
@@ -221,7 +221,7 @@ export async function GET() {
               symbol: cur.symbol,
               price: parseFloat(cur.price.toFixed(2)),
               change,
-              source: 'ExchangeRate API',
+              source: 'Currency API',
               impact: cur.impact
             });
           }

@@ -320,11 +320,36 @@ export const getCities = unstable_cache(
     try {
       const { data, error } = await supabase.from('cities').select('*').order('name', { ascending: true });
       if (error || !data || data.length === 0) {
-        return fallbackCities;
+        return fallbackCities.map(city => ({
+          ...city,
+          entityCount: fallbackEntities.filter(e => e.city_slug === city.slug).length
+        }));
       }
-      return data as City[];
+
+      // Count entities for each city
+      const { data: counts } = await supabase
+        .from('directory_entities')
+        .select('city_slug');
+      
+      const countsMap: Record<string, number> = {};
+      if (counts) {
+        counts.forEach(item => {
+          const slug = item.city_slug?.toLowerCase();
+          if (slug) {
+            countsMap[slug] = (countsMap[slug] || 0) + 1;
+          }
+        });
+      }
+
+      return data.map((city: any) => ({
+        ...city,
+        entityCount: countsMap[city.slug?.toLowerCase()] || 0
+      })) as City[];
     } catch {
-      return fallbackCities;
+      return fallbackCities.map(city => ({
+        ...city,
+        entityCount: fallbackEntities.filter(e => e.city_slug === city.slug).length
+      }));
     }
   },
   ['cities_cache'],

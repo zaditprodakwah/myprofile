@@ -24,10 +24,9 @@ export async function POST(req: NextRequest) {
 
     let text = '';
     try {
-      // Dynamic import — pdf-parse v2 exports directly (no .default)
-      const pdfParseModule = await import('pdf-parse');
-      const pdfParse = (pdfParseModule as any).default ?? pdfParseModule;
-      const pdfData = await pdfParse(buffer);
+      const { PDFParse } = await import('pdf-parse');
+      const parser = new PDFParse(new Uint8Array(arrayBuffer));
+      const pdfData = await parser.getText();
       text = pdfData.text || '';
     } catch (parseError: any) {
       console.warn('PDF Parse failed, proceeding with empty text:', parseError.message);
@@ -42,7 +41,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 2. Analyze with Gemini — metrik spesifik CV/Resume
-    const geminiKey = process.env.GEMINI_API_KEY || '';
+    const geminiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
     let scores = {
       ats_formatting: 70,
       keyword_density: 65,

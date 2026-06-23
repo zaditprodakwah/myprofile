@@ -6,10 +6,10 @@ import Footer from "@/components/Footer";
 import { cn } from "@/lib/utils";
 import { analyzeSlop } from "@/lib/slop-detector";
 import { 
-  Shield, Database, Cpu, Search, Settings, Check, RefreshCw, 
-  Save, Send, Plus, Trash2, Edit2, X, 
-  Briefcase, MapPin, User, CheckCircle2, Upload, Globe
+  Plus, Trash2, Edit2, CheckCircle2, XCircle, Search, ExternalLink, Activity, Target, UploadCloud, Check, X, ShieldAlert, Cpu,
+  Shield, Database, Settings, RefreshCw, Save, Send, Briefcase, MapPin, User, Upload, Globe
 } from 'lucide-react';
+import { toast, globalLoading } from '@/lib/ui-store';
 import { supabase } from '@/lib/supabase';
 import { Service, CaseStudy, City, Entity, Article, UtilityLead, DirectoryLead, ContactLead, SiteContent } from '@/lib/types';
 import Link from 'next/link';
@@ -21,7 +21,6 @@ export default function AdminDashboardPage() {
 
   const [activeTab, setActiveTab] = useState<'leads' | 'content' | 'portfolio' | 'directory' | 'blog' | 'reference' | 'seo' | 'config' | 'scraper'>('leads');
   const [isLoading, setIsLoading] = useState(false);
-  const [actionMessage, setActionMessage] = useState({ text: '', type: 'success' });
 
   // Sub-tabs
   const [leadsTab, setLeadsTab] = useState<'utility' | 'directory' | 'contact'>('utility');
@@ -72,9 +71,15 @@ export default function AdminDashboardPage() {
   const [testFeedResult, setTestFeedResult] = useState<Record<string, string>>({});
 
   // Scraper Tab State
-  const [scraperTab, setScraperTab] = useState<'gmaps' | 'rss'>('gmaps');
+  const [scraperTab, setScraperTab] = useState<'gmaps' | 'rss' | 'queues' | 'discovery' | 'approval'>('queues');
   const [gmapsQuery, setGmapsQuery] = useState('');
   const [gmapsScrapeResult, setGmapsScrapeResult] = useState('');
+  
+  // Command Center State
+  const [scrapingQueues, setScrapingQueues] = useState<any[]>([]);
+  const [crawlQueue, setCrawlQueue] = useState<any[]>([]);
+  const [pendingEntities, setPendingEntities] = useState<any[]>([]);
+  const [newQueueForm, setNewQueueForm] = useState({ target_query: '', location: '', niche: '', priority: 0 });
   
   // Bulk Actions
   const [selectedEntityIds, setSelectedEntityIds] = useState<string[]>([]);
@@ -138,8 +143,8 @@ export default function AdminDashboardPage() {
 
   // Helper: Show notification
   const triggerMessage = useCallback((text: string, type: 'success' | 'error' = 'success') => {
-    setActionMessage({ text, type });
-    setTimeout(() => setActionMessage({ text: '', type: 'success' }), 4000);
+    if (type === 'error') toast.error(text);
+    else toast.success(text);
   }, []);
 
   // Guard Auth Check — verifikasi via API server-side, bukan env publik
@@ -226,6 +231,20 @@ export default function AdminDashboardPage() {
     }
   }, []);
 
+  const fetchCommandCenterData = useCallback(async () => {
+    try {
+      const { data: queues } = await supabase.from('scraping_queues').select('*').order('priority', { ascending: false });
+      const { data: crawl } = await supabase.from('crawl_queue').select('*').order('created_at', { ascending: false }).limit(100);
+      const { data: pending } = await supabase.from('directory_entities').select('*').in('verification_status', ['pending_approval', 'unverified']).order('created_at', { ascending: false }).limit(50);
+      
+      if (queues) setScrapingQueues(queues);
+      if (crawl) setCrawlQueue(crawl);
+      if (pending) setPendingEntities(pending);
+    } catch (err) {
+      console.error('Command Center fetch error', err);
+    }
+  }, []);
+
   const fetchConfigs = useCallback(async () => {
     try {
       const { data } = await supabase.from('system_configs').select('*');
@@ -258,11 +277,12 @@ export default function AdminDashboardPage() {
       else if (activeTab === 'blog') await fetchArticles();
       else if (activeTab === 'reference') await fetchReferenceItems();
       else if (activeTab === 'config') await fetchConfigs();
+      else if (activeTab === 'scraper') await fetchCommandCenterData();
       setIsLoading(false);
     };
 
     loadData();
-  }, [isAuthenticated, activeTab, fetchLeads, fetchSiteContent, fetchPortfolio, fetchDirectory, fetchArticles, fetchReferenceItems, fetchConfigs]);
+  }, [isAuthenticated, activeTab, fetchLeads, fetchSiteContent, fetchPortfolio, fetchDirectory, fetchArticles, fetchReferenceItems, fetchConfigs, fetchCommandCenterData]);
 
   // LEADS STATUS MANAGEMENT
   const handleUpdateStatus = async (table: 'utility_leads' | 'directory_leads' | 'contact_leads', id: string, newStatus: string) => {
@@ -821,6 +841,53 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // COMMAND CENTER HANDLERS
+  const handleQueueSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const { error } = await supabase.from('scraping_queues').insert([newQueueForm]);
+      if (error) throw error;
+      triggerMessage('Antrean scraping berhasil ditambahkan!');
+      setNewQueueForm({ target_query: '', location: '', niche: '', priority: 0 });
+      await fetchCommandCenterData();
+    } catch (err) {
+      triggerMessage((err as Error).message || 'Gagal menambahkan antrean', 'error');
+    }
+  };
+
+  const handleManualScrapeTrigger = async (id: string) => {
+    try {
+      triggerMessage('Memicu scraper manual...', 'success');
+      const res = await fetch('/api/scraper/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: secretKey, queueId: id })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      triggerMessage('Scraper berhasil dipicu untuk ID: ' + id);
+      await fetchCommandCenterData();
+    } catch (err) {
+      triggerMessage((err as Error).message || 'Gagal memicu scraper', 'error');
+    }
+  };
+
+  const handleReviewEntity = async (id: string, action: 'approve' | 'reject') => {
+    try {
+      if (action === 'approve') {
+        const { error } = await supabase.from('directory_entities').update({ verification_status: 'unverified' }).eq('id', id);
+        if (error) throw error;
+        triggerMessage('Entitas disetujui. Status diubah ke unverified.');
+      } else {
+        const { error } = await supabase.from('directory_entities').delete().eq('id', id);
+        if (error) throw error;
+        triggerMessage('Entitas ditolak dan dihapus dari staging.');
+      }
+      await fetchCommandCenterData();
+    } catch (err) {
+      triggerMessage((err as Error).message || `Gagal melakukan ${action}`, 'error');
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <>
@@ -878,19 +945,6 @@ export default function AdminDashboardPage() {
               </span>
             </div>
           </div>
-
-          {/* Action Message Banner */}
-          {actionMessage.text && (
-            <div className={cn(
-              "p-4 rounded-xl border text-xs font-mono flex items-center gap-2.5 animate-fade-in",
-              actionMessage.type === 'success' 
-                ? "bg-teal-accent/5 border-teal-accent/25 text-teal-accent" 
-                : "bg-red-500/5 border-red-500/25 text-red-600"
-            )}>
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-              <span>{actionMessage.text}</span>
-            </div>
-          )}
 
           {/* Navigation Tabs */}
           <div className="flex border-b border-brand-border gap-2 overflow-x-auto">
@@ -2662,24 +2716,186 @@ export default function AdminDashboardPage() {
                 {activeTab === 'scraper' && (
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <h3 className="text-lg font-heading-serif font-bold text-text-primary">Scraper & Data Ingestion Engine</h3>
-                      <p className="text-xs text-text-muted leading-relaxed">Kelola operasi pengambilan data otomatis dari sumber eksternal (Google Maps, RSS, dll) untuk masuk ke dalam database Sovereign / Directory.</p>
+                      <h3 className="text-lg font-heading-serif font-bold text-text-primary">Entity Command Center & Data Ingestion</h3>
+                      <p className="text-xs text-text-muted leading-relaxed">Kelola operasi antrean target (Scraping & Discovery), perayapan web cerdas, hingga persetujuan manual (approval workflow) untuk entitas yang tertunda.</p>
                     </div>
 
-                    <div className="flex border-b border-brand-border">
+                    <div className="flex border-b border-brand-border flex-wrap overflow-x-auto gap-2 pb-1">
+                      <button
+                        onClick={() => setScraperTab('queues')}
+                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider whitespace-nowrap", scraperTab === 'queues' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
+                      >
+                        Target & Queue Config
+                      </button>
+                      <button
+                        onClick={() => setScraperTab('discovery')}
+                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider whitespace-nowrap", scraperTab === 'discovery' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
+                      >
+                        Discovery Monitor
+                      </button>
+                      <button
+                        onClick={() => setScraperTab('approval')}
+                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider whitespace-nowrap", scraperTab === 'approval' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
+                      >
+                        Approval Workflow
+                      </button>
                       <button
                         onClick={() => setScraperTab('gmaps')}
-                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider", scraperTab === 'gmaps' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
+                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider whitespace-nowrap", scraperTab === 'gmaps' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
                       >
-                        Google Maps / Places API
+                        Manual Scraper Tools
                       </button>
                       <button
                         onClick={() => setScraperTab('rss')}
-                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider", scraperTab === 'rss' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
+                        className={cn("px-4 py-2 font-mono text-[10px] uppercase tracking-wider whitespace-nowrap", scraperTab === 'rss' ? "border-b-2 border-teal-accent text-teal-accent font-bold" : "text-text-muted hover:text-text-primary")}
                       >
-                        RSS Feed Scraper
+                        RSS Feed Config
                       </button>
                     </div>
+
+                    {scraperTab === 'queues' && (
+                      <div className="space-y-6 max-w-4xl">
+                        <form onSubmit={handleQueueSubmit} className="bg-offwhite border border-brand-border rounded-2xl p-6 space-y-4">
+                          <h4 className="text-xs font-mono text-gold-accent uppercase tracking-widest flex items-center gap-1.5">
+                            <Plus className="w-4 h-4" /> Registrasi Kueri Scraping Baru
+                          </h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-[10px] font-mono text-text-muted uppercase mb-1">Target Query / Keyword</label>
+                              <input required type="text" value={newQueueForm.target_query} onChange={e => setNewQueueForm({...newQueueForm, target_query: e.target.value})} className="w-full bg-white border border-brand-border rounded-xl px-3 py-2 text-xs" placeholder="Contoh: Klinik Gigi Terdekat" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-mono text-text-muted uppercase mb-1">Lokasi (Kota/Daerah)</label>
+                              <input type="text" value={newQueueForm.location} onChange={e => setNewQueueForm({...newQueueForm, location: e.target.value})} className="w-full bg-white border border-brand-border rounded-xl px-3 py-2 text-xs" placeholder="Contoh: Jakarta Selatan" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-mono text-text-muted uppercase mb-1">Niche / Kategori</label>
+                              <input type="text" value={newQueueForm.niche} onChange={e => setNewQueueForm({...newQueueForm, niche: e.target.value})} className="w-full bg-white border border-brand-border rounded-xl px-3 py-2 text-xs" placeholder="Contoh: Healthcare" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-mono text-text-muted uppercase mb-1">Prioritas (Makin Tinggi = Prioritas)</label>
+                              <input type="number" value={newQueueForm.priority} onChange={e => setNewQueueForm({...newQueueForm, priority: Number(e.target.value)})} className="w-full bg-white border border-brand-border rounded-xl px-3 py-2 text-xs" />
+                            </div>
+                          </div>
+                          <button type="submit" className="bg-teal-accent text-white font-mono text-[10px] uppercase font-bold py-3 px-6 rounded-xl cursor-pointer hover:bg-teal-glow">
+                            Tambah ke Antrean
+                          </button>
+                        </form>
+
+                        <div className="overflow-x-auto border border-brand-border rounded-xl">
+                          <table className="w-full text-left font-sans text-xs text-text-muted">
+                            <thead className="bg-offwhite text-text-primary font-mono uppercase text-[10px] tracking-wider border-b border-brand-border">
+                              <tr>
+                                <th className="p-4">Kueri & Lokasi</th>
+                                <th className="p-4">Niche</th>
+                                <th className="p-4">Status & Prioritas</th>
+                                <th className="p-4 text-right">Aksi</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-brand-border">
+                              {scrapingQueues.length === 0 ? (
+                                <tr><td colSpan={4} className="p-4 text-center">Antrean kosong.</td></tr>
+                              ) : (
+                                scrapingQueues.map((q) => (
+                                  <tr key={q.id} className="hover:bg-offwhite/50">
+                                    <td className="p-4 font-semibold text-text-primary">{q.target_query} <span className="block font-normal text-text-muted text-[10px]">{q.location || '-'}</span></td>
+                                    <td className="p-4 text-[10px] font-mono">{q.niche || '-'}</td>
+                                    <td className="p-4 font-mono">
+                                      <span className="bg-offwhite border border-brand-border px-1.5 py-0.5 rounded text-[9px] uppercase">{q.status}</span>
+                                      <span className="block text-[10px] text-text-muted mt-1">Prio: {q.priority}</span>
+                                    </td>
+                                    <td className="p-4 text-right">
+                                      <button onClick={() => handleManualScrapeTrigger(q.id)} className="bg-teal-accent text-white text-[9px] font-mono uppercase px-2 py-1 rounded cursor-pointer hover:bg-teal-glow">Scrape Now</button>
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {scraperTab === 'discovery' && (
+                      <div className="space-y-6 max-w-4xl">
+                        <div className="overflow-x-auto border border-brand-border rounded-xl">
+                          <table className="w-full text-left font-sans text-xs text-text-muted">
+                            <thead className="bg-offwhite text-text-primary font-mono uppercase text-[10px] tracking-wider border-b border-brand-border">
+                              <tr>
+                                <th className="p-4">Target URL</th>
+                                <th className="p-4">Depth</th>
+                                <th className="p-4">Status</th>
+                                <th className="p-4">Last Crawled</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-brand-border">
+                              {crawlQueue.length === 0 ? (
+                                <tr><td colSpan={4} className="p-4 text-center">Crawl queue kosong.</td></tr>
+                              ) : (
+                                crawlQueue.map((c) => (
+                                  <tr key={c.id} className="hover:bg-offwhite/50">
+                                    <td className="p-4 font-mono text-[10px] text-teal-accent break-all max-w-[300px]">{c.target_url}</td>
+                                    <td className="p-4 text-[10px] font-mono">{c.depth}</td>
+                                    <td className="p-4 font-mono text-[9px] uppercase">
+                                      <span className="bg-offwhite border border-brand-border px-1.5 py-0.5 rounded">{c.status}</span>
+                                    </td>
+                                    <td className="p-4 text-[10px] font-mono">{c.last_crawled_at ? new Date(c.last_crawled_at).toLocaleString() : '-'}</td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {scraperTab === 'approval' && (
+                      <div className="space-y-6 max-w-4xl">
+                        <div className="overflow-x-auto border border-brand-border rounded-xl">
+                          <div className="p-4 bg-offwhite border-b border-brand-border">
+                            <h4 className="text-xs font-mono text-teal-accent uppercase tracking-widest flex items-center gap-1.5"><Activity className="w-4 h-4" /> Quality Control & Monitoring</h4>
+                            <p className="text-[10px] text-text-muted mt-1">Sistem kami cerdas dan tangguh. Mayoritas entitas akan terpublikasi otomatis (<span className="text-teal-accent">unverified status</span>). Anda dapat memantau hasil tangkapan bot di sini, dan membatalkannya (Take Down) jika dirasa kurang valid.</p>
+                          </div>
+                          <table className="w-full text-left font-sans text-xs text-text-muted">
+                            <thead className="bg-offwhite text-text-primary font-mono uppercase text-[10px] tracking-wider border-b border-brand-border">
+                              <tr>
+                                <th className="p-4">Nama Entitas</th>
+                                <th className="p-4">Kontak / Lencana</th>
+                                <th className="p-4">Status & Web</th>
+                                <th className="p-4 text-right">Aksi</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-brand-border">
+                              {pendingEntities.length === 0 ? (
+                                <tr><td colSpan={4} className="p-4 text-center">Tidak ada entitas terbaru untuk dimonitor.</td></tr>
+                              ) : (
+                                pendingEntities.map((ent) => (
+                                  <tr key={ent.id} className="hover:bg-offwhite/50">
+                                    <td className="p-4 font-semibold text-text-primary">{ent.name}</td>
+                                    <td className="p-4 text-[10px]">
+                                      {ent.contact_email && <span className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded mr-1">Email</span>}
+                                      {ent.contact_phone && <span className="bg-green-100 text-green-800 px-1.5 py-0.5 rounded mr-1">Phone</span>}
+                                      {!ent.contact_email && !ent.contact_phone && '-'}
+                                    </td>
+                                    <td className="p-4 text-[10px]">
+                                      <span className={cn("px-1.5 py-0.5 rounded text-[9px] uppercase mr-2", ent.verification_status === 'unverified' ? "bg-teal-100 text-teal-800" : "bg-yellow-100 text-yellow-800")}>{ent.verification_status === 'unverified' ? 'Auto-Approved' : 'Pending'}</span>
+                                      {ent.website_url && <a href={ent.website_url} target="_blank" className="text-teal-accent hover:underline inline-block truncate max-w-[150px] align-middle">{ent.website_url}</a>}
+                                      <span className="text-text-muted block mt-1">{ent.address || ent.city_slug}</span>
+                                    </td>
+                                    <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
+                                      {ent.verification_status === 'pending_approval' && (
+                                        <button onClick={() => handleReviewEntity(ent.id, 'approve')} className="text-teal-accent hover:text-teal-glow inline-flex items-center gap-0.5 border border-teal-accent/30 bg-teal-accent/5 px-2 py-1 rounded cursor-pointer"><Check className="w-3.5 h-3.5" /> Approve</button>
+                                      )}
+                                      <button onClick={() => handleReviewEntity(ent.id, 'reject')} className="text-red-600 hover:text-red-800 inline-flex items-center gap-0.5 border border-red-500/30 bg-red-500/5 px-2 py-1 rounded cursor-pointer"><X className="w-3.5 h-3.5" /> {ent.verification_status === 'unverified' ? 'Take Down' : 'Reject'}</button>
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
 
                     {scraperTab === 'gmaps' && (
                       <div className="space-y-6 max-w-3xl">

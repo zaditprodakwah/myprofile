@@ -81,21 +81,98 @@ export async function GET() {
       // B. Fetch BPS Data with WAF Bypass (User-Agent header)
       if (apiKey && apiKey.trim() !== '') {
         try {
-          const bpsUrl = `https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/456/key/${apiKey}`;
-          const response = await fetch(bpsUrl, {
+          // Fetch GDP growth (Var 104)
+          const yearsUrl104 = `https://webapi.bps.go.id/v1/api/list/model/th/lang/ind/domain/0000/var/104/key/${apiKey}`;
+          const yearsRes104 = await fetch(yearsUrl104, {
             signal: abortController.signal,
             headers: {
               'Accept': 'application/json',
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+              'User-Agent': 'Mozilla/5.0'
             }
-          });
+          }).then(r => r.ok ? r.json() : null);
 
-          if (response.ok) {
-            const raw = await response.json();
-            if (raw.data && raw.data.length > 0) {
-              gdpGrowth = raw.data[0]?.nilai ? `${raw.data[0].nilai}%` : gdpGrowth;
-              inflationRate = raw.data[1]?.nilai ? `${raw.data[1].nilai}%` : inflationRate;
-              hasBpsSuccess = true;
+          let gdpThId = null;
+          if (yearsRes104?.status === 'OK' && yearsRes104.data?.[1]) {
+            const sortedYears = yearsRes104.data[1];
+            if (sortedYears.length > 0) {
+              gdpThId = sortedYears[0].th_id;
+            }
+          }
+
+          if (gdpThId) {
+            const dataUrl104 = `https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/104/key/${apiKey}/th/${gdpThId}`;
+            const dataRes104 = await fetch(dataUrl104, {
+              signal: abortController.signal,
+              headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'Mozilla/5.0'
+              }
+            }).then(r => r.ok ? r.json() : null);
+
+            if (dataRes104?.status === 'OK' && dataRes104.datacontent) {
+              const content = dataRes104.datacontent;
+              // YoY GDP growth key starts with '990031043' + gdpThId
+              const prefix = `990031043${gdpThId}`;
+              const keys = Object.keys(content).filter(k => k.startsWith(prefix));
+              if (keys.length > 0) {
+                keys.sort();
+                const latestKey = keys[keys.length - 1];
+                const val = content[latestKey];
+                if (val) {
+                  gdpGrowth = `${val}%`;
+                  hasBpsSuccess = true;
+                }
+              }
+            }
+          }
+
+          // Fetch Inflation (Var 1)
+          const yearsUrl1 = `https://webapi.bps.go.id/v1/api/list/model/th/lang/ind/domain/0000/var/1/key/${apiKey}`;
+          const yearsRes1 = await fetch(yearsUrl1, {
+            signal: abortController.signal,
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'Mozilla/5.0'
+            }
+          }).then(r => r.ok ? r.json() : null);
+
+          let infThId = null;
+          if (yearsRes1?.status === 'OK' && yearsRes1.data?.[1]) {
+            const sortedYears = yearsRes1.data[1];
+            if (sortedYears.length > 0) {
+              infThId = sortedYears[0].th_id;
+            }
+          }
+
+          if (infThId) {
+            const dataUrl1 = `https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/1/key/${apiKey}/th/${infThId}`;
+            const dataRes1 = await fetch(dataUrl1, {
+              signal: abortController.signal,
+              headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'Mozilla/5.0'
+              }
+            }).then(r => r.ok ? r.json() : null);
+
+            if (dataRes1?.status === 'OK' && dataRes1.datacontent) {
+              const content = dataRes1.datacontent;
+              // Indonesia monthly inflation key starts with '999910' + infThId
+              const prefix = `999910${infThId}`;
+              const keys = Object.keys(content).filter(k => k.startsWith(prefix));
+              if (keys.length > 0) {
+                // Sort keys based on numeric month suffix
+                keys.sort((a, b) => {
+                  const monthA = parseInt(a.substring(prefix.length));
+                  const monthB = parseInt(b.substring(prefix.length));
+                  return monthA - monthB;
+                });
+                const latestKey = keys[keys.length - 1];
+                const val = content[latestKey];
+                if (val) {
+                  inflationRate = `${val}%`;
+                  hasBpsSuccess = true;
+                }
+              }
             }
           }
         } catch (err) {

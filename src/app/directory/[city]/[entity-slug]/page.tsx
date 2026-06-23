@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Globe, Phone, MapPin, Shield, Star, RefreshCw, Sparkles, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Globe, Phone, MapPin, Shield, Star, RefreshCw, Sparkles, AlertCircle, Check, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { supabaseServer } from '@/lib/supabase-server';
 import EntityClaimPortal from '@/components/EntityClaimPortal';
@@ -36,13 +36,18 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
     rawType === 'institution' ? 'Instansi / Lembaga' : 
     'Bisnis Lokal';
 
+  // Clean tagline to prevent showing raw JSON in tagline
+  const rawDescription = String(dbData.description || '');
+  const isJsonDescRaw = rawDescription.trim().startsWith('[') && rawDescription.trim().endsWith(']');
+  const rawTagline = String(dbData.tagline || '');
+  
   const entity = {
     id: String(dbData.id),
     name: String(dbData.name),
     slug: String(dbData.slug),
     category: translatedCategory,
-    tagline: String(dbData.tagline || dbData.description || 'Layanan bisnis terdaftar'),
-    description: String(dbData.description || dbData.tagline || 'Informasi rinci belum ditambahkan.'),
+    tagline: rawTagline || (!isJsonDescRaw ? rawDescription : '') || 'Layanan bisnis terdaftar',
+    description: rawDescription || rawTagline || 'Informasi rinci belum ditambahkan.',
     address: String(dbData.address || 'Alamat belum didaftarkan'),
     phone: String(dbData.contact_phone || ''),
     email: String(dbData.contact_email || ''),
@@ -53,6 +58,35 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
     created_at: dbData.created_at ? new Date(dbData.created_at) : new Date(),
     last_scraped: dbData.last_scraped ? new Date(dbData.last_scraped) : null
   };
+
+  // Parse JSON description if applicable
+  let parsedDescription: any = null;
+  let isJsonDescription = false;
+  try {
+    if (isJsonDescRaw) {
+      parsedDescription = JSON.parse(entity.description);
+      isJsonDescription = Array.isArray(parsedDescription);
+    }
+  } catch (e) {
+    // Not JSON
+  }
+
+  // Parse open_hours and review_count from raw_metadata
+  let openHoursParsed: Record<string, string[]> | null = null;
+  const rawOpenHours = dbData.raw_metadata?.open_hours;
+  if (rawOpenHours) {
+    if (typeof rawOpenHours === 'string') {
+      try {
+        openHoursParsed = JSON.parse(rawOpenHours);
+      } catch (e) {
+        // failed to parse
+      }
+    } else if (typeof rawOpenHours === 'object') {
+      openHoursParsed = rawOpenHours as Record<string, string[]>;
+    }
+  }
+
+  const reviewCount = dbData.raw_metadata?.review_count ? Number(dbData.raw_metadata.review_count) : 0;
 
   const cleanWebsiteUrl = (url: string) => {
     return url.replace(/^https?:\/\//i, '').replace(/\/$/, '');
@@ -177,6 +211,11 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
                       <span className="font-heading-sans font-black text-sm text-text-primary">{entity.trustScore.toFixed(1)}</span>
                       <span className="text-[10px] text-text-muted">/5.0</span>
                     </div>
+                    {reviewCount > 0 && (
+                      <span className="text-[9px] font-sans text-text-muted mt-1 shrink-0">
+                        ({reviewCount} Ulasan)
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -191,11 +230,43 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
                 )}
 
                 {/* About / Description */}
-                <div className="pt-6 border-t border-brand-border/40 mt-6 space-y-2">
+                <div className="pt-6 border-t border-brand-border/40 mt-6 space-y-4">
                   <h3 className="text-[9px] font-mono text-text-muted uppercase tracking-widest">Tentang Bisnis</h3>
-                  <p className="text-xs text-text-muted leading-relaxed font-sans">
-                    {entity.description}
-                  </p>
+                  {isJsonDescription ? (
+                    <div className="space-y-4">
+                      {parsedDescription.map((section: any) => (
+                        <div key={section.id} className="space-y-2">
+                          <h4 className="text-[10px] font-mono text-text-primary uppercase tracking-wider font-semibold">
+                            {section.name}
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {section.options?.map((option: any, optIdx: number) => (
+                              <span 
+                                key={optIdx} 
+                                className={cn(
+                                  "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium border font-sans",
+                                  option.enabled 
+                                    ? "bg-teal-50 text-teal-700 border-teal-100" 
+                                    : "bg-slate-50 text-slate-400 border-slate-200 line-through"
+                                )}
+                              >
+                                {option.enabled ? (
+                                  <Check className="w-3 h-3 text-teal-600 shrink-0" />
+                                ) : (
+                                  <AlertCircle className="w-3 h-3 text-slate-400 shrink-0" />
+                                )}
+                                {option.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-text-muted leading-relaxed font-sans">
+                      {entity.description}
+                    </p>
+                  )}
                 </div>
 
                 {/* Contact Data Details */}
@@ -292,6 +363,24 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
                   >
                     Jalankan Audit Performa →
                   </Link>
+                </div>
+              )}
+
+              {/* Operational Hours Widget */}
+              {openHoursParsed && (
+                <div className="bg-white border border-brand-border rounded-2xl p-6 shadow-xs space-y-4">
+                  <div className="flex items-center gap-2 text-teal-accent">
+                    <Clock className="w-4 h-4" />
+                    <h4 className="font-heading-sans font-bold text-xs text-text-primary uppercase tracking-wide">Jam Operasional</h4>
+                  </div>
+                  <div className="space-y-1.5 text-xs text-text-muted font-sans">
+                    {Object.entries(openHoursParsed).map(([day, hours]) => (
+                      <div key={day} className="flex justify-between border-b border-brand-border/40 pb-1 last:border-0 last:pb-0">
+                        <span className="font-medium text-text-primary">{day}</span>
+                        <span className="text-right text-[11px] text-text-muted">{Array.isArray(hours) ? hours.join(', ') : String(hours)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
