@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { JobOrchestrator } from '@/modules/audit/application/job-orchestrator';
 import { v4 as uuidv4 } from 'uuid';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || req.ip || 'anonymous';
+    // Max 10 requests per 15 minutes (900000ms)
+    if (!checkRateLimit(ip, 10, 900000)) {
+      return NextResponse.json({ success: false, error: 'Terlalu banyak permintaan (Rate limit). Silakan coba lagi dalam beberapa menit.' }, { status: 429 });
+    }
+
     const contentType = req.headers.get('content-type') || '';
     
     let targetUrl = '';

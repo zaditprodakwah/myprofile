@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { google } from 'googleapis';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || 'anonymous';
+    // Max 5 requests per 15 minutes (900000ms) for contact forms
+    if (!checkRateLimit(ip, 5, 900000)) {
+      return NextResponse.json({ success: false, error: 'Terlalu banyak permintaan (Rate limit). Silakan coba lagi dalam beberapa menit.' }, { status: 429 });
+    }
+
     const data = await request.json();
     const { name, whatsapp, email, role, need, projectDescription } = data;
 

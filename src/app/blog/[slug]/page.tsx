@@ -398,10 +398,10 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                   <Zap className="w-5 h-5" />
                 </div>
                 <h3 className="text-xl font-heading-sans font-bold leading-tight">
-                  Butuh Konsultasi Arsitektur Digital?
+                  Punya Ide atau Proyek?
                 </h3>
                 <p className="text-sm text-text-inverse/70 leading-relaxed font-sans">
-                  Dapatkan bimbingan taktis, rekayasa web performa Next.js 16, dan optimasi SEO terpadu langsung dari Zadit.
+                  Diskusikan strategi dan pertumbuhan bisnis Anda bersama Zadit — dari riset pasar hingga eksekusi digital.
                 </p>
                 
                 <div className="pt-2">

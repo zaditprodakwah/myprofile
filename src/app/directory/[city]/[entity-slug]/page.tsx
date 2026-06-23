@@ -126,7 +126,7 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
   const validationHistory = [
     {
       date: entity.created_at.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
-      change: `Profil entitas berhasil dideteksi dan didaftarkan oleh robot penjelajah direktori regional Zadit di ${getCityTitle(entity.city)}.`
+      change: `Profil entitas berhasil dideteksi dan didaftarkan dalam direktori regional Zadit di ${getCityTitle(entity.city)}.`
     },
     {
       date: new Date(entity.created_at.getTime() + 86400000).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
@@ -295,7 +295,7 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
                         <a 
                           href={entity.website.startsWith('http') ? entity.website : `https://${entity.website}`} 
                           target="_blank" 
-                          rel="noopener noreferrer" 
+                          rel="nofollow noopener noreferrer" 
                           className="text-teal-accent hover:underline font-bold block"
                         >
                           {cleanWebsiteUrl(entity.website)} ↗
@@ -355,7 +355,7 @@ export default async function EntityDetailPage({ params }: EntityDetailPageProps
                     <h4 className="font-heading-sans font-bold text-xs text-text-primary uppercase tracking-wide">Audit Kecepatan Web</h4>
                   </div>
                   <p className="text-[11px] text-text-muted leading-relaxed">
-                    Uji performansi, tingkat aksesibilitas (A11y), dan kualitas SEO teknis situs resmi <b>{cleanWebsiteUrl(entity.website)}</b> langsung menggunakan robot audit kami.
+                   Uji performansi, tingkat aksesibilitas (A11y), dan kualitas SEO teknis situs resmi <b>{cleanWebsiteUrl(entity.website)}</b> secara langsung.
                   </p>
                   <Link 
                     href={`/utility/audit-engine?url=${encodeURIComponent(cleanWebsiteUrl(entity.website))}`}

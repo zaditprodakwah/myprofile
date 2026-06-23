@@ -85,6 +85,10 @@ export interface Article {
   semantic_keywords?: string[];
   faq_items?: Array<{ question: string; answer: string }>;
   author_name?: string;
+  featured_image?: string;
+  reading_time?: number;
+  is_agc?: boolean;
+  view_count?: number;
   is_published: boolean;
   published_at?: string;
   updated_at?: string;

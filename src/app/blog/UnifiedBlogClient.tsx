@@ -94,7 +94,9 @@ export default function UnifiedBlogClient({ initialArticles, initialReferences }
     tags: art.semantic_keywords || ['Growth', 'SEO'],
     url: `/blog/${art.slug}`,
     icon: <Radio className="w-3.5 h-3.5 text-teal-accent" />,
-    label: 'Artikel AI & Wawasan'
+    label: 'Wawasan Terkini',
+    featured_image: art.featured_image,
+    view_count: art.view_count || 0
   }));
 
   const mappedReferences = references.map(ref => ({
@@ -108,7 +110,9 @@ export default function UnifiedBlogClient({ initialArticles, initialReferences }
     tags: ref.tags || ['Reference', 'Strategy'],
     url: `/blog/${ref.slug}`,
     icon: getReferenceIcon(ref.category),
-    label: getReferenceLabel(ref.category)
+    label: getReferenceLabel(ref.category),
+    featured_image: null,
+    view_count: 0
   }));
 
   // Combine and sort by date desc
@@ -191,18 +195,26 @@ export default function UnifiedBlogClient({ initialArticles, initialReferences }
                 <article 
                   itemScope 
                   itemType="https://schema.org/BlogPosting"
-                  className="bg-white border border-brand-border rounded-2xl p-6 md:p-8 hover:border-teal-accent hover:shadow-md transition-all duration-300 flex flex-col justify-between group h-64 shadow-xs"
+                  className="bg-white border border-brand-border rounded-2xl p-5 hover:border-teal-accent hover:shadow-md transition-all duration-300 flex flex-col group h-full shadow-xs"
                 >
                   <meta itemProp="datePublished" content={item.publishedAt || ''} />
                   <meta itemProp="url" content={`https://presenceos.zadit.id${item.url}`} />
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full border border-brand-border text-text-primary uppercase">
+                  
+                  {item.featured_image && (
+                    <div className="w-full h-40 mb-4 rounded-xl overflow-hidden bg-brand-slate/5 border border-brand-border/50 shrink-0 relative">
+                      <img src={item.featured_image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    </div>
+                  )}
+
+                  <div className="space-y-3 flex-grow">
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-offwhite px-2.5 py-1 rounded-full border border-brand-border text-text-primary uppercase shrink-0">
                         {item.icon}
                         {item.label}
                       </span>
-                      <span className="text-[9px] font-mono text-text-muted flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-teal-accent" /> {formatDate(item.publishedAt)}
+                      <span className="text-[9px] font-mono text-text-muted flex flex-col items-end gap-1 shrink-0 text-right">
+                        <span className="flex items-center gap-1"><Clock className="w-3 h-3 text-teal-accent" /> {formatDate(item.publishedAt)}</span>
+                        {item.view_count > 0 && <span className="flex items-center gap-1"><BarChart3 className="w-3 h-3 text-gold-accent" /> {item.view_count} tayangan</span>}
                       </span>
                     </div>
                     

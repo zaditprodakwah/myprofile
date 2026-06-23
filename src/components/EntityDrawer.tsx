@@ -166,7 +166,6 @@ export default function EntityDrawer({ entity, onClose }: EntityDrawerProps) {
                     </div>
                   </div>
 
-                  {entity.google_maps_url && (
                     <div className="flex gap-3 items-start">
                       <MapPin className="w-4 h-4 text-text-muted mt-0.5 shrink-0" />
                       <div className="space-y-0.5">
@@ -174,14 +173,13 @@ export default function EntityDrawer({ entity, onClose }: EntityDrawerProps) {
                         <a 
                           href={entity.google_maps_url} 
                           target="_blank" 
-                          rel="noopener noreferrer" 
+                          rel="nofollow noopener noreferrer" 
                           className="text-teal-accent hover:underline font-bold"
                         >
                           Buka Google Maps ↗
                         </a>
                       </div>
                     </div>
-                  )}
 
                   {entity.phone && (
                     <div className="flex gap-3 items-start">
@@ -198,10 +196,10 @@ export default function EntityDrawer({ entity, onClose }: EntityDrawerProps) {
                       <Globe className="w-4 h-4 text-text-muted mt-0.5 shrink-0" />
                       <div className="space-y-0.5">
                         <p className="text-[9px] font-mono text-text-muted uppercase tracking-wider">Situs Web Resmi</p>
-                        <a 
+                      <a 
                           href={entity.website.startsWith('http') ? entity.website : `https://${entity.website}`} 
                           target="_blank" 
-                          rel="noopener noreferrer" 
+                          rel="nofollow noopener noreferrer" 
                           className="text-teal-accent hover:underline font-bold"
                         >
                           {cleanWebsiteUrl(entity.website)} ↗
@@ -316,7 +314,7 @@ export default function EntityDrawer({ entity, onClose }: EntityDrawerProps) {
                       <h4 className="font-heading-sans font-bold text-xs">Diagnostik Kecepatan Website</h4>
                     </div>
                     <p className="text-[11px] text-text-muted leading-relaxed">
-                      Jalankan robot audit untuk mengukur Narrative Clarity dan Accessibility Score (A11y) situs resmi <b>{cleanWebsiteUrl(entity.website)}</b> sekarang.
+                      Jalankan diagnostik untuk mengukur Narrative Clarity dan Accessibility Score (A11y) situs resmi <b>{cleanWebsiteUrl(entity.website)}</b> sekarang.
                     </p>
                     <a 
                       href={`/utility/audit-engine?url=${encodeURIComponent(cleanWebsiteUrl(entity.website))}`}

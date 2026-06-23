@@ -6,9 +6,10 @@ import LatestInsights from "@/components/LatestInsights";
 import SidebarNav from "@/components/SidebarNav";
 import Footer from "@/components/Footer";
 
-import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats } from "@/lib/data-server";
+import { getSiteContent, getServices, getCaseStudies, getSystemConfig, getLatestArticles, getLiveStats, getCities } from "@/lib/data-server";
 
 import IntegratedServicesHub from "@/components/IntegratedServicesHub";
+import CityDirectoryScroll from "@/components/CityDirectoryScroll";
 import dynamic from "next/dynamic";
 import { Metadata } from "next";
 
@@ -56,13 +57,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [content, services, caseStudies, config, latestArticles, liveStats] = await Promise.all([
+  const [content, services, caseStudies, config, latestArticles, liveStats, cities] = await Promise.all([
     getSiteContent(),
     getServices(),
     getCaseStudies(),
     getSystemConfig(),
     getLatestArticles(3),
-    getLiveStats()
+    getLiveStats(),
+    getCities()
   ]);
 
   return (
@@ -92,6 +94,9 @@ export default async function Home() {
         />
 
         <LatestInsights articles={latestArticles} />
+        
+        <CityDirectoryScroll cities={cities} />
+        
         <GrowthCalculator />
         <PartnershipForm />
       </main>

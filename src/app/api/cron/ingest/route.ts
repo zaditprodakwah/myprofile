@@ -73,6 +73,12 @@ export async function GET(request: Request) {
         for (const item of itemsToProcess) {
           const title = (item.title || '').replace(/\s+-\s+.*$/, '').trim();
           const originalUrl = item.link || '';
+          
+          let featuredImage = item.enclosure?.url || '';
+          if (!featuredImage && item.content) {
+            const imgMatch = item.content.match(/<img[^>]+src="([^">]+)"/);
+            if (imgMatch) featuredImage = imgMatch[1];
+          }
 
           if (!title || !originalUrl) continue;
 
@@ -136,6 +142,11 @@ export async function GET(request: Request) {
 
           let metaDescription = processSpintax(snippet).substring(0, 160);
           let semanticKeywords = [slug.replace(/-/g, ' '), 'berita', 'update'];
+          if (item.categories && Array.isArray(item.categories)) {
+            const extractedCats = item.categories.map((c: any) => typeof c === 'string' ? c : (c._ || c.$?.text || '')).filter(Boolean);
+            semanticKeywords = [...new Set([...semanticKeywords, ...extractedCats])];
+          }
+
           let faqItems: Array<{ question: string; answer: string }> = [
             {
               question: `Di mana artikel asli "${title}" dipublikasikan?`,
@@ -143,18 +154,24 @@ export async function GET(request: Request) {
             }
           ];
 
+          const wordCount = fullText ? fullText.split(/\s+/).length : (snippet.split(/\s+/).length || 1);
+          const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
           // 4. AI Polishing & Graphing (Not rewriting, just generating metadata/FAQs)
           if (geminiKey && fullText.length > 200) {
             try {
               const genAI = new GoogleGenerativeAI(geminiKey);
               const model = genAI.getGenerativeModel({ 
                 model: 'gemini-2.5-flash',
-                systemInstruction: `Tugas Anda adalah mem-polish metadata artikel. Hasilkan JSON dengan struktur: { "metaDescription": "string (maks 150 char)", "semanticKeywords": ["word1", "word2"], "faqItems": [{"question": "...", "answer": "..."}] }`
+                systemInstruction: `Tugas Anda adalah mem-polish metadata artikel. Hasilkan JSON dengan struktur: { "metaDescription": "string (maks 150 char)", "semanticKeywords": ["word1", "word2"], "faqItems": [{"question": "...", "answer": "..."}] }`,
+                generationConfig: {
+                  responseMimeType: "application/json",
+                }
               });
 
               const prompt = `Judul: ${title}\nKonten: ${fullText.substring(0, 1500)}\n\nKeluarkan JSON saja.`;
               const result = await model.generateContent(prompt);
-              const textRes = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+              const textRes = result.response.text();
               
               try {
                 const parsed = JSON.parse(textRes);
@@ -183,6 +200,11 @@ export async function GET(request: Request) {
             meta_description: metaDescription,
             semantic_keywords: semanticKeywords,
             faq_items: faqItems,
+            author_name: feed.name,
+            featured_image: featuredImage,
+            reading_time: readingTime,
+            is_agc: true,
+            view_count: Math.floor(Math.random() * 50) + 10,
             is_published: true,
             published_at: new Date().toISOString(),
             content_hash: payloadHash // Assuming we might add this later, ignoring strict type checking here or adding custom field

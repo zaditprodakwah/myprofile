@@ -111,7 +111,7 @@ export default function MarketTelemetryBlock() {
         <div className="bg-gradient-to-r from-teal-accent/15 to-teal-accent/5 border border-teal-accent/30 rounded-2xl p-5 space-y-1.5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-teal-accent/10 rounded-full blur-2xl pointer-events-none" />
           <div className="flex items-center gap-1.5 text-[9px] font-mono text-teal-accent uppercase tracking-wider font-bold">
-            <Radio className="w-3.5 h-3.5 text-teal-accent animate-pulse" /> AI Macro & Business Outlook
+            <Radio className="w-3.5 h-3.5 text-teal-accent animate-pulse" /> Analisis & Outlook Bisnis
           </div>
           <p className="text-xs md:text-sm text-text-inverse/90 leading-relaxed font-sans italic font-medium">
             "{aiInsight}"
@@ -242,7 +242,7 @@ export default function MarketTelemetryBlock() {
       {newsData.length > 0 && (
         <div className="pt-6 border-t border-brand-mid/40 space-y-3">
           <div className="flex items-center gap-2 text-xs font-mono text-text-inverse/50 uppercase tracking-wider">
-            <Radio className="w-3.5 h-3.5 text-teal-accent animate-pulse" /> Sentimen Makroekonomi & AI Insight Bisnis
+            <Radio className="w-3.5 h-3.5 text-teal-accent animate-pulse" /> Sentimen Pasar & Insight Bisnis
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {newsData.slice(0, 6).map((art, i) => (
